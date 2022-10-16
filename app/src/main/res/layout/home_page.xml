@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/HomeContainerLL"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/romSelecterLL"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:orientation="vertical"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="1dp">
+
+                <TextView
+
+                    android:layout_marginLeft="15dp"
+                    android:textColor="#535353"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Repository"
+                    android:textSize="30dp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.tabs.TabLayout
+                    app:tabTextColor="@color/black"
+                    android:id="@+id/romCategoryList"
+                    app:tabGravity="center"
+                    app:tabMode="scrollable"
+                    android:layout_marginTop="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"></com.google.android.material.tabs.TabLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/selectedCategoryList"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/homeNoticeBoardLL"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:orientation="vertical" />
+
+            <TextView
+                android:textColor="#535353"
+                android:background="@color/white"
+                android:layout_marginLeft="15dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notice"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+
+                android:id="@+id/homeNoticeBoardList"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

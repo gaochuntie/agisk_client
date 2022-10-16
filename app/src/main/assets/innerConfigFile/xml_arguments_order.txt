@@ -1,0 +1,16 @@
+attributes
+    id name uuid author description mark
+    
+partition
+    new:name start size
+    delete:name | pt_number
+    clone:s_driver s_number t_start
+    format:pt_number filesystem
+    mount:pt_number filesystem mount_point
+
+Disk
+    reserve:start length
+    write:start length raw_file offset_raw
+    clone:s_driver s_start s_length t_start
+    format:start length
+    backup:start length destfile

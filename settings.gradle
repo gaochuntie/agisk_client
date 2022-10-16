@@ -1,0 +1,2 @@
+rootProject.name = "My_Application_c++"
+include ':app'

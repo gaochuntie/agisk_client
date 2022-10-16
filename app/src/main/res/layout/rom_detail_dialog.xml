@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_marginHorizontal="30dp"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/rom_detail_BottomButtonBox"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <Button
+            android:id="@+id/rom_detail_cancelBT"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_weight="1"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/rom_detail_Action"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_weight="1"
+            android:text="Action" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="500dp"
+        android:orientation="vertical"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toTopOf="@id/rom_detail_BottomButtonBox"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:id="@+id/dialog_romname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="unknown name"
+                android:textColor="@color/black"
+                android:textSize="40dp" />
+
+            <androidx.cardview.widget.CardView
+                android:background="@color/white"
+                app:cardBackgroundColor="@color/white"
+                android:layout_margin="5dp"
+                app:cardCornerRadius="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_margin="5dp"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/rom_detail_author"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:breakStrategy="high_quality"
+                        android:text="Author: "
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black" />
+
+
+                    <TextView
+                        android:id="@+id/rom_detail_uuid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:breakStrategy="high_quality"
+                        android:text="UUID: "
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/rom_detail_mark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:breakStrategy="high_quality"
+                        android:text="Mark: "
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/rom_detail_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:breakStrategy="high_quality"
+                        android:text="Description: "
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/rom_detail_xml_location"
+                        android:breakStrategy="high_quality"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black"
+                        android:text="xml path: " />
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

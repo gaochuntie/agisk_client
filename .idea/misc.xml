@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.15375" />
+        <entry key="app/src/main/res/drawable/bg_round_rect.xml" value="0.191" />
+        <entry key="app/src/main/res/drawable/button_white.xml" value="0.1345" />
+        <entry key="app/src/main/res/drawable/ic_contract_foreground.xml" value="0.191" />
+        <entry key="app/src/main/res/drawable/ic_install_button.xml" value="0.215" />
+        <entry key="app/src/main/res/drawable/ic_install_button_foreground.xml" value="0.215" />
+        <entry key="app/src/main/res/drawable/ic_install_edit_button_foreground.xml" value="0.1215" />
+        <entry key="app/src/main/res/drawable/ic_install_foreground.xml" value="0.1345" />
+        <entry key="app/src/main/res/drawable/ic_install_get_button_foreground.xml" value="0.1215" />
+        <entry key="app/src/main/res/drawable/linearlayout_divider.xml" value="0.196" />
+        <entry key="app/src/main/res/drawable/searchbarbg_white.xml" value="0.191" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/fragment_about.xml" value="0.27334542157751585" />
+        <entry key="app/src/main/res/layout/fragment_install.xml" value="0.23097826086956522" />
+        <entry key="app/src/main/res/layout/fragment_system_info_map.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/home_page.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/logviewer.xml" value="0.2787516032492518" />
+        <entry key="app/src/main/res/layout/popwin_helper.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/rom_category_item.xml" value="0.27334542157751585" />
+        <entry key="app/src/main/res/layout/rom_category_list_item.xml" value="0.1997555012224939" />
+        <entry key="app/src/main/res/layout/rom_detail_dialog.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/rom_list_item.xml" value="0.27070947284978203" />
+        <entry key="app/src/main/res/layout/settings_activity.xml" value="0.27334542157751585" />
+        <entry key="app/src/main/res/xml/header_preferences.xml" value="0.27334542157751585" />
+        <entry key="app/src/main/res/xml/messages_preferences.xml" value="0.27334542157751585" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.27334542157751585" />
+        <entry key="app/src/main/res/xml/sync_preferences.xml" value="0.27334542157751585" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

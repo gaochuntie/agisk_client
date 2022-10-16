@@ -1,0 +1,114 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        applicationId "atms.app.my_application_c"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+        renderscriptTargetApi 21
+        renderscriptSupportModeEnabled true
+
+        ndk{
+
+            moduleName "cpp"
+            abiFilters "armeabi-v7a","arm64-v8a","x86"
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags '-std=c++11'
+
+            }
+        }
+
+
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.10.2'
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
+
+    def dialogx_version = "0.0.43"
+    implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
+}
+
+
+android {
+    compileOptions {
+        // This library uses Java 8 features, this is required
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+repositories {
+    maven { url 'https://jitpack.io'
+        uri("https://maven.pkg.github.com/GCX-HCI/tray")}
+
+}
+dependencies {
+
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation "net.grandcentrix.tray:tray:0.12.0"
+
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'org.jetbrains:annotations:15.0'
+    def libsuVersion = '5.0.2'
+
+    // The core module that provides APIs to a shell
+    implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
+
+    // Optional: APIs for creating root services. Depends on ":core"
+    implementation "com.github.topjohnwu.libsu:service:${libsuVersion}"
+
+    // Optional: Provides remote file system support
+    implementation "com.github.topjohnwu.libsu:nio:${libsuVersion}"
+    //expandable-cardview
+    compile 'com.alespero:expandable-cardview:0.8'
+
+
+    implementation 'com.google.android.material:material:1.2.1'
+
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    implementation 'com.wuhenzhizao:titlebar:1.2.0'
+
+    implementation 'devlight.io:navigationtabbar:1.2.5'
+
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0' // ViewPager 2 需要使用 RecycleView 的 adapter
+
+}
