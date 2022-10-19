@@ -28,9 +28,24 @@ add_library( # Sets the name of the library.
         PartitionActions.cpp
         PartitionActions.h
         DiskActions.h
-
         )
 
+add_library(
+        agisk
+        SHARED
+
+        gptfdisk/*
+
+        IMPORTED
+)
+set_target_properties( # Specifies the target library.
+        agisk
+
+        # Specifies the parameter you want to define.
+        PROPERTIES IMPORTED_LOCATION
+
+        # Provides the path to the library you want to import.
+        libs/libuuid.so)
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
 # default, you only need to specify the name of the public NDK library
@@ -50,7 +65,9 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
         agisk-dev
-
+        agisk
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})
+
+include_directories(src/main/cpp/include/)

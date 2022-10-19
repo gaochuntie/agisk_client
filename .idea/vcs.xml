@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/agisk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/gptfdisk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/ncurses" vcs="Git" />
   </component>
 </project>
