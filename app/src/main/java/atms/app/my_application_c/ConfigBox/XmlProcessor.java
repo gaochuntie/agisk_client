@@ -37,7 +37,7 @@ import atms.app.my_application_c.Tools.GlobalMsg;
 
 public class XmlProcessor {
     static {
-        System.loadLibrary("agisk-dev");
+        System.loadLibrary("agisk-cli");
     }
 
     public static String TAG = "XML : ";

@@ -39,7 +39,10 @@ import devlight.io.library.ntb.NavigationTabBar;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     //setup jni environment
     static {
-        System.loadLibrary("agisk-dev");
+        System.loadLibrary("agisk-cli");
+        System.loadLibrary("gpt");
+        System.loadLibrary("uuid");
+        System.loadLibrary("c++_shared");
     }
 
 
@@ -109,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //setup ui
         setupNavBar();
         setupViewPage();
-
     }
 
     private void checkRootAccess(boolean isroot) {
@@ -344,8 +346,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setupLogPopWindows(View v) {
         View view = LayoutInflater.from(this).inflate(R.layout.logviewer, null, false);
-        Button cancek = (Button) view.findViewById(R.id.log_cancel);
-        Button savelog = (Button) view.findViewById(R.id.log_save_bt);
+        Button cancek = view.findViewById(R.id.log_cancel);
+        Button savelog = view.findViewById(R.id.log_save_bt);
         TextView logcontent = view.findViewById(R.id.log_content);
 
         //1.构造一个PopupWindow，参数依次是加载的View，宽高

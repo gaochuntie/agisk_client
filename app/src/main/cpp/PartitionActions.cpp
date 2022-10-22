@@ -4,6 +4,8 @@
 
 #include "PartitionActions.h"
 #include <jni.h>
+#include "include/gpt/gpt.h"
+#include <android/log.h>
 
 extern "C"
 JNIEXPORT jint JNICALL
@@ -61,4 +63,49 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_mount(JNIEnv *env, jo
                                                                  jstring filesystem,
                                                                  jstring mount_point) {
     // TODO: implement mount()
+}
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readPartitionTableInfo(JNIEnv *env,
+                                                                                  jclass clazz,
+                                                                                  jstring device) {
+    // TODO: implement readPartitionTableInfo()
+    const char *devname_C = env->GetStringUTFChars(device, nullptr);
+    __android_log_print(ANDROID_LOG_DEBUG, "PART:", " %s", "part run");
+    GPTData gptdata(devname_C);
+    __android_log_print(ANDROID_LOG_DEBUG, "PART:", " %s", "part run");
+
+    ////////////////////////////////////////////
+    gptdata.JustLooking();
+
+    uint32_t MainHeaderLBA = gptdata.GetMainHeaderLBA();
+    uint32_t BlockSize = gptdata.GetBlockSize();
+
+    uint32_t num = gptdata.GetNumParts();
+
+
+
+    //Declare datas
+
+    uint32_t low, high;
+    uint32_t NumParts = gptdata.GetNumParts();
+    uint32_t CountParts = gptdata.CountParts();
+    uint32_t sector_size = gptdata.GetBlockSize();
+
+    // A 4mib area reserved for atms
+    // this area take up a partnum if possible
+    // If you want to have some partitions cloned more than 1 time,this area is necessary
+    //or it is not requested.
+
+    // Because each clone will hide orig partitions,so We can lost cloned partitions' situation without a recorde area!!!
+    //SO it comes with atms metadata
+    //Actions about atms metadata are all defined in Action.hpp,You can modify it to your format
+    // Also you can resize this area at line below...
+    // atmsMetedataSizeBlock defined in Utils.hpp -extern
+
+    gptdata.GetPartRange(&low, &high);
+
+    __android_log_print(ANDROID_LOG_DEBUG, "PART:", " %d", CountParts);
+    env->ReleaseStringUTFChars(device, devname_C);
+    return env->NewStringUTF("cccc");
 }

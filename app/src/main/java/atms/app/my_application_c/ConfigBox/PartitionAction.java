@@ -162,4 +162,7 @@ public class PartitionAction extends ActionBase {
      */
     private native int mount(String driver, int number, String filesystem, String mountPoint);
 
+
+    public static native String readPartitionTableInfo(String device);
+
 }

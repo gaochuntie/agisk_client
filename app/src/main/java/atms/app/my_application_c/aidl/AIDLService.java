@@ -34,9 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import atms.app.my_application_c.ConfigBox.ActionBase;
-import atms.app.my_application_c.ConfigBox.DiskAction;
 import atms.app.my_application_c.ConfigBox.OrigConfig;
-import atms.app.my_application_c.ConfigBox.PartitionAction;
 
 // Demonstrate RootService using AIDL (daemon mode)
 class AIDLService extends RootService {
@@ -57,7 +55,7 @@ class AIDLService extends RootService {
     }
 
     static {
-        System.loadLibrary("agisk-dev");
+        System.loadLibrary("agisk-cli");
     }
 
     // Demonstrate we can also run native code via JNI with RootServices
@@ -190,17 +188,17 @@ class AIDLService extends RootService {
                     switch (actionType) {
                         case ACTION_TYPE_PARTITION:
                             writelogTag(TAG, "Partition type");
-                            ((PartitionAction) actionBase).doAction();
+                            actionBase.doAction();
                             writelogTag(TAG, "Partition done");
                             break;
                         case ACTION_TYPE_DISK:
                             writelogTag(TAG, "Disk type");
-                            ((DiskAction) actionBase).doAction();
+                            actionBase.doAction();
                             writelogTag(TAG, "Disk done");
                             break;
                         default:
                             writelogTag(TAG, "Default type");
-                            ((ActionBase) actionBase).doAction();
+                            actionBase.doAction();
                             writelogTag(TAG, "Default done");
                             break;
                     }

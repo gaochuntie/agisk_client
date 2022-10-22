@@ -38,7 +38,7 @@ import java.util.UUID;
 public class MSGService extends RootService implements Handler.Callback {
 
     static {
-        System.loadLibrary("agisk-dev111111111111");
+        System.loadLibrary("agisk-cli");
     }
 
     native int nativeGetUid();
