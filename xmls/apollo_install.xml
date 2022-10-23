@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>apollo_install</name>
+        <id>fda054fc5da</id>
+        <author>asm1409</author>
+        <mark>install</mark>
+        <description>test</description>
+        <uuid>GSRE42V65C2S61V0</uuid>
+        <rom_name>flyme</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <delete name="userdata" driver="/dev/block/sda" pt_number="0" />
+            <new name="userdata" driver="/dev/block/sda" start="0" size="4096" />
+        </PartitionModification>
+        <DiskModification>
+            <!--            userdata clone-->
+            <clone s_driver="/dev/block/sda" t_driver="/dev/block/sda" s_start="0" s_length="0"
+                t_start="0" />
+            <!--            super clone-->
+            <clone s_driver="/dev/block/sda" t_driver="/dev/block/sda" s_start="0" s_length="0"
+                t_start="0" />
+            <reserve driver="/dev/block/sda" start="0" length="0" />
+            <write driver="/dev/block/sda" start="0" length="0" offset_raw="0">/tmp/d.img</write>
+        </DiskModification>
+    </Action>
+
+</config>

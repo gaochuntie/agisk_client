@@ -28,6 +28,8 @@ add_library( # Sets the name of the library.
         PartitionActions.cpp
         PartitionActions.h
         DiskActions.h
+        MyLog.cpp
+        MyLog.h
         )
 
 #add_library(gpt STATIC IMPORTED)

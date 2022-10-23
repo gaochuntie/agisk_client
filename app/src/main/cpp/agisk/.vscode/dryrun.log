@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/root/agisk1'
+g++ agisk.cpp Action.cpp Utils.cpp Adjustion.cpp -L./ --static -lsgdisk -luuid -lpopt -o agisk
+chmod a+x agisk
+make: Leaving directory '/root/agisk1'
+ 

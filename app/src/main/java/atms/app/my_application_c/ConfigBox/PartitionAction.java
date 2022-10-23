@@ -10,7 +10,15 @@ import atms.app.my_application_c.Tools.TAG;
  */
 public class PartitionAction extends ActionBase {
     enum PARTITION_ACTION_TYPE {
-        PARTITION_ACTION_TYPE_NEW, PARTITION_ACTION_TYPE_DELETE, PARTITION_ACTION_TYPE_CLONE, PARTITION_ACTION_TYPE_FORMAT, PARTITION_ACTION_TYPE_COEXIST_MOVE, PARTITION_ACTION_TYPE_HIDE_MOVE, PARTITION_ACTION_TYPE_RESIZE, PARTITION_ACTION_TYPE_MOUNT
+        PARTITION_ACTION_TYPE_NEW
+        , PARTITION_ACTION_TYPE_DELETE
+        , PARTITION_ACTION_TYPE_CLONE
+        , PARTITION_ACTION_TYPE_FORMAT
+        , PARTITION_ACTION_TYPE_COEXIST_MOVE
+        , PARTITION_ACTION_TYPE_HIDE_MOVE
+        , PARTITION_ACTION_TYPE_RESIZE
+        , PARTITION_ACTION_TYPE_MOUNT
+        , PARTITION_ACTION_TYPE_READ
     }
 
 
@@ -64,6 +72,9 @@ public class PartitionAction extends ActionBase {
                     break;
                 case PARTITION_ACTION_TYPE_MOUNT:
                     mount(driver, Integer.valueOf(argv[0]), argv[1], argv[2]);
+                    break;
+                case PARTITION_ACTION_TYPE_READ:
+                    readInfo(driver);
                     break;
 
             }
@@ -162,7 +173,7 @@ public class PartitionAction extends ActionBase {
      */
     private native int mount(String driver, int number, String filesystem, String mountPoint);
 
+    private native int readInfo(String driver);
 
-    public static native String readPartitionTableInfo(String device);
 
 }

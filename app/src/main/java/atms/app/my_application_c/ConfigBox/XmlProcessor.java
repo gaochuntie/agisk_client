@@ -354,6 +354,12 @@ public class XmlProcessor {
                                                                 , element3.getAttribute("driver"))
                                                 );
                                                 break;
+                                            case "read":
+                                                actions.add(new PartitionAction(1
+                                                        , new String[]{""}
+                                                        , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_READ
+                                                        , element3.getAttribute("driver")));
+                                                break;
                                         }
 
                                         break;

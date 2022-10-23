@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>PartDump</name>
+        <id>facfacas</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>part dump test</description>
+        <uuid>afcw4vscretvrec</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <read driver="/dev/block/sda" />
+        </PartitionModification>
+    </Action>
+
+</config>

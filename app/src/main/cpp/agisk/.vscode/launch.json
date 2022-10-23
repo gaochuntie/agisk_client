@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "(gdb) Agisk",
+      // 配置名称，将会在启动配置的下拉菜单中显示
+      "type": "cppdbg",
+      // 配置类型，这里只能为cppdbg
+      "request": "launch",
+      // 请求配置类型，可以为launch（启动）或attach（附加）
+      "program": "${workspaceRoot}/agisk",
+      // 将要进行调试的程序的路径
+      "args": [
+        "/dev/block/sda"
+      ],
+      "stopAtEntry": true,
+      // 设为true时程序将暂停在程序入口处，我一般设置为true
+      "cwd": "${workspaceRoot}",
+      // 调试程序时的工作目录
+      "environment": [],
+      // （环境变量？）
+      "externalConsole": false,
+      // 调试时是否显示控制台窗口，vscode自带控制台
+      "MIMode": "gdb"
+      // 指定连接的调试器，可以为gdb或lldb。
+      //"preLaunchTask": "shell" // 调试会话开始前执行的任务，一般为编译程序。
+      //与tasks.json的taskName相对应，可根据需求选择是否使用，本文不需要。
+    }
+  ]
+}

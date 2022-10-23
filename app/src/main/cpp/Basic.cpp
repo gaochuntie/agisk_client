@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include "Basic.h"
+#include "MyLog.h"
 
 #define BASIC_TAG "Basic.cpp"
 
@@ -156,14 +157,6 @@ Java_atms_app_my_1application_1c_Tools_GlobalMsg_appendLog(JNIEnv *env, jclass c
 }
 
 
-int appendBaseLog(string log_file, string pathSs) {
-    ofstream of;
-    of.open(pathSs.c_str(), ios_base::app);
-    of << log_file << endl;
-    of.flush();
-    of.close();
-    return 0;
-}
 
 
 extern "C"

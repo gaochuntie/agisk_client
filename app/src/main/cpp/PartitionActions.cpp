@@ -6,6 +6,7 @@
 #include <jni.h>
 #include "include/gpt/gpt.h"
 #include <android/log.h>
+#include "MyLog.h"
 
 extern "C"
 JNIEXPORT jint JNICALL
@@ -64,17 +65,19 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_mount(JNIEnv *env, jo
                                                                  jstring mount_point) {
     // TODO: implement mount()
 }
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readPartitionTableInfo(JNIEnv *env,
-                                                                                  jclass clazz,
-                                                                                  jstring device) {
-    // TODO: implement readPartitionTableInfo()
-    const char *devname_C = env->GetStringUTFChars(device, nullptr);
-    __android_log_print(ANDROID_LOG_DEBUG, "PART:", " %s", "part run");
-    GPTData gptdata(devname_C);
-    __android_log_print(ANDROID_LOG_DEBUG, "PART:", " %s", "part run");
 
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobject thiz,
+                                                                    jstring device) {
+    // TODO: implement readInfo()
+
+    string dumpLog = "/sdcard/partdump.log";
+    const char *devname_C = env->GetStringUTFChars(device, nullptr);
+    appendBaseLog(devname_C, dumpLog);
+    GPTData gptdata(devname_C);
+    appendBaseLog("Success open device", dumpLog);
     ////////////////////////////////////////////
     gptdata.JustLooking();
 
@@ -105,7 +108,16 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readPartitionTableInf
 
     gptdata.GetPartRange(&low, &high);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "PART:", " %d", CountParts);
+    for (uint32_t i = low; i <= high; i++) {
+        /* code */
+        if (gptdata.IsUsedPartNum(i)) {
+            //cout<<"Operatoring "<<i<<"      ";
+            GPTPart part = gptdata[i];
+            appendBaseLog(to_string(i)+":"+part.GetDescription()+":"
+                          + to_string(part.GetFirstLBA())+":"+ to_string(part.GetLastLBA()), dumpLog);
+        }
+
+    }
     env->ReleaseStringUTFChars(device, devname_C);
-    return env->NewStringUTF("cccc");
+    return 0;
 }
