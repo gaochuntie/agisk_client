@@ -15,9 +15,10 @@
   This project is still in developing stage,You may not be able to run it as expected.
   
 # TO contribute to this project,please see commit in cpp/* 
-  All work on android application will be handled myself. Please contribute to this project by implement TODO in cpp/*
+  All work on android application will be handled myself. Or you can write xmls for your device and make a request to xmls/
+.Please contribute to this project by implement TODO in cpp/*
   c++ sources.Each function is taged with a detailed commit.
-  [Tips] libuuid is not include,I will provide it soon.
+  [Tips] libuuid and libgpt  prebuild in cpp/libs 
   I will check request every night 
   
 # Language issue
