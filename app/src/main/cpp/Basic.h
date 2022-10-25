@@ -8,6 +8,5 @@
 
 using namespace std;
 
-int appendBaseLog(string log, string path);
 
 #endif //MY_APPLICATION_C_BASIC_H

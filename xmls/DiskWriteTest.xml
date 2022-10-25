@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
     <attribute>
-        <name>DiskBackup</name>
-        <id>fdakfdcadn</id>
+        <name>DiskWrite</name>
+        <id>fadjkdasf</id>
         <author>asm1409</author>
         <mark>test</mark>
-        <description>disk backup test</description>
-        <uuid>JKFUMHUNIOMJIO</uuid>
+        <description>disk write test</description>
+        <uuid>dascdsakfjeim</uuid>
         <rom_name>Test</rom_name>
         <android_version>android12</android_version>
     </attribute>
@@ -14,8 +14,7 @@
     <Action>
         <DiskModification>
             <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
-            <backup length="10240" start="512" destfile="/sdcard/backup.img"
-                driver="/dev/block/sda" />
+            <write start="0" length="10240" raw_file="/sdcard/raw.img" offset_raw="0" driver="/sdcard/testdriver" />
         </DiskModification>
     </Action>
 

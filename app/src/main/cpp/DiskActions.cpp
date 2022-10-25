@@ -21,9 +21,11 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
                                                             jlong length, jstring raw_file_path,
                                                             jlong offset_raw) {
     // TODO: implement write()
+    appendBaseLog(DISKACTION_LOG, "DISK WRITE");
+
     const char *raw_file_pathc = env->GetStringUTFChars(raw_file_path, nullptr);
     ifstream raw_fi(raw_file_pathc);
-    env->ReleaseStringUTFChars(raw_file_path, raw_file_pathc);
+
     if (!raw_file_pathc) {
         appendBaseLog(DISKACTION_LOG, "RAW file unreachable : " + string(raw_file_pathc));
         return 1;
@@ -31,11 +33,13 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
 
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     ofstream driver_of(driver_c);
-    env->ReleaseStringUTFChars(driver, driver_c);
+
     if (!driver_c) {
         appendBaseLog(DISKACTION_LOG, "Driver unreachable : " + string(driver_c));
         return 1;
     }
+    appendBaseLog(DISKACTION_LOG,
+                  "DISKACTION: " + string(raw_file_pathc) + " : " + string(driver_c));
 
     raw_fi.seekg(0, std::__ndk1::ios_base::end);
     if (offset_raw + length - 1 > raw_fi.tellg()) {
@@ -48,19 +52,24 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
 
     long leftNum=length;
 
-    for (; leftNum % 512; leftNum -= 512) {
+    for (; leftNum % 512 >0; leftNum -= 512) {
         raw_fi.read(buff, 512);
         driver_of.write(buff, raw_fi.gcount());
     }
     raw_fi.read(buff, leftNum);
     driver_of.write(buff, raw_fi.gcount());
 
-
     if (!driver_of.tellp() == start + length) {
         appendBaseLog(DISKACTION_LOG, "Write finished but with error!!! :" + string(driver_c));
 
     }
+    driver_of.flush();
+    driver_of.close();
+    raw_fi.close();
 
+
+    env->ReleaseStringUTFChars(raw_file_path, raw_file_pathc);
+    env->ReleaseStringUTFChars(driver, driver_c);
     return 0;
 
 
@@ -97,8 +106,8 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobjec
     long clength = length;
     const char *cdestfile = env->GetStringUTFChars(backupto, nullptr);
     //
-    appendBaseLog("DiskAction backup", test_log);
-    appendBaseLog(cdriver, test_log);
+    appendBaseLog(DISKACTION_LOG,"DiskAction backup");
+    appendBaseLog(DISKACTION_LOG,cdriver);
     //
     ifstream inf(cdriver);
     ofstream ouf(cdestfile);
@@ -114,7 +123,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobjec
             delete[] buff;
         }
     } else {
-        appendBaseLog("DiskAction backup failed", test_log);
+        appendBaseLog(DISKACTION_LOG,"DiskAction backup failed");
     }
 
     env->ReleaseStringUTFChars(driver, cdestfile);

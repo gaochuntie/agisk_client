@@ -9,5 +9,5 @@ using namespace std;
 #define DISKACTION_LOG "/sdcard/disk.log"
 
 
-int appendBaseLog(string log_file, string pathSs) ;
+int appendBaseLog(string pathSs, string logss) ;
 #endif //MY_APPLICATION_C_MYLOG_H

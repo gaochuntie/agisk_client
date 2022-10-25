@@ -9,7 +9,7 @@
 
 
 using namespace std;
-int appendBaseLog(string log_file, string pathSs) {
+extern int appendBaseLog(string pathSs, string log_file) {
     ofstream of;
     of.open(pathSs.c_str(), ios_base::app);
     of << log_file << endl;

@@ -75,9 +75,9 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env,
 
     string dumpLog = "/sdcard/partdump.log";
     const char *devname_C = env->GetStringUTFChars(device, nullptr);
-    appendBaseLog(devname_C, dumpLog);
+    //appendBaseLog(devname_C, dumpLog);
     GPTData gptdata(devname_C);
-    appendBaseLog("Success open device", dumpLog);
+    //appendBaseLog("Success open device", dumpLog);
     ////////////////////////////////////////////
     gptdata.JustLooking();
 
@@ -113,8 +113,8 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env,
         if (gptdata.IsUsedPartNum(i)) {
             //cout<<"Operatoring "<<i<<"      ";
             GPTPart part = gptdata[i];
-            appendBaseLog(to_string(i)+":"+part.GetDescription()+":"
-                          + to_string(part.GetFirstLBA())+":"+ to_string(part.GetLastLBA()), dumpLog);
+            //appendBaseLog(to_string(i)+":"+part.GetDescription()+":"
+                          //+ to_string(part.GetFirstLBA())+":"+ to_string(part.GetLastLBA()), dumpLog);
         }
 
     }
