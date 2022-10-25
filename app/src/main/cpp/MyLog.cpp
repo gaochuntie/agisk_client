@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 
+
 using namespace std;
 int appendBaseLog(string log_file, string pathSs) {
     ofstream of;
