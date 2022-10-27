@@ -42,7 +42,17 @@ public class DiskAction extends ActionBase {
         //GlobalMsg.appendLog("Debug",logpath);
         switch (type) {
             case DISK_ACTION_TYPE_CLONE:
-                clone(driver, argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]), Long.valueOf(argv[3]));
+                //(JNIEnv *env, jobject thiz,
+                //                                                            jstring driver, jlong s_start,
+                //                                                            jlong length, jstring t_driver,
+                //                                                            jlong t_start)
+                //              element3.getAttribute("s_driver")
+                //                                                        , element3.getAttribute("s_start")
+                // , element3.getAttribute("s_length")
+                // , element3.getAttribute("t_start")}
+                //
+                // , element3.getAttribute("t_driver")));
+                clone(driver, Long.valueOf(argv[1]), Long.valueOf(argv[2]), argv[4], Long.valueOf(argv[3]));
                 break;
             case DISK_ACTION_TYPE_SPACE:
                 spare(driver, Long.parseLong(argv[0]));
@@ -102,7 +112,11 @@ public class DiskAction extends ActionBase {
     private native int format(String driver, long start, long length);
 
     //specially clone to current disk
-    private native int clone(String driver, String s_driver, long s_start, long s_length, long t_start);
+    //(JNIEnv *env, jobject thiz,
+    //                                                            jstring driver, jlong s_start,
+    //                                                            jlong length, jstring t_driver,
+    //                                                            jlong t_start)
+    private native int clone(String driver,  long s_start, long s_length,String s_driver, long t_start);
 
     private native int backup(String driver, long start, long length, String backupto);
 

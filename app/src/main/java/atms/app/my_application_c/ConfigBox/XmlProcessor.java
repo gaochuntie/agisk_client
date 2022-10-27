@@ -412,8 +412,7 @@ public class XmlProcessor {
                                                         , element3.getAttribute("s_start")
                                                         , element3.getAttribute("s_length")
                                                         , element3.getAttribute("t_start")}
-
-                                                        , element3.getAttribute("t_driver")));
+                                                        , element3.getAttribute("driver")));
                                                 break;
                                             case "backup":
                                                 //GlobalMsg.appendLog(element.getAttribute("length"),"/sdcard/test1");

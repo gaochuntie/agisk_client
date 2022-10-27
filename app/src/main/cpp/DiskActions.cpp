@@ -20,11 +20,10 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
                                                             jstring driver, jlong start,
                                                             jlong length, jstring raw_file_path,
                                                             jlong offset_raw) {
-    // TODO: implement write()
     appendBaseLog(DISKACTION_LOG, "DISK WRITE");
 
     const char *raw_file_pathc = env->GetStringUTFChars(raw_file_path, nullptr);
-    ifstream raw_fi(raw_file_pathc);
+    ifstream raw_fi(raw_file_pathc,std::__ndk1::ios_base::binary);
 
     if (!raw_file_pathc) {
         appendBaseLog(DISKACTION_LOG, "RAW file unreachable : " + string(raw_file_pathc));
@@ -32,7 +31,8 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
     }
 
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
-    ofstream driver_of(driver_c);
+    ofstream driver_of(driver_c, std::__ndk1::ios_base::binary | std::__ndk1::ios_base::out |
+                                 std::__ndk1::ios_base::in);
 
     if (!driver_c) {
         appendBaseLog(DISKACTION_LOG, "Driver unreachable : " + string(driver_c));
@@ -79,8 +79,32 @@ JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
                                                              jstring driver, jlong start,
                                                              jlong length) {
-    // TODO: implement format()
-    return 1;
+    appendBaseLog(DISKACTION_LOG, "DISK FORMAT");
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    string driver_s(driver_c);
+    env->ReleaseStringUTFChars(driver, driver_c);
+
+    ofstream of(driver_s, std::__ndk1::ios_base::binary | std::__ndk1::ios_base::out |
+                          std::__ndk1::ios_base::in);
+    if (!of) {
+        appendBaseLog(DISKACTION_LOG, "Device unreachable : " + driver_s);
+        return 1;
+    }
+    if (!of.seekp(start)) {
+        appendBaseLog(DISKACTION_LOG, "Device seek fault. : " + driver_s);
+        return 1;
+    }
+    char zero[512];
+    memset(zero, 0, sizeof(zero));
+    long left=length;
+    for (;  left%512 >0 ; left-=512) {
+        of.write(zero, 512);
+    }
+    of.write(zero, left);
+    of.flush();
+    of.close();
+
+    return 0;
 }
 extern "C"
 JNIEXPORT jint JNICALL
@@ -88,8 +112,57 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_clone(JNIEnv *env, jobject
                                                             jstring driver, jlong s_start,
                                                             jlong length, jstring t_driver,
                                                             jlong t_start) {
-    // TODO: implement clone()
-    return 1;
+    appendBaseLog(DISKACTION_LOG, "DISK WRITE");
+
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    const char *tdriver_c = env->GetStringUTFChars(t_driver, nullptr);
+
+    string driver_s(driver_c);
+    string t_driver_s(tdriver_c);
+    env->ReleaseStringUTFChars(driver, driver_c);
+    env->ReleaseStringUTFChars(t_driver, tdriver_c);
+
+    ifstream fi(driver_s,std::__ndk1::ios_base::binary);
+
+    if (!fi) {
+        appendBaseLog(DISKACTION_LOG, "Driver unreachable : " + driver_s);
+        return 1;
+    }
+
+    ofstream driver_of(driver_c, std::__ndk1::ios_base::binary | std::__ndk1::ios_base::out |
+                                 std::__ndk1::ios_base::in);
+
+    if (!driver_of) {
+        appendBaseLog(DISKACTION_LOG, "Driver unreachable : " + t_driver_s);
+        return 1;
+    }
+
+    fi.seekg(0, std::__ndk1::ios_base::end);
+    if (s_start + length - 1 > fi.tellg()) {
+        appendBaseLog(DISKACTION_LOG, "SIZE error : " + fi.tellg());
+        return 1;
+    }
+    fi.seekg(s_start, std::__ndk1::ios_base::beg);
+    driver_of.seekp(t_start, std::__ndk1::ios_base::beg);
+    char buff[512];
+
+    long leftNum=length;
+
+    for (; leftNum % 512 >0; leftNum -= 512) {
+        fi.read(buff, 512);
+        driver_of.write(buff, fi.gcount());
+    }
+    fi.read(buff, leftNum);
+    driver_of.write(buff, fi.gcount());
+
+    if (!driver_of.tellp() == t_start + length) {
+        appendBaseLog(DISKACTION_LOG, "Write finished but with error!!! :" + string(driver_c));
+
+    }
+    driver_of.flush();
+    driver_of.close();
+    fi.close();
+    return 0;
 }
 
 
