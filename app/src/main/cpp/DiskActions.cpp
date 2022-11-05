@@ -5,6 +5,8 @@
 #include <error.h>
 #include <errno.h>
 #include "MyLog.h"
+
+#include "include/gpt/gpt.h"
 //
 // Created by jackmaxpale on 2022/9/23.
 //
@@ -172,18 +174,15 @@ JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobject thiz,
                                                              jstring driver, jlong start,
                                                              jlong length, jstring backupto) {
-    // TODO: implement backup()
     using namespace std;
     const char *cdriver = env->GetStringUTFChars(driver, nullptr);
-    long cstart = start;
-    long clength = length;
     const char *cdestfile = env->GetStringUTFChars(backupto, nullptr);
     //
     appendBaseLog(DISKACTION_LOG,"DiskAction backup");
     appendBaseLog(DISKACTION_LOG,cdriver);
     //
-    ifstream inf(cdriver);
-    ofstream ouf(cdestfile);
+    ifstream inf(cdriver,std::__ndk1::ios_base::binary);
+    ofstream ouf(cdestfile,std::__ndk1::ios_base::binary);
     if (inf) {
         if (ouf) {
             inf.seekg(start, std::__ndk1::ios_base::beg);
@@ -203,10 +202,84 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobjec
     env->ReleaseStringUTFChars(backupto, cdestfile);
     return 0;
 }
+
+
+/**
+ * spare a segement for reserved area
+ * will take the smallest available segement
+ */
 extern "C"
 JNIEXPORT jlong JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_spare(JNIEnv *env, jobject thiz,
                                                             jstring driver, jlong length) {
-    // TODO: implement spare()
+    const char *cdriver = env->GetStringUTFChars(driver, nullptr);
+    string driver_s(cdriver);
+    env->ReleaseStringUTFChars(driver, cdriver);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(DISKACTION_LOG, "Failed to load partition table : " + driver_s);
+        return 1;
+    }
+    uint64_t diskSize = gptData.GetDisk()->DiskSize(nullptr);
+
+    /**
+     * find available segement for required length
+     * from gpt lib
+     */
+     uint64_t requiredBlocks=((uint64_t)length/gptData.GetBlockSize()) +1;
+    uint64_t start = UINT64_C(0); // starting point for each search
+    uint64_t totalFound = UINT64_C(0); // running total
+    uint64_t firstBlock; // first block in a segment
+    uint64_t lastBlock; // last block in a segment
+    uint64_t segmentSize; // size of segment in blocks
+    uint32_t num = 0;
+    uint32_t *numSegments= nullptr;
+    uint64_t *largestSegment= nullptr;
+    uint64_t smallestSegement=0;
+    uint32_t foundNum=0;
+    uint64_t smallest_start=0;
+    uint64_t smallest_end=0;
+    if (diskSize > 0) {
+        do {
+            firstBlock = gptData.FindFirstAvailable(start);
+            if (firstBlock != UINT64_C(0)) { // something's free...
+                lastBlock = gptData.FindLastInFree(firstBlock);
+                segmentSize = lastBlock - firstBlock + UINT64_C(1);
+                if (segmentSize > requiredBlocks) {
+                    //ok find one
+                    *largestSegment = segmentSize;
+                    foundNum++;
+                    appendBaseLog(DISKACTION_LOG,
+                                  "Find available segement : " + to_string(firstBlock) +
+                                  " to "+ to_string(lastBlock));
+                    if (smallestSegement == 0) {
+                        smallestSegement = segmentSize;
+                        smallest_start = firstBlock;
+                        smallest_end = lastBlock;
+                    } else if (segmentSize < smallestSegement) {
+                        smallestSegement = segmentSize;
+                        smallest_start = firstBlock;
+                        smallest_end = lastBlock;
+                    }
+                } // if
+                totalFound += segmentSize;
+                num++;
+                start = lastBlock + 1;
+            } // if
+        } while (firstBlock != 0);
+    } // if
+    *numSegments = num;
+
+    if (foundNum < 1) {
+        appendBaseLog(DISKACTION_LOG, "No free segement match");
+        return 1;
+    }
+    appendBaseLog(DISKACTION_LOG, "Smallest free segement is " + to_string(smallestSegement));
+
+    //TODO create reserved xml for device_s from smallestStart to smallestEnd
+
+
     return 0;
 }
