@@ -22,7 +22,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
                                                             jstring driver, jlong start,
                                                             jlong length, jstring raw_file_path,
                                                             jlong offset_raw) {
-    appendBaseLog(DISKACTION_LOG, "DISK WRITE");
+    appendLogCutLine(DISKACTION_LOG, "DISK WRITE");
 
     const char *raw_file_pathc = env->GetStringUTFChars(raw_file_path, nullptr);
     ifstream raw_fi(raw_file_pathc,std::__ndk1::ios_base::binary);
@@ -81,7 +81,7 @@ JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
                                                              jstring driver, jlong start,
                                                              jlong length) {
-    appendBaseLog(DISKACTION_LOG, "DISK FORMAT");
+    appendLogCutLine(DISKACTION_LOG, "DISK FORMAT");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
@@ -114,7 +114,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_clone(JNIEnv *env, jobject
                                                             jstring driver, jlong s_start,
                                                             jlong length, jstring t_driver,
                                                             jlong t_start) {
-    appendBaseLog(DISKACTION_LOG, "DISK WRITE");
+    appendLogCutLine(DISKACTION_LOG, "DISK CLONE");
 
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     const char *tdriver_c = env->GetStringUTFChars(t_driver, nullptr);
@@ -178,7 +178,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobjec
     const char *cdriver = env->GetStringUTFChars(driver, nullptr);
     const char *cdestfile = env->GetStringUTFChars(backupto, nullptr);
     //
-    appendBaseLog(DISKACTION_LOG,"DiskAction backup");
+    appendLogCutLine(DISKACTION_LOG,"DISK BACKUP");
     appendBaseLog(DISKACTION_LOG,cdriver);
     //
     ifstream inf(cdriver,std::__ndk1::ios_base::binary);
@@ -213,30 +213,37 @@ JNIEXPORT jlong JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_spare(JNIEnv *env, jobject thiz,
                                                             jstring driver, jlong length) {
     const char *cdriver = env->GetStringUTFChars(driver, nullptr);
+
+    appendLogCutLine(DISKACTION_LOG, "SPARE");
+
+
     string driver_s(cdriver);
     env->ReleaseStringUTFChars(driver, cdriver);
 
+    appendBaseLog(DISKACTION_LOG, "SPARE: " + driver_s);
     GPTData gptData;
     gptData.JustLooking(1);
     if (!gptData.LoadPartitions(driver_s)) {
         appendBaseLog(DISKACTION_LOG, "Failed to load partition table : " + driver_s);
         return 1;
     }
-    uint64_t diskSize = gptData.GetDisk()->DiskSize(nullptr);
+    uint64_t diskSize = gptData.GetLastUsableLBA();
 
     /**
      * find available segement for required length
      * from gpt lib
      */
      uint64_t requiredBlocks=((uint64_t)length/gptData.GetBlockSize()) +1;
+    appendBaseLog(DISKACTION_LOG, "Required blocks : " + to_string(requiredBlocks));
+
     uint64_t start = UINT64_C(0); // starting point for each search
     uint64_t totalFound = UINT64_C(0); // running total
-    uint64_t firstBlock; // first block in a segment
-    uint64_t lastBlock; // last block in a segment
-    uint64_t segmentSize; // size of segment in blocks
+    uint64_t firstBlock =0; // first block in a segment
+    uint64_t lastBlock=0; // last block in a segment
+    uint64_t segmentSize=0; // size of segment in blocks
     uint32_t num = 0;
-    uint32_t *numSegments= nullptr;
-    uint64_t *largestSegment= nullptr;
+    uint32_t numSegments= 0;
+    uint64_t largestSegment= 0;
     uint64_t smallestSegement=0;
     uint32_t foundNum=0;
     uint64_t smallest_start=0;
@@ -246,14 +253,16 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_spare(JNIEnv *env, jobject
             firstBlock = gptData.FindFirstAvailable(start);
             if (firstBlock != UINT64_C(0)) { // something's free...
                 lastBlock = gptData.FindLastInFree(firstBlock);
+
                 segmentSize = lastBlock - firstBlock + UINT64_C(1);
-                if (segmentSize > requiredBlocks) {
+
+                if (segmentSize >= requiredBlocks) {
                     //ok find one
-                    *largestSegment = segmentSize;
+                    largestSegment = segmentSize;
                     foundNum++;
                     appendBaseLog(DISKACTION_LOG,
                                   "Find available segement : " + to_string(firstBlock) +
-                                  " to "+ to_string(lastBlock));
+                                  " to "+ to_string(lastBlock)+" ["+to_string(segmentSize)+"]");
                     if (smallestSegement == 0) {
                         smallestSegement = segmentSize;
                         smallest_start = firstBlock;
@@ -270,14 +279,15 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_spare(JNIEnv *env, jobject
             } // if
         } while (firstBlock != 0);
     } // if
-    *numSegments = num;
+    numSegments = num;
 
     if (foundNum < 1) {
         appendBaseLog(DISKACTION_LOG, "No free segement match");
         return 1;
     }
     appendBaseLog(DISKACTION_LOG, "Smallest free segement is " + to_string(smallestSegement));
-
+    appendBaseLog(DISKACTION_LOG,
+                  "From " + to_string(smallest_start) + " to " + to_string(smallest_end));
     //TODO create reserved xml for device_s from smallestStart to smallestEnd
 
 

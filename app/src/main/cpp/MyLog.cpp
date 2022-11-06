@@ -17,3 +17,12 @@ extern int appendBaseLog(string pathSs, string log_file) {
     of.close();
     return 0;
 }
+
+extern int appendLogCutLine(string pathSs,string tag){
+    ofstream of;
+    of.open(pathSs.c_str(), ios_base::app);
+    of << "--------" <<tag<<"--------"<< endl;
+    of.flush();
+    of.close();
+    return 0;
+}

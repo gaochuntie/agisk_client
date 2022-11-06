@@ -425,7 +425,11 @@ public class XmlProcessor {
                                                         , element3.getAttribute("driver")));
                                                 break;
                                             case "spare":
-                                                //TODO spare disk space
+                                                actions.add(new DiskAction(2
+                                                        , DiskAction.Disk_Action_Type.DISK_ACTION_TYPE_SPACE
+                                                        , new String[]{
+                                                        element3.getAttribute("length")}
+                                                        , element3.getAttribute("driver")));
                                                 break;
                                         }
                                         break;

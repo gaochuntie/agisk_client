@@ -71,13 +71,11 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobject thiz,
                                                                     jstring device) {
-    // TODO: implement readInfo()
 
-    string dumpLog = "/sdcard/partdump.log";
     const char *devname_C = env->GetStringUTFChars(device, nullptr);
-    //appendBaseLog(devname_C, dumpLog);
-    GPTData gptdata(devname_C);
-    //appendBaseLog("Success open device", dumpLog);
+    string devname_s(devname_C);
+    env->ReleaseStringUTFChars(device, devname_C);
+    GPTData gptdata(devname_s);
     ////////////////////////////////////////////
     gptdata.JustLooking();
 
@@ -85,8 +83,6 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env,
     uint32_t BlockSize = gptdata.GetBlockSize();
 
     uint32_t num = gptdata.GetNumParts();
-
-
 
     //Declare datas
 
@@ -107,17 +103,19 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env,
     // atmsMetedataSizeBlock defined in Utils.hpp -extern
 
     gptdata.GetPartRange(&low, &high);
-
+    appendBaseLog(PARTITION_DUMP_LOG, "[BEGIN]");
     for (uint32_t i = low; i <= high; i++) {
         /* code */
         if (gptdata.IsUsedPartNum(i)) {
             //cout<<"Operatoring "<<i<<"      ";
             GPTPart part = gptdata[i];
-            //appendBaseLog(to_string(i)+":"+part.GetDescription()+":"
-                          //+ to_string(part.GetFirstLBA())+":"+ to_string(part.GetLastLBA()), dumpLog);
+            appendBaseLog(PARTITION_DUMP_LOG, to_string(i) + ":"
+                                              + part.GetDescription() + ":"
+                                              + to_string(part.GetFirstLBA()) + ":"
+                                              + to_string(part.GetLastLBA()));
         }
 
     }
-    env->ReleaseStringUTFChars(device, devname_C);
+    appendBaseLog(PARTITION_DUMP_LOG, "[END]");
     return 0;
 }
