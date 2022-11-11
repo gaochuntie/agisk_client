@@ -64,7 +64,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 
-    def dialogx_version = "0.0.43"
+    def dialogx_version = "0.0.45"
     implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
 }
 

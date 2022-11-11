@@ -90,16 +90,24 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
         //clean list
         List<String> list = new ArrayList<>();
 
-        //clean array
-        String[] cat = getRomCategoryList();
 
-        //dirty array
-        String[] items = new String[cat.length + 1];
-        for (int i = 0; i < cat.length; i++) {
-            list.add(cat[i]);
-            items[i] = cat[i];
+        String[] items = null;
+        String[] cat = getRomCategoryList();
+        if (cat != null) {
+            //dirty array
+            items = new String[cat.length + 1];
+            for (int i = 0; i < cat.length; i++) {
+                list.add(cat[i]);
+                items[i] = cat[i];
+            }
+
+            items[items.length - 1] = "Add";
+        } else {
+            items = new String[1];
+            items[0] = "Add";
         }
-        items[items.length - 1] = "Add";
+
+
         Log.d(TAG.HomeFragTag, "Items length : " + items.length);
 
         BottomMenu bottomMenu = BottomMenu.show(items)
@@ -197,9 +205,13 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
         String[] list = getRomCategoryList();
         romCategoryTab.removeAllTabs();
         romCategoryTab.addTab(romCategoryTab.newTab().setText("All"));
-        for (String item : list) {
-            romCategoryTab.addTab(romCategoryTab.newTab().setText(item));
+
+        if (list != null) {
+            for (String item : list) {
+                romCategoryTab.addTab(romCategoryTab.newTab().setText(item));
+            }
         }
+
         romCategoryTab.addTab(romCategoryTab.newTab().setText("Manage"));
 
 
@@ -218,7 +230,7 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
 
         Set<String> content = sharedPref.getStringSet(getString(R.string.romcategory_list_key), null);
         if (content == null) {
-            return new String[]{"All"};
+            return null;
         }
         String[] ret = new String[content.size()];
         Log.d(TAG.HomeFragTag, "Set size " + content.size());

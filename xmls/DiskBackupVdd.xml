@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskBackupVdd</name>
+        <id>favrgawexa</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk backup vdd test</description>
+        <uuid>DVYDRCFDNFUVRTF</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <backup length="16384" start="512" destfile="/sdcard/agisk/backup.img"
+                driver="/dev/block/loop31" />
+        </DiskModification>
+    </Action>
+
+</config>

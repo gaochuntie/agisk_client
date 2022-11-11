@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskWriteVdd</name>
+        <id>ntdrbyrd</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk write test</description>
+        <uuid>BTDBDTVGRCDRVTDVFDC</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <write start="512" length="512" raw_file="/sdcard/agisk/random.img" offset_raw="512" driver="/dev/block/loop32" />
+        </DiskModification>
+    </Action>
+
+</config>

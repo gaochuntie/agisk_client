@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskFormatVdd</name>
+        <id>fadcrvsc</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk format test</description>
+        <uuid>FKTJCIMRJVERJF</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <format start="512" length="512" driver="/dev/block/loop32" />
+        </DiskModification>
+    </Action>
+
+</config>

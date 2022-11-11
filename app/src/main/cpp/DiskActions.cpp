@@ -15,6 +15,7 @@
 
 /**
  * write a raw file into disk area
+ * Tested ok!
  */
 extern "C"
 JNIEXPORT jint JNICALL
@@ -41,7 +42,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
         return 1;
     }
     appendBaseLog(DISKACTION_LOG,
-                  "DISKACTION: " + string(raw_file_pathc) + " : " + string(driver_c));
+                   string(raw_file_pathc)+" ("+to_string(offset_raw)+")" + " to " + string(driver_c)+" ("+to_string(start)+") length:"+to_string(length));
 
     raw_fi.seekg(0, std::__ndk1::ios_base::end);
     if (offset_raw + length - 1 > raw_fi.tellg()) {
@@ -76,6 +77,10 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
 
 
 }
+
+/**
+ * Tested ok!
+ */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
@@ -85,7 +90,6 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobjec
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
-
     ofstream of(driver_s, std::__ndk1::ios_base::binary | std::__ndk1::ios_base::out |
                           std::__ndk1::ios_base::in);
     if (!of) {
@@ -105,6 +109,9 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobjec
     of.write(zero, left);
     of.flush();
     of.close();
+    appendBaseLog(DISKACTION_LOG, driver_s);
+    appendBaseLog(DISKACTION_LOG, "Format success from " + to_string(start) + " to " +
+                                  to_string((start + length - 1)));
 
     return 0;
 }
@@ -169,6 +176,9 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_clone(JNIEnv *env, jobject
 
 
 #define test_log "/sdcard/test.log"
+/**
+ * Tested ok!
+ */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobject thiz,

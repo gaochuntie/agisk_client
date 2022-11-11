@@ -132,7 +132,7 @@ public class installFragment extends Fragment {
     }
 
     private void showAddAction() {
-        PopMenu.show(new String[]{"Create", "Import"})
+        com.kongzue.dialogx.dialogs.PopMenu.show(new String[]{"Create", "Import"})
                 .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
                     @Override
                     public boolean onClick(PopMenu dialog, CharSequence text, int index) {
@@ -149,8 +149,21 @@ public class installFragment extends Fragment {
                         }
                         return false;
                     }
-                }).setOverlayBaseView(true)
+                })
+                .setOnIconChangeCallBack(new OnIconChangeCallBack<PopMenu>() {
+                    @Override
+                    public int getIcon(PopMenu dialog, int index, String menuText) {
+                        switch (index) {
+                            case 0:
+                                return R.mipmap.add;
+                            case 1:
+                                return R.mipmap.download_circled;
+                        }
+                        return 0;
+                    }
+                })
                 .setAlignGravity(Gravity.CENTER);
+
     }
 
     private void showEditWindows() {

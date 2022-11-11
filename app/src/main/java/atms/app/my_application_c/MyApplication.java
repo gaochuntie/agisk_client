@@ -52,7 +52,7 @@ public class MyApplication extends Application {
         DialogX.globalStyle = MaterialStyle.style();
 
 //设置亮色/暗色（在启动下一个对话框时生效）
-        DialogX.globalTheme = DialogX.THEME.AUTO;
+        DialogX.globalTheme = DialogX.THEME.LIGHT;
 
 //设置对话框最大宽度（单位为像素）
         DialogX.dialogMaxWidth = 1920;
