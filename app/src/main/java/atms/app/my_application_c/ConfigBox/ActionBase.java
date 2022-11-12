@@ -7,6 +7,7 @@ import atms.app.my_application_c.Native.jniRes;
 public class ActionBase {
     public enum ActionType {
         ACTION_TYPE_DISK, ACTION_TYPE_PARTITION, ACTION_TYPE_REBOOT, ACTION_TYPE_REBOOT_RECOVERY, ACTION_TYPE_REBOOT_BOOTLOADER
+        ,ACTION_TYPE_FILE
     }
 
     //

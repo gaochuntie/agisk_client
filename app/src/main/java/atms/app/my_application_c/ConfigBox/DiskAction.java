@@ -34,7 +34,6 @@ public class DiskAction extends ActionBase {
      */
     @Override
     public boolean doAction() {
-        //TODO doAction
 
         //Thread.sleep(2000);
 
