@@ -18,7 +18,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         JNIEnv *env, jobject thiz, jstring driver, jint number, jstring name, jlong start,
         jlong length) {
     // TODO: test newPart()
-    appendLogCutLine(PARTITION_LOG,"PARTITION CREATE1")
+    appendLogCutLine(PARTITION_LOG,"PARTITION CREATE1");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
     string name_s(name_c);
     env->ReleaseStringUTFChars(name, name_c);
@@ -126,7 +126,7 @@ JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2J(
         JNIEnv *env, jobject thiz, jstring driver, jstring name, jlong length) {
     // TODO: test newPart()
-    appendLogCutLine(PARTITION_LOG,"PARTITION CREATE3")
+    appendLogCutLine(PARTITION_LOG,"PARTITION CREATE3");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
