@@ -18,7 +18,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         JNIEnv *env, jobject thiz, jstring driver, jint number, jstring name, jlong start,
         jlong length) {
     // TODO: test newPart()
-    appendLogCutLine(PARTITION_LOG,"PARTITION CREATE1");
+    appendLogCutLine(PARTITION_LOG, "PARTITION CREATE1");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
     string name_s(name_c);
     env->ReleaseStringUTFChars(name, name_c);
@@ -27,7 +27,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
 
-    uint32_t usedPartNum=-1;
+    uint32_t usedPartNum = -1;
 
     GPTData gptData;
     gptData.JustLooking(1);
@@ -36,15 +36,16 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         return 1;
     }
     if (!gptData.IsFreePartNum(number)) {
-        appendBaseLog(PARTITION_LOG,"Partition num "+to_string(number)+" is used");
+        appendBaseLog(PARTITION_LOG, "Partition num " + to_string(number) + " is used");
         return 1;
     }
-    uint64_t start_sector=(uint64_t)(start/gptData.GetBlockSize());
+    uint64_t start_sector = (uint64_t) (start / gptData.GetBlockSize());
     uint64_t last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
 
-    for (uint64_t i=start_sector; i <= last_sector ; ++i) {
+    for (uint64_t i = start_sector; i <= last_sector; ++i) {
         if (!gptData.IsFree(i, &usedPartNum)) {
-            appendBaseLog(PARTITION_LOG, "Required area is used by other partition "+to_string(usedPartNum));
+            appendBaseLog(PARTITION_LOG,
+                          "Required area is used by other partition " + to_string(usedPartNum));
             return 1;
         }
     }
@@ -56,7 +57,10 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     GPTPart part = gptData[number];
     if (part.IsUsed() && part.GetFirstLBA() == start_sector && part.GetLastLBA() == last_sector) {
         gptData.JustLooking(0);
-        gptData.SaveGPTData(1);
+        if (!gptData.SaveGPTData(1)){
+            appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+            return 1;
+        }
         return 0;
     }
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
@@ -79,7 +83,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
-    uint32_t usedPartNum=-1;
+    uint32_t usedPartNum = -1;
 
 
     GPTData gptData;
@@ -89,17 +93,18 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         return 1;
     }
 
-    uint64_t number=gptData.FindFirstFreePart();
+    uint64_t number = gptData.FindFirstFreePart();
     if (number == -1) {
         appendBaseLog(PARTITION_LOG, "All partition num " + to_string(number) + " is used");
         return 1;
     }
-    uint64_t start_sector=(uint64_t)(start/gptData.GetBlockSize());
+    uint64_t start_sector = (uint64_t) (start / gptData.GetBlockSize());
     uint64_t last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
 
-    for (uint64_t i=start_sector; i <= last_sector ; ++i) {
+    for (uint64_t i = start_sector; i <= last_sector; ++i) {
         if (!gptData.IsFree(i, &usedPartNum)) {
-            appendBaseLog(PARTITION_LOG, "Required area is used by other partition "+to_string(usedPartNum));
+            appendBaseLog(PARTITION_LOG,
+                          "Required area is used by other partition " + to_string(usedPartNum));
             return 1;
         }
     }
@@ -111,7 +116,10 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     GPTPart part = gptData[number];
     if (part.IsUsed() && part.GetFirstLBA() == start_sector && part.GetLastLBA() == last_sector) {
         gptData.JustLooking(0);
-        gptData.SaveGPTData(1);
+        if (!gptData.SaveGPTData(1)){
+            appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+            return 1;
+        }
         return 0;
     }
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
@@ -126,7 +134,7 @@ JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2J(
         JNIEnv *env, jobject thiz, jstring driver, jstring name, jlong length) {
     // TODO: test newPart()
-    appendLogCutLine(PARTITION_LOG,"PARTITION CREATE3");
+    appendLogCutLine(PARTITION_LOG, "PARTITION CREATE3");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
@@ -141,7 +149,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_s);
         return 1;
     }
-    uint64_t number=gptData.FindFirstFreePart();
+    uint64_t number = gptData.FindFirstFreePart();
     if (number == -1) {
         appendBaseLog(PARTITION_LOG, "All partition num " + to_string(number) + " is used");
         return 1;
@@ -154,21 +162,21 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
      */
     uint64_t diskSize = gptData.GetLastUsableLBA();
 
-    uint64_t requiredBlocks=((uint64_t)length/gptData.GetBlockSize()) +1;
+    uint64_t requiredBlocks = ((uint64_t) length / gptData.GetBlockSize()) + 1;
     appendBaseLog(PARTITION_LOG, "Required blocks : " + to_string(requiredBlocks));
 
     uint64_t start = UINT64_C(0); // starting point for each search
     uint64_t totalFound = UINT64_C(0); // running total
-    uint64_t firstBlock =0; // first block in a segment
-    uint64_t lastBlock=0; // last block in a segment
-    uint64_t segmentSize=0; // size of segment in blocks
+    uint64_t firstBlock = 0; // first block in a segment
+    uint64_t lastBlock = 0; // last block in a segment
+    uint64_t segmentSize = 0; // size of segment in blocks
     uint32_t num = 0;
-    uint32_t numSegments= 0;
-    uint64_t largestSegment= 0;
-    uint64_t smallestSegement=0;
-    uint32_t foundNum=0;
-    uint64_t smallest_start=0;
-    uint64_t smallest_end=0;
+    uint32_t numSegments = 0;
+    uint64_t largestSegment = 0;
+    uint64_t smallestSegement = 0;
+    uint32_t foundNum = 0;
+    uint64_t smallest_start = 0;
+    uint64_t smallest_end = 0;
     if (diskSize > 0) {
         do {
             firstBlock = gptData.FindFirstAvailable(start);
@@ -183,7 +191,8 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
                     foundNum++;
                     appendBaseLog(PARTITION_LOG,
                                   "Find available segement(sector) : " + to_string(firstBlock) +
-                                  " to "+ to_string(lastBlock)+" ["+to_string(segmentSize)+"]");
+                                  " to " + to_string(lastBlock) + " [" + to_string(segmentSize) +
+                                  "]");
                     if (smallestSegement == 0) {
                         smallestSegement = segmentSize;
                         smallest_start = firstBlock;
@@ -218,20 +227,79 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
 
     //check
     GPTPart part = gptData[number];
-    if (part.IsUsed() && part.GetFirstLBA() == smallest_start && part.GetLastLBA() == smallest_end) {
+    if (part.IsUsed() && part.GetFirstLBA() == smallest_start &&
+        part.GetLastLBA() == smallest_end) {
         gptData.JustLooking(0);
-        gptData.SaveGPTData(1);
+        if (!gptData.SaveGPTData(1)){
+            appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+            return 1;
+        }
         return 0;
     }
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
     return 1;
 }
+
+/**
+ * delete1
+ */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_String_2Ljava_lang_String_2(
         JNIEnv *env, jobject thiz, jstring driver, jstring name) {
-    // TODO: implement delete()
+    // TODO: test delete()
+    appendLogCutLine(PARTITION_LOG, "PARTITION DELETE1");
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    string driver_s(driver_c);
+    env->ReleaseStringUTFChars(driver, driver_c);
+
+    const char *name_c = env->GetStringUTFChars(name, nullptr);
+    string name_s(driver_c);
+    env->ReleaseStringUTFChars(name, name_c);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_s);
+        return 1;
+    }
+
+    uint32_t foundedNumPart = 0;
+    uint32_t foundedPart = 0;
+
+    for (uint32_t i = 0; i < gptData.GetNumParts(); ++i) {
+        GPTPart part = gptData[i];
+        if (part.IsUsed() && part.GetDescription() == name_s) {
+            foundedNumPart++;
+            foundedPart = i;
+        }
+    }
+    if (foundedNumPart == 0) {
+        appendBaseLog(PARTITION_LOG, "No such partition " + name_s);
+        return 1;
+    }
+    if (foundedNumPart > 1) {
+        appendBaseLog(PARTITION_LOG,
+                      "More than one partition called " + name_s + " | " +
+                      to_string(foundedNumPart));
+        return 1;
+    }
+
+    gptData.DeletePartition(foundedPart);
+    if (((GPTPart) gptData[foundedPart]).IsUsed()) {
+        appendBaseLog(PARTITION_LOG, "Delete partition failed");
+        return 1;
+    }
+    gptData.JustLooking(0);
+    if (!gptData.SaveGPTData(1)){
+        appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+        return 1;
+    }
+    return 0;
 }
+/**
+ * delete2
+ */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_String_2I(JNIEnv *env,
@@ -239,6 +307,34 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
                                                                                         jstring driver,
                                                                                         jint number) {
     // TODO: implement delete()
+    appendLogCutLine(PARTITION_LOG, "PARTITION DELETE2");
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    string driver_s(driver_c);
+    env->ReleaseStringUTFChars(driver, driver_c);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_s);
+        return 1;
+    }
+
+    if (gptData.IsUsedPartNum(number)) {
+        if (!gptData.DeletePartition(number)) {
+            appendBaseLog(PARTITION_LOG, "Delete failed " + to_string(number));
+            return 1;
+        }
+        gptData.JustLooking(0);
+        if (!gptData.SaveGPTData(1)){
+            appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+            return 1;
+        }
+        return 0;
+    }
+    appendBaseLog(PARTITION_LOG, "Partition not exist. " + to_string(number));
+    return 1;
+
+
 }
 extern "C"
 JNIEXPORT jint JNICALL
