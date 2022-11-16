@@ -11,13 +11,13 @@
 
 /**
  * partition create1
+ * tested
  */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2ILjava_lang_String_2JJ(
-        JNIEnv *env, jobject thiz, jstring driver, jint number, jstring name, jlong start,
+        JNIEnv *env, jobject thiz, jstring driver, jint number_or, jstring name, jlong start,
         jlong length) {
-    // TODO: test newPart()
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE1");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
     string name_s(name_c);
@@ -28,6 +28,12 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     env->ReleaseStringUTFChars(driver, driver_c);
 
     uint32_t usedPartNum = -1;
+
+    /**
+     * We and sgdisk use number starting from 1 not 0
+     * but gpt lib start from 0
+     */
+    int number = number_or - 1;
 
     GPTData gptData;
     gptData.JustLooking(1);
@@ -49,13 +55,11 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
             return 1;
         }
     }
-    gptData.CreatePartition(number, start_sector, last_sector);
-    gptData.SetName(number, name_s);
-
-
-    //check
-    GPTPart part = gptData[number];
-    if (part.IsUsed() && part.GetFirstLBA() == start_sector && part.GetLastLBA() == last_sector) {
+    if (gptData.CreatePartition(number, start_sector, last_sector)) {
+        if (!gptData.SetName(number, name_s)) {
+            appendBaseLog(PARTITION_LOG, "Unable to set name");
+            return 1;
+        }
         gptData.JustLooking(0);
         if (!gptData.SaveGPTData(1)){
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
@@ -74,7 +78,6 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2JJ(
         JNIEnv *env, jobject thiz, jstring driver, jstring name, jlong start, jlong length) {
-    // TODO: test newPart()
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE2");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
     string name_s(name_c);
@@ -108,13 +111,13 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
             return 1;
         }
     }
-    gptData.CreatePartition(number, start_sector, last_sector);
-    gptData.SetName(number, name_s);
 
 
-    //check
-    GPTPart part = gptData[number];
-    if (part.IsUsed() && part.GetFirstLBA() == start_sector && part.GetLastLBA() == last_sector) {
+    if (gptData.CreatePartition(number, start_sector, last_sector)) {
+        if (!gptData.SetName(number, name_s)) {
+            appendBaseLog(PARTITION_LOG, "Unable to set name");
+            return 1;
+        }
         gptData.JustLooking(0);
         if (!gptData.SaveGPTData(1)){
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
@@ -122,25 +125,26 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         }
         return 0;
     }
+
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
     return 1;
 }
 
 /**
  * partition create3
+ * tested
  */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2J(
         JNIEnv *env, jobject thiz, jstring driver, jstring name, jlong length) {
-    // TODO: test newPart()
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE3");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
 
     const char *name_c = env->GetStringUTFChars(name, nullptr);
-    string name_s(driver_c);
+    string name_s(name_c);
     env->ReleaseStringUTFChars(name, name_c);
 
     GPTData gptData;
@@ -221,14 +225,11 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     appendLogCutLine(PARTITION_LOG, "Take the smallest free segement");
     //create partition
 
-    gptData.CreatePartition(number, smallest_start, smallest_end);
-    gptData.SetName(number, name_s);
-
-
-    //check
-    GPTPart part = gptData[number];
-    if (part.IsUsed() && part.GetFirstLBA() == smallest_start &&
-        part.GetLastLBA() == smallest_end) {
+    if (gptData.CreatePartition(number, smallest_start, smallest_start+requiredBlocks-1)) {
+        if (!gptData.SetName(number, name_s)) {
+            appendBaseLog(PARTITION_LOG, "Unable to set name");
+            return 1;
+        }
         gptData.JustLooking(0);
         if (!gptData.SaveGPTData(1)){
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
@@ -306,7 +307,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
                                                                                         jobject thiz,
                                                                                         jstring driver,
                                                                                         jint number) {
-    // TODO: implement delete()
+    // TODO: test delete()
     appendLogCutLine(PARTITION_LOG, "PARTITION DELETE2");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);

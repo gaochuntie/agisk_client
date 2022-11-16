@@ -51,7 +51,22 @@ public class PartitionAction extends ActionBase {
 
             switch (pt_type) {
                 case PARTITION_ACTION_TYPE_NEW:
-                    newPart(driver, argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
+                    /**
+                     * "name"
+                     * "start"
+                     * "size"
+                     * "number"
+                     */
+                    if (argv[1].isEmpty() && argv[3].isEmpty()) {
+                        newPart(driver, argv[0], Long.valueOf(argv[2]));
+                        break;
+                    }
+                    if (argv[3].isEmpty()) {
+                        newPart(driver, argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
+                        break;
+                    }
+                    newPart(driver, Integer.valueOf(argv[3]), argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
+
                     break;
                 case PARTITION_ACTION_TYPE_DELETE:
                     if (!argv[0].isEmpty()) {

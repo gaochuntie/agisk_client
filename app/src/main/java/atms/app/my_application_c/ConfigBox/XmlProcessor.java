@@ -286,11 +286,12 @@ public class XmlProcessor {
 
                                         switch (element3.getTagName()) {
                                             case "new":
-                                                actions.add(new PartitionAction(4
+                                                actions.add(new PartitionAction(5
                                                         , new String[]{
                                                         element3.getAttribute("name")
                                                         , element3.getAttribute("start")
-                                                        , element3.getAttribute("size")}
+                                                        , element3.getAttribute("size")
+                                                        ,element3.getAttribute("number")}
 
                                                         , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_NEW
                                                         , element3.getAttribute("driver"))

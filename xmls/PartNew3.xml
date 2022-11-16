@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>PartNew1</name>
+        <id>fresctser</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>part create1 test loop31</description>
+        <uuid>ijtwejtciojv</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+<!--            new:name start size-->
+            <new driver="/dev/block/loop31" name="part4" size="1024" />
+        </PartitionModification>
+    </Action>
+
+</config>
