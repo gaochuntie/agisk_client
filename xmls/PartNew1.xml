@@ -15,7 +15,7 @@
         <PartitionModification>
 <!--            new:name start size-->
 <!--            number start from 1-->
-            <new driver="/dev/block/loop31" name="part4" size="1024" start="103809024" number="5" />
+            <new driver="/dev/block/loop31" name="part4" size="1024" start="103809024" pt_number="5" />
         </PartitionModification>
     </Action>
 

@@ -73,7 +73,7 @@ public class PartitionAction extends ActionBase {
                         delete(driver, argv[0]);
                         break;
                     }
-                    if (Integer.valueOf(argv[1]) > 0) {
+                    if (Integer.valueOf(argv[1]) >= 0) {
                         delete(driver, Integer.valueOf(argv[1]));
                         break;
                     }

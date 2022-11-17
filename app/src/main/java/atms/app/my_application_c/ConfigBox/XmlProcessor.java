@@ -291,7 +291,7 @@ public class XmlProcessor {
                                                         element3.getAttribute("name")
                                                         , element3.getAttribute("start")
                                                         , element3.getAttribute("size")
-                                                        ,element3.getAttribute("number")}
+                                                        ,element3.getAttribute("pt_number")}
 
                                                         , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_NEW
                                                         , element3.getAttribute("driver"))

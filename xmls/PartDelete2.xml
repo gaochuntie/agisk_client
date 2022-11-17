@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>PartDelete2</name>
+        <id>vtscfdsrscf</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>part delete2 test loop31</description>
+        <uuid>tdcgsrfsdfxf</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <delete driver="/dev/block/loop31" pt_number="4" />
+        </PartitionModification>
+    </Action>
+
+</config>

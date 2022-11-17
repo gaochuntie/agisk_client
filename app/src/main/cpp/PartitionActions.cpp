@@ -16,7 +16,7 @@
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2ILjava_lang_String_2JJ(
-        JNIEnv *env, jobject thiz, jstring driver, jint number_or, jstring name, jlong start,
+        JNIEnv *env, jobject thiz, jstring driver, jint number, jstring name, jlong start,
         jlong length) {
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE1");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
@@ -30,10 +30,10 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     uint32_t usedPartNum = -1;
 
     /**
-     * We and sgdisk use number starting from 1 not 0
+     *  sgdisk use number starting from 1 not 0
      * but gpt lib start from 0
+     * we take gpt lib
      */
-    int number = number_or - 1;
 
     GPTData gptData;
     gptData.JustLooking(1);
@@ -65,6 +65,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
+        appendBaseLog(PARTITION_LOG, "Done");
         return 0;
     }
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
@@ -123,6 +124,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
+        appendBaseLog(PARTITION_LOG, "Done");
         return 0;
     }
 
@@ -235,6 +237,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
+        appendBaseLog(PARTITION_LOG, "Done");
         return 0;
     }
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
@@ -243,19 +246,19 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
 
 /**
  * delete1
+ * tested
  */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_String_2Ljava_lang_String_2(
         JNIEnv *env, jobject thiz, jstring driver, jstring name) {
-    // TODO: test delete()
     appendLogCutLine(PARTITION_LOG, "PARTITION DELETE1");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
     env->ReleaseStringUTFChars(driver, driver_c);
 
     const char *name_c = env->GetStringUTFChars(name, nullptr);
-    string name_s(driver_c);
+    string name_s(name_c);
     env->ReleaseStringUTFChars(name, name_c);
 
     GPTData gptData;
@@ -273,6 +276,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
         if (part.IsUsed() && part.GetDescription() == name_s) {
             foundedNumPart++;
             foundedPart = i;
+            appendBaseLog(PARTITION_LOG, "Found " + to_string(i));
         }
     }
     if (foundedNumPart == 0) {
@@ -296,10 +300,12 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
         appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
         return 1;
     }
+    appendBaseLog(PARTITION_LOG, "Done");
     return 0;
 }
 /**
  * delete2
+ * tested
  */
 extern "C"
 JNIEXPORT jint JNICALL
@@ -307,7 +313,6 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
                                                                                         jobject thiz,
                                                                                         jstring driver,
                                                                                         jint number) {
-    // TODO: test delete()
     appendLogCutLine(PARTITION_LOG, "PARTITION DELETE2");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
@@ -330,6 +335,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
+        appendBaseLog(PARTITION_LOG, "Done");
         return 0;
     }
     appendBaseLog(PARTITION_LOG, "Partition not exist. " + to_string(number));
@@ -414,5 +420,6 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env,
 
     }
     appendBaseLog(PARTITION_DUMP_LOG, "[END]");
+    appendBaseLog(PARTITION_LOG, "Done");
     return 0;
 }
