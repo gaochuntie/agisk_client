@@ -53,8 +53,10 @@ Java_atms_app_my_1application_1c_aidl_AIDLService_writelog(JNIEnv *env, jobject 
     __android_log_print(ANDROID_LOG_DEBUG, "Basic.cpp ", "%s", log_file);
 
     ofstream of;
-    of.open("/sdcard/mylog", ios_base::app);
-    of << log_file << endl;
+    of.open(GLOBAL_LOG, ios_base::app);
+
+
+    of <<" ["<<NowTime<<"] "<< log_file << endl;
 
     return;
 
@@ -70,8 +72,9 @@ Java_atms_app_my_1application_1c_aidl_AIDLService_writelogTag(JNIEnv *env, jobje
     // __android_log_print(ANDROID_LOG_DEBUG,"Basic.cpp ","%s", log_file);
 
     ofstream of;
-    of.open("/sdcard/mylog", ios_base::app);
-    of << tagss << "::" << log_file << endl;
+    of.open(GLOBAL_LOG, ios_base::app);
+
+    of <<" ["<<NowTime<<"] "<<tagss << "::" << log_file << endl;
     return;
 }
 

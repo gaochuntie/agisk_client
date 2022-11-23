@@ -17,9 +17,10 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_about.xml" value="0.27334542157751585" />
         <entry key="app/src/main/res/layout/fragment_install.xml" value="0.23097826086956522" />
-        <entry key="app/src/main/res/layout/fragment_system_info_map.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_system_info_map.xml" value="0.33" />
         <entry key="app/src/main/res/layout/home_page.xml" value="0.25" />
         <entry key="app/src/main/res/layout/logviewer.xml" value="0.2787516032492518" />
+        <entry key="app/src/main/res/layout/notice_item.xml" value="0.3546875" />
         <entry key="app/src/main/res/layout/popwin_helper.xml" value="0.33" />
         <entry key="app/src/main/res/layout/rom_category_item.xml" value="0.27334542157751585" />
         <entry key="app/src/main/res/layout/rom_category_list_item.xml" value="0.1997555012224939" />

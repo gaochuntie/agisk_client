@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -17,14 +18,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.androidbuts.multispinnerfilter.KeyPairBoolData;
+import com.androidbuts.multispinnerfilter.SingleSpinnerListener;
+import com.androidbuts.multispinnerfilter.SingleSpinnerSearch;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.kongzue.dialogx.dialogs.MessageDialog;
 import com.topjohnwu.superuser.Shell;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import atms.app.my_application_c.Tools.GlobalMsg;
 import atms.app.my_application_c.Tools.globalMsgOnAddCallback;
@@ -51,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     libsu init main shell
      */
     static {
+
         // Set settings before the main shell can be created
         Shell.enableVerboseLogging = BuildConfig.DEBUG;
         Shell.setDefaultBuilder(Shell.Builder.create()
@@ -141,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                Log.d("MainActivity", String.valueOf(position));
+                // Log.d("MainActivity", String.valueOf(position));
                 if (isEnablePageScrollCallBack) {
                     navigationTabBar.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 }
@@ -349,6 +361,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button cancek = view.findViewById(R.id.log_cancel);
         Button savelog = view.findViewById(R.id.log_save_bt);
         TextView logcontent = view.findViewById(R.id.log_content);
+        TabLayout tabLayout = view.findViewById(R.id.log_type);
+        NestedScrollView nestedScrollView = view.findViewById(R.id.log_scrollview);
 
         //1.构造一个PopupWindow，参数依次是加载的View，宽高
         final PopupWindow popWindow = new PopupWindow(view,
@@ -377,6 +391,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 popWindow.dismiss();
             }
         });
+        savelog.setEnabled(false);
         savelog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -403,11 +418,130 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         logPopWin = popWindow;
+
+        //tab layout
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setText("Main"));
+        tabLayout.addTab(tabLayout.newTab().setText("DiskAction"));
+        tabLayout.addTab(tabLayout.newTab().setText("PartitionAction"));
+        tabLayout.addTab(tabLayout.newTab().setText("PartitionDump"));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                switch (tab.getText().toString()) {
+                    case "Main":
+                        readOutLog(GlobalMsg.GLOBAL_LOG,logcontent,nestedScrollView);
+                        break;
+                    case "DiskAction":
+                        readOutLog(GlobalMsg.DISKACTION_LOG,logcontent,nestedScrollView);
+                        break;
+                    case "PartitionAction":
+                        readOutLog(GlobalMsg.PARTITION_LOG,logcontent,nestedScrollView);
+                        break;
+                    case "PartitionDump":
+                        readOutLog(GlobalMsg.PARTITION_DUMP_LOG,logcontent,nestedScrollView);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                switch (tab.getText().toString()) {
+                    case "Main":
+                        readOutLog(GlobalMsg.GLOBAL_LOG,logcontent,nestedScrollView);
+                        break;
+                    case "DiskAction":
+                        readOutLog(GlobalMsg.DISKACTION_LOG,logcontent,nestedScrollView);
+                        break;
+                    case "PartitionAction":
+                        readOutLog(GlobalMsg.PARTITION_LOG,logcontent,nestedScrollView);
+                        break;
+                    case "PartitionDump":
+                        readOutLog(GlobalMsg.PARTITION_DUMP_LOG,logcontent,nestedScrollView);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+    }
+
+    private void readOutLog(String path, TextView out,NestedScrollView container) {
+        out.setText("");
+        out.append("Please wait...\n");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File myObj = new File(path);
+                    if (!myObj.exists()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                out.append("No such file");
+                            }
+                        });
+
+                        return;
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            out.setText(path+"\n");
+                        }
+                    });
+                    Scanner myReader = new Scanner(myObj);
+                    while (myReader.hasNextLine()) {
+                        String data = myReader.nextLine();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                out.append(data+"\n");}
+                        });
+
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            container.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    container.fullScroll(View.FOCUS_DOWN);
+
+                                }
+                            });
+                        }
+                    });
+
+                    myReader.close();
+                } catch (FileNotFoundException e) {
+                    System.out.println("An error occurred.");
+                    out.append(e.getMessage());
+                    e.printStackTrace();
+
+                }
+            }
+        }).start();
+
     }
 
     public void showLogViewer() {
         if (logPopWin != null) {
             logPopWin.showAtLocation(logPopWin.getContentView(), Gravity.CENTER, 0, 0);
+            View view = logPopWin.getContentView();
+            TabLayout tabLayout = view.findViewById(R.id.log_type);
+
+            tabLayout.selectTab(tabLayout.getTabAt(0));
         }
     }
 

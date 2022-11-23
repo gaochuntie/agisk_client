@@ -1,6 +1,7 @@
 package atms.app.my_application_c.adapter;
 
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import atms.app.my_application_c.R;
 public class romListAdapter extends RecyclerView.Adapter<romListAdapter.ViewHolder> {
 
     private final String[] localDataSet;
+    romItemOnClickListener onClickListener;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -59,7 +61,8 @@ public class romListAdapter extends RecyclerView.Adapter<romListAdapter.ViewHold
      * @param dataSet String[] containing the data to populate views to be used
      *                by RecyclerView.
      */
-    public romListAdapter(String[] dataSet) {
+    public romListAdapter(String[] dataSet, romItemOnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
         localDataSet = dataSet;
     }
 
@@ -80,13 +83,22 @@ public class romListAdapter extends RecyclerView.Adapter<romListAdapter.ViewHold
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
+
+        viewHolder.getTextView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickListener.onItemClick(position);
+            }
+        });
         if (position == getItemCount() - 1) {
             viewHolder.getTextView().setText("");
             viewHolder.getRomPic().setImageResource(R.drawable.ic_install_button_foreground);
+            return;
         } else {
             /**
              * set rom picture/background picture
              */
+            viewHolder.getRomPic().setImageBitmap(null);
             if (romListData.getRom(position).getRompicture() != null) {
                 viewHolder.getRomPic().setImageBitmap(romListData.getRom(position).getRompicture().srcbitmap);
             }

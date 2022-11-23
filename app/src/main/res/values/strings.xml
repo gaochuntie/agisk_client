@@ -22,4 +22,11 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
+    <!--?xml version="1.0" encoding="utf-8"?-->
+        <string-array name="log_type">
+            <item>Main</item>
+            <item>DiskAction</item>
+            <item>PartitionAction</item>
+            <item>PartitionDump</item>
+        </string-array>
 </resources>

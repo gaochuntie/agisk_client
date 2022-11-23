@@ -59,9 +59,17 @@ public class XmlProcessor {
         return isEncrypted;
     }
 
+    /**
+     * simply check file suffix, .enxml is encrypted others false
+     * @param extra_path
+     * @return
+     */
     private boolean checkIsEncrypted(String extra_path) {
         //TODO check is encrypted
-        boolean result = true;
+        boolean result = false;
+        if (extra_path.endsWith(".enxml")) {
+            result = true;
+        }
         isEncrypted = result;
         return result;
     }

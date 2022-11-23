@@ -373,6 +373,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobject thiz,
                                                                     jstring device) {
+    appendLogCutLine(PARTITION_DUMP_LOG, "PARTITION DUMP");
 
     const char *devname_C = env->GetStringUTFChars(device, nullptr);
     string devname_s(devname_C);

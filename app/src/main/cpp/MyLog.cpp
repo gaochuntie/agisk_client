@@ -22,7 +22,21 @@ extern int appendLogCutLine(string pathSs,string tag){
     ofstream of;
     of.open(pathSs.c_str(), ios_base::app);
     of << "--------" <<tag<<"--------"<< endl;
+    of << "[" << NowTime << "]" << endl;
     of.flush();
     of.close();
     return 0;
+}
+
+extern string  NowTime(){
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer[80];
+
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
+    std::string str(buffer);
+    return str;
 }

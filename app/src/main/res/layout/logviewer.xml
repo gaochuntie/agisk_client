@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:local="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:minHeight="300dp"
     android:layout_width="wrap_content"
@@ -35,8 +36,9 @@
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/log_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:maxHeight="500dp"
         android:orientation="vertical"
         app:layout_constrainedHeight="true"
@@ -49,16 +51,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <com.google.android.material.tabs.TabLayout
+                app:tabTextColor="@color/black"
+                android:id="@+id/log_type"
+                app:tabGravity="center"
+                app:tabMode="scrollable"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"/>
 
-            <TextView
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:id="@+id/logTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Global log"
-                android:textColor="@color/black"
-                android:textSize="40dp" />
 
             <androidx.cardview.widget.CardView
                 android:background="@color/white"
@@ -77,11 +80,11 @@
 
                     <TextView
                         android:id="@+id/log_content"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:breakStrategy="high_quality"
-                        android:text="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                        android:textSize="20dp"
+                        android:text="Log content"
+                        android:textSize="12dp"
                         android:background="@color/white"
                         android:textColor="@color/black" />
 

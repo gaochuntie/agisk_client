@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,10 +62,12 @@ import atms.app.my_application_c.Settings;
 import atms.app.my_application_c.Tools.TAG;
 import atms.app.my_application_c.Tools.Worker;
 import atms.app.my_application_c.Tools.clientNumListener;
+import atms.app.my_application_c.adapter.noticeListAdapter;
+import atms.app.my_application_c.adapter.romItemOnClickListener;
 import atms.app.my_application_c.adapter.romListAdapter;
 import atms.app.my_application_c.aidl.workClient;
 
-public class homeFragment extends Fragment implements View.OnClickListener, RecyclerView.OnItemTouchListener {
+public class homeFragment extends Fragment implements View.OnClickListener {
     private RecyclerView selectedCategoryRomList;
     private RecyclerView noticeListRC;
     private TabLayout romCategoryTab;
@@ -80,7 +83,35 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
         setUpRomCategoryList(view);
 
         ((MainActivity) getActivity()).setupLogPopWindows(view);
+
+        showNotice();
         return view;
+    }
+
+    private void showNotice() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        noticeListRC.setLayoutManager(linearLayoutManager);
+
+        List<noticeListAdapter.NoticeItem> notice_list = new ArrayList<>();
+
+        notice_list.add(new noticeListAdapter
+                .NoticeItem("Update notes", "Provide basic function:\n" +
+                "DiskAction all\n" +
+                "PartitionAction new123 delete12 \n" +
+                "Provide some xmls :\n" +
+                "System Partition Expandation\n" +
+                "Virtual SD Card Maker\n" ));
+
+        notice_list.add(new noticeListAdapter.NoticeItem("Coffee", "paypal.me/gaochuntie\n"));
+        notice_list.add(new noticeListAdapter.NoticeItem("Warning","Partition Number start from 0 , not 1 as sgdisk"));
+
+        notice_list.add(new noticeListAdapter.NoticeItem("Join Us","------So join us to show off your talent.\n" +
+                "jackmaxpale@gmail.com\n" +
+                "2041469901@qq.com\n" +
+                "https://t.me/+0Ouds6DUyhgwMDk1\n" +
+                "https://github.com/gaochuntie/agisk_client"));
+        noticeListRC.setAdapter(new noticeListAdapter(notice_list));
     }
 
     /**
@@ -171,7 +202,6 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
 
     private void bindView(View view) {
         selectedCategoryRomList = view.findViewById(R.id.selectedCategoryList);
-        selectedCategoryRomList.addOnItemTouchListener(this);
         noticeListRC = view.findViewById(R.id.homeNoticeBoardList);
         romCategoryTab = view.findViewById(R.id.romCategoryList);
         romCategoryTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -309,7 +339,12 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
                         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
                         selectedCategoryRomList.setLayoutManager(linearLayoutManager);
                         Log.d(TAG.HomeFragTag, "Romlist size " + romlist.length);
-                        selectedCategoryRomList.setAdapter(new romListAdapter(romlist));
+                        selectedCategoryRomList.setAdapter(new romListAdapter(romlist, new romItemOnClickListener() {
+                            @Override
+                            public void onItemClick(int position) {
+                                showSelectedRomDetails(position);
+                            }
+                        }));
 
                     }
                 });
@@ -478,33 +513,6 @@ public class homeFragment extends Fragment implements View.OnClickListener, Recy
                     }
                 })
                 .setMaskColor(Color.parseColor("#4D000000"));
-    }
-
-    //recyclerview listener
-    @Override
-    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-
-        View view = rv.findChildViewUnder(e.getX(), e.getY());
-        if (view == null) {
-            return false;
-        }
-        if (e.getAction() == MotionEvent.ACTION_UP) {
-            int id = rv.getChildAdapterPosition(view);
-            //TextView name = (TextView) view.findViewById(R.id.rom);
-            //Snackbar.make(rv, name.getText().toString(), Snackbar.LENGTH_SHORT).show();
-            showSelectedRomDetails(id);
-        }
-        return false;
-    }
-
-    @Override
-    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-
-    }
-
-    @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
     }
 
 

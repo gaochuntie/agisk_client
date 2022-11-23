@@ -9,6 +9,17 @@ import java.util.Date;
 import java.util.List;
 
 public class GlobalMsg {
+    public static String DISKACTION_LOG = "/sdcard/Android/data/atms.app.my_application_c/files/log/disk.log";
+
+    public static String PARTITION_DUMP_LOG = "/sdcard/Android/data/atms.app.my_application_c/files/log/partdump.log";
+
+    public static String PARTITION_LOG = "/sdcard/Android/data/atms.app.my_application_c/files/log/partition.log";
+
+    public static String GLOBAL_LOG = "/sdcard/Android/data/atms.app.my_application_c/files/log/main.log";
+
+    //            #define PARTITION_DUMP_LOG "/sdcard/Android/data/atms.app.my_application_c/files/log/partdump.log"
+//            #define PARTITION_LOG "/sdcard/Android/data/atms.app.my_application_c/files/log/partition.log"
+//            #define GLOBAL_LOG "/sdcard/Android/data/atms.app.my_application_c/files/log/main.log"
     public static StringBuilder errormsg = new StringBuilder();
 
     public static void addLog(String msg) {

@@ -66,6 +66,7 @@
                             android:layout_marginRight="10dp" />
 
                         <TextView
+                            android:id="@+id/storage_chip"
                             android:gravity="left"
                             android:layout_gravity="center"
                             android:layout_column="1"
@@ -87,6 +88,7 @@
                             android:layout_marginRight="10dp" />
 
                         <TextView
+                            android:id="@+id/data_size"
                             android:gravity="left"
                             android:layout_row="1"
                             android:layout_gravity="center"
@@ -109,6 +111,7 @@
                             android:layout_marginRight="10dp" />
 
                         <TextView
+                            android:id="@+id/data_location"
                             android:gravity="left"
                             android:layout_gravity="center"
                             android:layout_column="1"
@@ -127,10 +130,11 @@
                             android:layout_rowSpan="1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="System Layout:"
+                            android:text="Partition Layout:"
                             android:layout_marginRight="10dp" />
 
                         <TextView
+                            android:id="@+id/partition_layout"
                             android:gravity="left"
                             android:layout_gravity="center"
                             android:layout_column="1"

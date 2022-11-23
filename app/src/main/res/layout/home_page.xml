@@ -29,7 +29,7 @@
                 <TextView
 
                     android:layout_marginLeft="15dp"
-                    android:textColor="#535353"
+                    android:textColor="#010C2B"
                     android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
                 android:orientation="vertical" />
 
             <TextView
-                android:textColor="#535353"
+                android:textColor="#001657"
                 android:background="@color/white"
                 android:layout_marginLeft="15dp"
 

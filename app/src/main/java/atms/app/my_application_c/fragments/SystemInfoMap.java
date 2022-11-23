@@ -4,8 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import com.topjohnwu.superuser.Shell;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import atms.app.my_application_c.R;
 
@@ -60,6 +66,33 @@ public class SystemInfoMap extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_system_info_map, container, false);
+        View view=inflater.inflate(R.layout.fragment_system_info_map, container, false);
+        setInfo(view);
+        return view;
+    }
+
+    void setInfo(View view) {
+        List<String> result = new ArrayList<>();
+        TextView storage_chip = view.findViewById(R.id.storage_chip);
+        TextView userdata_size = view.findViewById(R.id.data_size);
+        TextView userdata_location = view.findViewById(R.id.data_location);
+        TextView partition_layout = view.findViewById(R.id.partition_layout);
+
+
+        Shell.cmd("[ -e /dev/block/mmcblk0 ] && echo EMMC || echo UFS").to(result).exec();
+        storage_chip.setText(result.get(result.size()-1));
+
+        Shell.cmd("blockdev /dev/block/by-name/userdata --getsize64").to(result).exec();
+
+        int size_gib = (int) (Long.valueOf(result.get(result.size() - 1)) / (1024 * 1024 * 1024));
+        userdata_size.setText(String.valueOf(size_gib) + "Gib");
+
+        Shell.cmd("ls -l /dev/block/by-name/userdata").to(result).exec();
+        String data_location = result.get(result.size() - 1).substring(result.get(result.size() - 1).lastIndexOf("-> ")+3);
+        userdata_location.setText(data_location);
+
+
+        Shell.cmd("[ -e /dev/block/by-name/super ] && echo DSU || echo Ramdisk").to(result).exec();
+        partition_layout.setText(result.get(result.size()-1));
     }
 }
