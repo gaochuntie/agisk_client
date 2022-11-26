@@ -100,7 +100,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                 "DiskAction all\n" +
                 "PartitionAction new123 delete12 \n" +
                 "Provide some xmls :\n" +
-                "System Partition Expandation\n" +
+                "System Partition Expansion\n" +
                 "Virtual SD Card Maker\n" ));
 
         notice_list.add(new noticeListAdapter.NoticeItem("Coffee", "paypal.me/gaochuntie\n"));

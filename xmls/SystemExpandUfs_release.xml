@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>System Expansion UFS</name>
+        <id>asm00000001</id>
+        <author>asm1409</author>
+        <mark>expansion</mark>
+        <description>Expansion system partition to 8 gib for ufs devices note:Please check your userdata location in Map,this xml is for sda userdata and sde system</description>
+        <uuid>d7a3ec69-aec4-4cff-9cdb-48097734715a</uuid>
+        <rom_name>Expansion</rom_name>
+        <android_version>android9</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <delete name="userdata" driver="/dev/block/sda" />
+            <delete name="system" driver="/dev/block/sde" />
+            <new name="system" driver="/dev/block/sda" size="8589934592" />
+<!--            0 to take the largest chunk-->
+            <new name="userdata" driver="/dev/block/sda" size="0" />
+        </PartitionModification>
+    </Action>
+
+</config>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>VirtualSdcard Maker UFS</name>
+        <id>asm00000003</id>
+        <author>asm1409</author>
+        <mark>virtualsdcard</mark>
+        <description>Create 8gib virtual sdcard partition for ufs devices  note:Please check your userdata location in Map , I guess it's in sda</description>
+        <uuid>465576f8-f9b5-4e0b-b9a0-721ad048be64</uuid>
+        <rom_name>VirtualSdcard</rom_name>
+        <android_version>android9</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <delete name="userdata" driver="/dev/block/sda" />
+            <new name="virtual_sd" driver="/dev/block/sda" size="8589934592" />
+<!--            0 to take the largest chunk-->
+            <new name="userdata" driver="/dev/block/sda" size="0" />
+        </PartitionModification>
+    </Action>
+
+</config>

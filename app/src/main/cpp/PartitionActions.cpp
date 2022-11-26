@@ -46,7 +46,19 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         return 1;
     }
     uint64_t start_sector = (uint64_t) (start / gptData.GetBlockSize());
-    uint64_t last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
+    uint64_t last_sector = 0;
+
+    /**
+     * 0 to take the largest chunk
+     */
+    if (length == 0) {
+        appendBaseLog(PARTITION_LOG, "Length is 0 , take the largest chunk");
+        appendBaseLog(PARTITION_LOG, "Length " + to_string(
+                (last_sector - start_sector + 1) * gptData.GetBlockSize()));
+        last_sector = gptData.FindLastInFree(start_sector);
+    }else{
+        last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
+    }
 
     for (uint64_t i = start_sector; i <= last_sector; ++i) {
         if (!gptData.IsFree(i, &usedPartNum)) {
@@ -103,7 +115,19 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         return 1;
     }
     uint64_t start_sector = (uint64_t) (start / gptData.GetBlockSize());
-    uint64_t last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
+    uint64_t last_sector = 0;
+
+    /**
+     * 0 to take the largest chunk
+     */
+    if (length == 0) {
+        appendBaseLog(PARTITION_LOG, "Length is 0 , take the largest chunk");
+        appendBaseLog(PARTITION_LOG, "Length " + to_string(
+                (last_sector - start_sector + 1) * gptData.GetBlockSize()));
+        last_sector = gptData.FindLastInFree(start_sector);
+    }else{
+        last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
+    }
 
     for (uint64_t i = start_sector; i <= last_sector; ++i) {
         if (!gptData.IsFree(i, &usedPartNum)) {
@@ -168,7 +192,12 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
      */
     uint64_t diskSize = gptData.GetLastUsableLBA();
 
-    uint64_t requiredBlocks = ((uint64_t) length / gptData.GetBlockSize()) + 1;
+
+    //calculate requiredBlocks
+    //This is a correct compulation
+    uint64_t requiredBlocks = ((uint64_t) (length + gptData.GetBlockSize() - 1) /
+                               gptData.GetBlockSize());
+
     appendBaseLog(PARTITION_LOG, "Required blocks : " + to_string(requiredBlocks));
 
     uint64_t start = UINT64_C(0); // starting point for each search
@@ -183,6 +212,9 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
     uint32_t foundNum = 0;
     uint64_t smallest_start = 0;
     uint64_t smallest_end = 0;
+    uint64_t largest_start = 0;
+    uint64_t largest_end = 0;
+
     if (diskSize > 0) {
         do {
             firstBlock = gptData.FindFirstAvailable(start);
@@ -193,7 +225,14 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
 
                 if (segmentSize >= requiredBlocks) {
                     //ok find one
-                    largestSegment = segmentSize;
+
+                    //largest
+                    if (segmentSize > largestSegment) {
+                        largestSegment = segmentSize;
+                        largest_start = firstBlock;
+                        largest_end = lastBlock;
+                    }
+
                     foundNum++;
                     appendBaseLog(PARTITION_LOG,
                                   "Find available segement(sector) : " + to_string(firstBlock) +
@@ -221,19 +260,34 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
         appendBaseLog(PARTITION_LOG, "No free segement match");
         return 1;
     }
-    appendBaseLog(PARTITION_LOG, "Smallest free segement is " + to_string(smallestSegement));
-    appendBaseLog(PARTITION_LOG,
-                  "From " + to_string(smallest_start) + " to " + to_string(smallest_end));
-    appendLogCutLine(PARTITION_LOG, "Take the smallest free segement");
-    //create partition
 
-    if (gptData.CreatePartition(number, smallest_start, smallest_start+requiredBlocks-1)) {
+    if (length != 0) {
+        appendBaseLog(PARTITION_LOG, "Smallest free segement is " + to_string(smallestSegement));
+        appendBaseLog(PARTITION_LOG,
+                      "From " + to_string(smallest_start) + " to " + to_string(smallest_start + requiredBlocks - 1));
+        appendLogCutLine(PARTITION_LOG, "Take the smallest free segement");
+    }else{
+        appendBaseLog(PARTITION_LOG, "Length is 0 , take the largest chunk");
+        appendBaseLog(PARTITION_LOG, "Start " + to_string(largest_start) + " Length " + to_string(largestSegment));
+    }
+
+    //create partition
+    int result=1;
+
+    if (length==0){
+        result = gptData.CreatePartition(number, largest_start,
+                                         largest_end);
+    }else{
+        result = gptData.CreatePartition(number, smallest_start,
+                                         smallest_start + requiredBlocks - 1);
+    }
+    if (result) {
         if (!gptData.SetName(number, name_s)) {
             appendBaseLog(PARTITION_LOG, "Unable to set name");
             return 1;
         }
         gptData.JustLooking(0);
-        if (!gptData.SaveGPTData(1)){
+        if (!gptData.SaveGPTData(1)) {
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }

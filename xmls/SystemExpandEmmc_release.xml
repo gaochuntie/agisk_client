@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>System Expansion EMMC</name>
+        <id>asm00000002</id>
+        <author>asm1409</author>
+        <mark>expansion</mark>
+        <description>Expansion system partition to 8 gib for emmc devices </description>
+        <uuid>800da19c-aa52-4a0e-8cf9-f1ff224dabbd</uuid>
+        <rom_name>Expansion</rom_name>
+        <android_version>android9</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <delete name="userdata" driver="/dev/block/mmcblk0" />
+            <delete name="system" driver="/dev/block/mmcblk0" />
+            <new name="system" driver="/dev/block/mmcblk0" size="8589934592" />
+<!--            0 to take the largest chunk-->
+            <new name="userdata" driver="/dev/block/mmcblk0" size="0" />
+        </PartitionModification>
+    </Action>
+
+</config>
