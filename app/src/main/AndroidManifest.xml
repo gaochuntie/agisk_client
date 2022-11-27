@@ -14,9 +14,6 @@
             android:name="atms.app.my_application_c.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
-        <activity
-            android:name="atms.app.my_application_c.aidl.workClientActivity"
-            android:exported="true" />
         <activity android:name="atms.app.my_application_c.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

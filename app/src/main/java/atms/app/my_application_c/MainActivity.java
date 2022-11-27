@@ -114,10 +114,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         jniObj = new JNI();
 
-
+        setupLogDir();
         //setup ui
         setupNavBar();
         setupViewPage();
+
+    }
+
+
+    private void setupLogDir() {
+        File log_dir = getExternalFilesDir("log");
     }
 
     private void checkRootAccess(boolean isroot) {
