@@ -1,7 +1,6 @@
 package atms.app.my_application_c.adapter;
 
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

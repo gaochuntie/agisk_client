@@ -7,149 +7,330 @@
     tools:context=".fragments.SystemInfoMap">
 
     <androidx.core.widget.NestedScrollView
-        android:background="#00FFFFFF"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:backgroundTint="@color/white">
 
         <LinearLayout
-
-            android:background="#00FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:backgroundTint="@color/white"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
-                android:background="#0000"
+            <TextView
+                android:id="@+id/textView3"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="#00FFFFFF"
+                android:text="Generous Information"
+                android:textColor="#000F61"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#8A8A8A" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#0000"
+                android:backgroundTint="@color/white">
 
                 <LinearLayout
-                    android:divider="@drawable/linearlayout_divider"
-                    android:showDividers="end"
-                    android:background="#00FFFFFF"
+                    android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:background="#00FFFFFF"
+                    android:divider="@drawable/linearlayout_divider"
+                    android:orientation="vertical"
+                    android:showDividers="end">
+
+
 
                     <TextView
-                        android:layout_marginBottom="5dp"
-                        android:background="#00FFFFFF"
-                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Storage Chip:"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/storage_chip"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Generous Information" />
-
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="UFS"
+                        android:textColor="@color/black" />
 
                     <View
-                        android:background="#8A8A8A"
-                        android:id="@+id/view"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp" />
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Userdata Size:"
+                        android:textColor="@color/black" />
 
-                    <GridLayout
-                        android:rowCount="4"
-                        android:columnCount="2"
+                    <TextView
+                        android:id="@+id/data_size"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_row="1"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="128gb"
+                        android:textColor="@color/black" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Userdata Location:"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/data_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="sda87" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Partition Layout:" />
+
+                    <TextView
+                        android:id="@+id/partition_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="DSU" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="System Location:" />
+
+                    <TextView
+                        android:id="@+id/system_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center"
+                        android:breakStrategy="high_quality"
+                        android:gravity="left"
+                        android:text="unknown" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
 
 
-                        <TextView
-                            android:gravity="right"
-                            android:layout_gravity="right"
-                            android:layout_column="0"
-                            android:layout_columnSpan="1"
-                            android:layout_row="0"
-                            android:layout_rowSpan="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Storage Chip:"
-                            android:layout_marginRight="10dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Super Location:" />
 
-                        <TextView
-                            android:id="@+id/storage_chip"
-                            android:gravity="left"
-                            android:layout_gravity="center"
-                            android:layout_column="1"
-                            android:layout_rowSpan="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="UFS" />
-
-                        <TextView
-                            android:gravity="right"
-                            android:layout_gravity="right"
-                            android:layout_column="0"
-                            android:layout_columnSpan="1"
-                            android:layout_row="1"
-                            android:layout_rowSpan="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Userdata Size:"
-                            android:layout_marginRight="10dp" />
-
-                        <TextView
-                            android:id="@+id/data_size"
-                            android:gravity="left"
-                            android:layout_row="1"
-                            android:layout_gravity="center"
-                            android:layout_column="1"
-                            android:layout_rowSpan="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="128gb" />
-
-                        <TextView
-                            android:gravity="right"
-                            android:layout_gravity="right"
-                            android:layout_column="0"
-                            android:layout_columnSpan="1"
-                            android:layout_row="2"
-                            android:layout_rowSpan="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Userdata index:"
-                            android:layout_marginRight="10dp" />
-
-                        <TextView
-                            android:id="@+id/data_location"
-                            android:gravity="left"
-                            android:layout_gravity="center"
-                            android:layout_column="1"
-                            android:layout_row="2"
-                            android:layout_rowSpan="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="sda87" />
-
-                        <TextView
-                            android:gravity="right"
-                            android:layout_gravity="left"
-                            android:layout_column="0"
-                            android:layout_columnSpan="1"
-                            android:layout_row="3"
-                            android:layout_rowSpan="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Partition Layout:"
-                            android:layout_marginRight="10dp" />
-
-                        <TextView
-                            android:id="@+id/partition_layout"
-                            android:gravity="left"
-                            android:layout_gravity="center"
-                            android:layout_column="1"
-                            android:layout_row="3"
-                            android:layout_rowSpan="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="DSU" />
+                    <TextView
+                        android:id="@+id/super_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center"
+                        android:breakStrategy="high_quality"
+                        android:gravity="left"
+                        android:text="unknown" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
 
-                    </GridLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="#00FFFFFF"
+                android:text="Advanced Information"
+                android:textColor="#000F61"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#8A8A8A" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#0000"
+                android:backgroundTint="@color/white">
+
+                <LinearLayout
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#00FFFFFF"
+                    android:divider="@drawable/linearlayout_divider"
+                    android:orientation="vertical"
+                    android:showDividers="end">
+
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="VirtualSdcard Size:"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/virtual_sd_size"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="unknown"
+                        android:textColor="@color/black" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Virtual Sdcard Location:"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/virtual_sd_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_row="1"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="0"
+                        android:textColor="@color/black" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Agisk Metadata Location:"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/metadata_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="unknown" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:text="Agisk Metadata Area:" />
+
+                    <TextView
+                        android:id="@+id/metadata_area"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center"
+                        android:gravity="left"
+                        android:text="0-0" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#8A8A8A" />
+
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/read_partition_table"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="Read Partition Table"
+                android:textColor="#000F61"
+                android:textSize="15dp"
+                android:textStyle="bold" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#8A8A8A" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 
 </FrameLayout>

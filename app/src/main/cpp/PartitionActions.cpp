@@ -460,17 +460,21 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env,
     // atmsMetedataSizeBlock defined in Utils.hpp -extern
 
     gptdata.GetPartRange(&low, &high);
-    appendBaseLog(PARTITION_LOG, "Sector size : " + gptdata.GetBlockSize());
+    appendBaseLog(PARTITION_DUMP_LOG, "Driver " + devname_s);
+    appendBaseLog(PARTITION_DUMP_LOG, "Sector size : " + to_string(gptdata.GetBlockSize()));
+
     appendBaseLog(PARTITION_DUMP_LOG, "[BEGIN]");
+    appendBaseLog(PARTITION_DUMP_LOG, "Number:Name:StartLBA:EndLBA:SizeInMib");
     for (uint32_t i = low; i <= high; i++) {
         /* code */
         if (gptdata.IsUsedPartNum(i)) {
             //cout<<"Operatoring "<<i<<"      ";
             GPTPart part = gptdata[i];
-            appendBaseLog(PARTITION_DUMP_LOG, to_string(i) + ":"
-                                              + part.GetDescription() + ":"
-                                              + to_string(part.GetFirstLBA()) + ":"
-                                              + to_string(part.GetLastLBA()));
+            appendBaseLog(PARTITION_DUMP_LOG, to_string(i) + " : "
+                                              + part.GetDescription() + " : "
+                                              + to_string(part.GetFirstLBA()) + " : "
+                                              + to_string(part.GetLastLBA())+" : "
+                                              + to_string(part.GetLengthLBA()*gptdata.GetBlockSize()/(1024*1024))+"Mib");
         }
 
     }

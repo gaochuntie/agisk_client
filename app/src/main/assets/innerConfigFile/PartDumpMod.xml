@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>PartDump</name>
+        <id>mod</id>
+        <author>asm1409</author>
+        <mark>mod</mark>
+        <description>part dump mod</description>
+        <uuid>0</uuid>
+        <rom_name>mod</rom_name>
+        <android_version>android9</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <read driver="REPLACE_DRIVER_KEY" />
+        </PartitionModification>
+    </Action>
+
+</config>

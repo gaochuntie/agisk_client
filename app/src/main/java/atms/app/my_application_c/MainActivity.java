@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -18,15 +17,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.androidbuts.multispinnerfilter.KeyPairBoolData;
-import com.androidbuts.multispinnerfilter.SingleSpinnerListener;
-import com.androidbuts.multispinnerfilter.SingleSpinnerSearch;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.kongzue.dialogx.dialogs.MessageDialog;
 import com.topjohnwu.superuser.Shell;
@@ -542,6 +536,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TabLayout tabLayout = view.findViewById(R.id.log_type);
 
             tabLayout.selectTab(tabLayout.getTabAt(0));
+        }
+    }
+
+    public void showLogViewer(int index) {
+        if (logPopWin != null) {
+            logPopWin.showAtLocation(logPopWin.getContentView(), Gravity.CENTER, 0, 0);
+            View view = logPopWin.getContentView();
+            TabLayout tabLayout = view.findViewById(R.id.log_type);
+            if (index < tabLayout.getTabCount()) {
+                tabLayout.selectTab(tabLayout.getTabAt(index));
+            } else {
+                tabLayout.selectTab(tabLayout.getTabAt(0));
+            }
         }
     }
 
