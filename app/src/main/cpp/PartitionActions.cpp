@@ -15,7 +15,7 @@
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2ILjava_lang_String_2JJ(
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2ILjava_lang_String_2JJ(
         JNIEnv *env, jobject thiz, jstring driver, jint number, jstring name, jlong start,
         jlong length) {
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE1");
@@ -89,7 +89,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2JJ(
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2JJ(
         JNIEnv *env, jobject thiz, jstring driver, jstring name, jlong start, jlong length) {
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE2");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
@@ -162,7 +162,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2J(
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2Ljava_lang_String_2J(
         JNIEnv *env, jobject thiz, jstring driver, jstring name, jlong length) {
     appendLogCutLine(PARTITION_LOG, "PARTITION CREATE3");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
@@ -304,7 +304,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_newPart__Ljava_lang_S
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_String_2Ljava_lang_String_2(
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2Ljava_lang_String_2(
         JNIEnv *env, jobject thiz, jstring driver, jstring name) {
     appendLogCutLine(PARTITION_LOG, "PARTITION DELETE1");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
@@ -363,7 +363,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_String_2I(JNIEnv *env,
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2I(JNIEnv *env,
                                                                                         jobject thiz,
                                                                                         jstring driver,
                                                                                         jint number) {
@@ -399,7 +399,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_delete__Ljava_lang_St
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_clone(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_clone(JNIEnv *env, jobject thiz,
                                                                  jstring driver,
                                                                  jstring from_driver,
                                                                  jint from_number, jlong t_start) {
@@ -407,7 +407,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_clone(JNIEnv *env, jo
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_format(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_format(JNIEnv *env, jobject thiz,
                                                                   jstring driver,
                                                                   jint partition_num,
                                                                   jstring filesystem) {
@@ -415,7 +415,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_format(JNIEnv *env, j
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject thiz,
                                                                  jstring driver, jint number,
                                                                  jstring filesystem,
                                                                  jstring mount_point) {
@@ -425,7 +425,7 @@ Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_mount(JNIEnv *env, jo
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobject thiz,
                                                                     jstring device) {
     appendLogCutLine(PARTITION_DUMP_LOG, "PARTITION DUMP");
 

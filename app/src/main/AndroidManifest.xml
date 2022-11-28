@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="atms.app.my_application_c">
+    package="atms.app.agiskclient">
 
     <application
-        android:name="atms.app.my_application_c.MyApplication"
+        android:name="atms.app.agiskclient.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,10 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.My_Application_c">
         <activity
-            android:name="atms.app.my_application_c.SettingsActivity"
+            android:name="atms.app.agiskclient.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
-        <activity android:name="atms.app.my_application_c.MainActivity">
+        <activity android:name="atms.app.agiskclient.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

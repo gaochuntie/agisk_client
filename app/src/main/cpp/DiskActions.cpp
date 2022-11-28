@@ -19,7 +19,7 @@
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_DiskAction_write(JNIEnv *env, jobject thiz,
                                                             jstring driver, jlong start,
                                                             jlong length, jstring raw_file_path,
                                                             jlong offset_raw) {
@@ -83,7 +83,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_write(JNIEnv *env, jobject
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
                                                              jstring driver, jlong start,
                                                              jlong length) {
     appendLogCutLine(DISKACTION_LOG, "DISK FORMAT");
@@ -117,7 +117,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_format(JNIEnv *env, jobjec
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_DiskAction_clone(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_DiskAction_clone(JNIEnv *env, jobject thiz,
                                                             jstring driver, jlong s_start,
                                                             jlong length, jstring t_driver,
                                                             jlong t_start) {
@@ -181,7 +181,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_clone(JNIEnv *env, jobject
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_DiskAction_backup(JNIEnv *env, jobject thiz,
                                                              jstring driver, jlong start,
                                                              jlong length, jstring backupto) {
     using namespace std;
@@ -220,7 +220,7 @@ Java_atms_app_my_1application_1c_ConfigBox_DiskAction_backup(JNIEnv *env, jobjec
  */
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_DiskAction_spare(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_DiskAction_spare(JNIEnv *env, jobject thiz,
                                                             jstring driver, jlong length) {
     const char *cdriver = env->GetStringUTFChars(driver, nullptr);
 

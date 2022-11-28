@@ -12,7 +12,7 @@ extern "C" {
  * Method:    add
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_atms_app_my_1application_1c_JNI_add
+JNIEXPORT jint JNICALL Java_atms_app_agiskclient_JNI_add
         (JNIEnv *, jobject, jint, jint);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jint JNICALL Java_atms_app_my_1application_1c_JNI_add
  * Method:    checkPasswd
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_atms_app_my_1application_1c_JNI_checkPasswd
+JNIEXPORT jboolean JNICALL Java_atms_app_agiskclient_JNI_checkPasswd
         (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

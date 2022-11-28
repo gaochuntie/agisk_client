@@ -15,12 +15,12 @@
 
 #define BASIC_TAG "Basic.cpp"
 
-extern "C" JNIEXPORT jint JNICALL Java_atms_app_my_1application_1c_JNI_add
+extern "C" JNIEXPORT jint JNICALL Java_atms_app_agiskclient_JNI_add
         (JNIEnv *env, jobject jobj, jint x, jint y) {
     return x + y;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_atms_app_my_1application_1c_JNI_checkPasswd
+extern "C" JNIEXPORT jboolean JNICALL Java_atms_app_agiskclient_JNI_checkPasswd
         (JNIEnv *env, jobject jobj, jstring pass) {
     jboolean iscopy = JNI_TRUE;
     const char *password = (char *) env->GetStringChars(pass, &iscopy);
@@ -33,19 +33,19 @@ extern "C" JNIEXPORT jboolean JNICALL Java_atms_app_my_1application_1c_JNI_check
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_aidl_AIDLService_nativeGetUid(JNIEnv *env, jobject thiz) {
+Java_atms_app_agiskclient_aidl_AIDLService_nativeGetUid(JNIEnv *env, jobject thiz) {
     return 1515;
     return getuid();
     // TODO: implement nativeGetUid()
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_my_1application_1c_Tools_MSGService_nativeGetUid(JNIEnv *env, jobject thiz) {
+Java_atms_app_agiskclient_Tools_MSGService_nativeGetUid(JNIEnv *env, jobject thiz) {
     return getuid();
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_atms_app_my_1application_1c_aidl_AIDLService_writelog(JNIEnv *env, jobject thiz, jstring log) {
+Java_atms_app_agiskclient_aidl_AIDLService_writelog(JNIEnv *env, jobject thiz, jstring log) {
     // TODO: implement writelog()
     using namespace std;
     const char *log_file = env->GetStringUTFChars(log, nullptr);
@@ -63,7 +63,7 @@ Java_atms_app_my_1application_1c_aidl_AIDLService_writelog(JNIEnv *env, jobject 
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_atms_app_my_1application_1c_aidl_AIDLService_writelogTag(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_aidl_AIDLService_writelogTag(JNIEnv *env, jobject thiz,
                                                               jstring tag, jstring log) {
     using namespace std;
     const char *log_file = env->GetStringUTFChars(log, nullptr);
@@ -97,7 +97,7 @@ jstring str2jstring(JNIEnv *env, const char *pat) {
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_atms_app_my_1application_1c_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, jobject thiz,
+Java_atms_app_agiskclient_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, jobject thiz,
                                                                    jstring extra_path) {
     // TODO: implement decryptXml()
     using namespace std;
@@ -143,7 +143,7 @@ Java_atms_app_my_1application_1c_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_atms_app_my_1application_1c_Tools_GlobalMsg_appendLog(JNIEnv *env, jclass clazz, jstring log,
+Java_atms_app_agiskclient_Tools_GlobalMsg_appendLog(JNIEnv *env, jclass clazz, jstring log,
                                                            jstring path) {
     using namespace std;
     const char *log_file = env->GetStringUTFChars(log, nullptr);
@@ -164,7 +164,7 @@ Java_atms_app_my_1application_1c_Tools_GlobalMsg_appendLog(JNIEnv *env, jclass c
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_atms_app_my_1application_1c_Tools_GlobalMsg_readLog(JNIEnv *env, jclass clazz, jstring path) {
+Java_atms_app_agiskclient_Tools_GlobalMsg_readLog(JNIEnv *env, jclass clazz, jstring path) {
     using namespace std;
     const char *log_file = env->GetStringUTFChars(path, nullptr);
     string ss(log_file);
