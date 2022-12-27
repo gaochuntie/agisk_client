@@ -22,8 +22,62 @@ public class ReservedAreaRepository {
             chunkListOrig = new ArrayList<>();
         }
 
-        public void putChunk(Chunk chunk) {
+        public void putChunk(Chunk chunke) {
             //TODO implement putChunk
+            chunkListOrig.add(chunke);
+
+            //sense7 at tail
+
+            for (int i = 0; i < chunkList.size()-1; i++) {
+                Chunk former = chunkList.get(i);
+                Chunk later = chunkList.get(i + 1);
+                //sense1 no overlap
+                if (chunke.startByte > former.endByte && chunke.endByte < later.startByte) {
+                    chunkList.add(i + 1, chunke);
+                    return;
+                }
+
+                Chunk chunk = former;
+                //sense1 inside
+                if (chunke.startByte >= chunk.startByte) {
+                    if (chunke.endByte <= chunk.endByte) {
+                        //inside
+                        return;
+                    }
+                }
+
+                //sense2 former overlap
+                if (chunke.startByte>= chunk.startByte && chunke.startByte<=chunk.endByte) {
+                    if (chunke.endByte > chunk.endByte && chunke.endByte < later.startByte) {
+                        //combine
+                        former.endByte = chunke.endByte;
+                        return;
+                    }
+                }
+
+                //sense3 later overlap
+                if (chunke.startByte> former.endByte && chunke.startByte<later.startByte) {
+                    if (chunke.endByte >= later.startByte && chunke.endByte <= later.endByte) {
+                        //combine
+                        later.startByte = chunke.startByte;
+                        return;
+                    }
+                }
+
+                //sense4 former and later overlap
+                if (chunke.startByte>= former.startByte && chunke.startByte<=former.endByte) {
+                    if (chunke.endByte >= later.startByte && chunke.endByte <= later.endByte) {
+                        //combine
+                        former.endByte= later.endByte;
+                        chunkList.remove(i + 1);
+                        return;
+                    }
+                }
+                //sense5 at interval of former and later
+
+
+                //sense6 overlap multiple chunks
+            }
 
         }
 
@@ -111,7 +165,27 @@ public class ReservedAreaRepository {
         public long lengthSector = 0;
         public String id="";
 
-        public Chunk(long startByte, long lengthByte,String id) {
+        //linked list
+        public Chunk next = null;
+        public Chunk prev = null;
+
+        public Chunk getNext() {
+            return next;
+        }
+
+        public void setNext(Chunk next) {
+            this.next = next;
+        }
+
+        public Chunk getPrev() {
+            return prev;
+        }
+
+        public void setPrev(Chunk prev) {
+            this.prev = prev;
+        }
+
+        public Chunk(long startByte, long lengthByte, String id) {
             this.startByte = startByte;
             this.lengthByte = lengthByte;
             this.endByte = startByte + lengthByte - 1;
