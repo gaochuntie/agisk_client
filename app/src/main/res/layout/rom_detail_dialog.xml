@@ -74,7 +74,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
                     <TextView
                         android:id="@+id/rom_detail_author"
                         android:layout_width="wrap_content"
@@ -84,7 +87,24 @@
                         android:textSize="20dp"
                         android:background="@color/white"
                         android:textColor="@color/black" />
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
 
+                    <TextView
+                        android:id="@+id/rom_detail_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:breakStrategy="high_quality"
+                        android:text="ID: "
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black" />
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
 
                     <TextView
                         android:id="@+id/rom_detail_uuid"
@@ -95,7 +115,10 @@
                         android:textSize="20dp"
                         android:background="@color/white"
                         android:textColor="@color/black" />
-
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
                     <TextView
                         android:id="@+id/rom_detail_mark"
                         android:layout_width="wrap_content"
@@ -105,6 +128,11 @@
                         android:textSize="20dp"
                         android:background="@color/white"
                         android:textColor="@color/black" />
+
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
 
                     <TextView
                         android:id="@+id/rom_detail_description"
@@ -116,6 +144,10 @@
                         android:background="@color/white"
                         android:textColor="@color/black" />
 
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
                     <TextView
                         android:id="@+id/rom_detail_xml_location"
                         android:breakStrategy="high_quality"
@@ -126,7 +158,24 @@
                         android:textColor="@color/black"
                         android:text="xml path: " />
 
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
 
+                    <TextView
+                        android:id="@+id/rom_detail_state"
+                        android:breakStrategy="high_quality"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:background="@color/white"
+                        android:textColor="@color/black"
+                        android:text="ACTION STATE: " />
+                    <View
+                        android:background="@color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

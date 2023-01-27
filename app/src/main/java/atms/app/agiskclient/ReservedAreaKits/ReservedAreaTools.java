@@ -5,12 +5,27 @@ import java.util.ArrayList;
 import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository.Driver;
 
 public class ReservedAreaTools {
+    //init at application
     public static void initRepository() {
         if (ReservedAreaRepository.driverList == null) {
             ReservedAreaRepository.driverList = new ArrayList<>();
             return;
         }
         ReservedAreaRepository.driverList.clear();
+    }
+
+    //release static list when application exit
+    public static void releaseRespository() {
+        if (ReservedAreaRepository.driverList != null) {
+            ReservedAreaRepository.driverList = null;
+            return;
+        }
+    }
+
+    //blank list
+    public static void blankRepository() {
+        releaseRespository();
+        initRepository();
     }
 
     public static boolean putArea(String driver, long start, long length, String id) {

@@ -12,13 +12,20 @@ package atms.app.agiskclient.Data;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import atms.app.agiskclient.ConfigBox.ActionBase;
+import atms.app.agiskclient.ConfigBox.DiskAction;
 import atms.app.agiskclient.ConfigBox.OrigConfig;
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
+import atms.app.agiskclient.Tools.TAG;
 
 public class romListData {
 
@@ -49,11 +56,23 @@ public class romListData {
     //attribute
 
     //orig
+    String id;
     String author;
     String uuid;
     String mark;
     String description;
     String xml_path;
+    boolean isReservedProtected=false;
+
+    public boolean isReservedProtected() {
+        return isReservedProtected;
+    }
+
+    public void setIsReservedProtected() {
+        //TODO implement is protected
+        //check all disk related actions
+        Log.d(TAG.ROM_LIST_DATA, "Checking reserved protection : " + uuid);
+    }
 
     //parsed
     String romname;
@@ -83,12 +102,21 @@ public class romListData {
      * Must call this to set needed values from origconfig
      */
     public void initRomFromOrigConfig() {
+        setId(origConfig.getAttributions().get("id"));
         setRomname(origConfig.getAttributions().get("name"));
         setAuthor(origConfig.getAttributions().get("author"));
         setUuid(origConfig.getAttributions().get("uuid"));
         setDescription(origConfig.getAttributions().get("description"));
         setXml_path(origConfig.getFile_path());
         setMark(origConfig.getAttributions().get("mark"));
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getAuthor() {

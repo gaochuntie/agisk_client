@@ -22,11 +22,51 @@ public class ReservedAreaRepository {
             chunkListOrig = new ArrayList<>();
         }
 
+
         public void putChunk(Chunk chunke) {
+            chunkListOrig.add(chunke);
+
+        }
+
+        public void putChunk1(Chunk chunke) {
             //TODO implement putChunk
             chunkListOrig.add(chunke);
 
-            //sense7 at tail
+            //sense6 at tail
+            Chunk tail = chunkList.get(chunkList.size() - 1);
+            if (chunke.startByte >= tail.startByte) {
+                //no overlap
+                if (chunke.startByte > tail.endByte) {
+                    chunkList.add(chunke);
+                    return;
+                }
+                //inside
+                if (chunke.endByte <= tail.endByte) {
+                    return;
+                }
+                //overlap
+                tail.endByte = chunke.endByte;
+                return;
+            }
+
+            //sense7 at head
+            Chunk head = chunkList.get(0);
+            if (chunke.endByte <= head.endByte) {
+                //no overlap
+                if (chunke.endByte < head.startByte) {
+                    chunkList.add(0,chunke);
+                    return;
+                }
+                //inside
+                if (chunke.startByte >= head.startByte) {
+                    return;
+                }
+                //overlap
+                head.startByte = chunke.startByte;
+                return;
+            }
+
+            //
 
             for (int i = 0; i < chunkList.size()-1; i++) {
                 Chunk former = chunkList.get(i);
@@ -73,10 +113,10 @@ public class ReservedAreaRepository {
                         return;
                     }
                 }
-                //sense5 at interval of former and later
+
+                //sense5 overlap multiple chunks
 
 
-                //sense6 overlap multiple chunks
             }
 
         }
@@ -93,14 +133,16 @@ public class ReservedAreaRepository {
          * @return true allow
          */
         public boolean checkByte(long addr,String id) {
+            List<Chunk> overlaped = new ArrayList<>();
 
-            for (Chunk chunk : chunkList) {
-                if (addr >= chunk.startByte && addr <= (chunk.startByte + chunk.lengthByte - 1)) {
+            for (Chunk chunk : chunkListOrig) {
+                if (addr >= chunk.startByte && addr <= chunk.endByte) {
                     if (id.equals(chunk.id)) {
                         return true;
                     }else{
                         //protect hit
                         //TODO Hit
+                        overlaped.add(chunk);
                         return false;
                     }
                 }
@@ -109,7 +151,8 @@ public class ReservedAreaRepository {
         }
 
         public boolean checkArea(long start, long length,String id) {
-            for (Chunk chunk : chunkList) {
+            List<Chunk> overlaped = new ArrayList<>();
+            for (Chunk chunk : chunkListOrig) {
 
                 //sense1 inside
                 if (start >= chunk.startByte) {
@@ -118,6 +161,7 @@ public class ReservedAreaRepository {
                             return true;
                         }else{
                             //protect hit
+                            overlaped.add(chunk);
                             return false;
                         }
                     }
@@ -129,6 +173,7 @@ public class ReservedAreaRepository {
                         return true;
                     }else{
                         //hit
+                        overlaped.add(chunk);
                         return false;
                     }
                 }
@@ -139,6 +184,7 @@ public class ReservedAreaRepository {
                         return true;
                     }else{
                         //hit
+                        overlaped.add(chunk);
                         return false;
                     }
                 }
@@ -149,6 +195,7 @@ public class ReservedAreaRepository {
                         return true;
                     } else {
                         //hit
+                        overlaped.add(chunk);
                         return false;
                     }
                 }

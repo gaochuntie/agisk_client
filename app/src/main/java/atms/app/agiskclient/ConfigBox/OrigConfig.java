@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
+
 public class OrigConfig {
     enum FILE_TYPE {FILE_TYPE_INNER, FILE_TYPE_EXTRA, FILE_TYPE_CONTENT}
 
@@ -29,6 +31,7 @@ public class OrigConfig {
     public List<ActionBase> getActionList() {
         return actionList;
     }
+
 
     public Map<String, String> getAttributions() {
         return attributions;
@@ -73,10 +76,15 @@ public class OrigConfig {
         isEncrypted = xmlProcessor.isEncrypted();
     }
 
-    public void setActionList() {
-        m_xmlProcessor.setActions(actionList);
 
+    public void setActionList() {
+        if (actionList.size() != 0) {
+            return;
+        }
+        m_xmlProcessor.setActions(actionList);
     }
+
+
 
 
     /**

@@ -13,6 +13,8 @@ import com.kongzue.dialogx.style.MaterialStyle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaTools;
 import atms.app.agiskclient.Tools.Worker;
 
 
@@ -36,6 +38,7 @@ public class MyApplication extends Application {
         //Worker.setExecutorService(executorService);
         setupDialogX();
 
+
     }
 
     @Override
@@ -44,6 +47,7 @@ public class MyApplication extends Application {
         Worker.unsetExecutorService();
         executorService.shutdown();
         isAppExited = true;
+        ReservedAreaTools.releaseRespository();
     }
 
     private void setupDialogX() {

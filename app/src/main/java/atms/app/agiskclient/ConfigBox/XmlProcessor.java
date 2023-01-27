@@ -32,6 +32,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
 import atms.app.agiskclient.Tools.GlobalMsg;
 
 
@@ -255,6 +256,7 @@ public class XmlProcessor {
     }
 
 
+
     /**
      * set action list and get reserved chunks
      *
@@ -388,7 +390,9 @@ public class XmlProcessor {
                                                         , element3.getAttribute("length")}
 
                                                         , element3.getAttribute("driver"));
+
                                                 diskAction.addReservedChunks(new DiskAction.ReservedChunks(
+                                                        element3.getAttribute("driver"),
                                                         element3.getAttribute("start")
                                                         , element3.getAttribute("length")));
                                                 actions.add(diskAction);

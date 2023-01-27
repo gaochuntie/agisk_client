@@ -4,7 +4,7 @@ package atms.app.agiskclient.ConfigBox;
  * disk action,all action implement by jni
  */
 public class DiskAction extends ActionBase {
-    enum Disk_Action_Type {
+    public enum Disk_Action_Type {
         DISK_ACTION_TYPE_RESERVE, DISK_ACTION_TYPE_WRITE, DISK_ACTION_TYPE_FORMAT0, DISK_ACTION_TYPE_CLONE, DISK_ACTION_TYPE_BACKUP, DISK_ACTION_TYPE_SPACE
     }
 
@@ -67,7 +67,7 @@ public class DiskAction extends ActionBase {
                 format(driver, Long.valueOf(argv[0]), Long.valueOf(argv[1]));
                 break;
             case DISK_ACTION_TYPE_RESERVE:
-                addReservedChunks(new ReservedChunks(argv[0], argv[1]));
+                addReservedChunks(new ReservedChunks(argv[2],argv[0], argv[1]));
                 break;
             default:
                 break;
@@ -83,10 +83,12 @@ public class DiskAction extends ActionBase {
 
         public long start;
         public long length;
+        public String driver;
 
-        public ReservedChunks(String start, String length) {
+        public ReservedChunks(String driver,String start, String length) {
             this.start = Long.valueOf(start);
             this.length = Long.valueOf(length);
+            this.driver = driver;
         }
 
 

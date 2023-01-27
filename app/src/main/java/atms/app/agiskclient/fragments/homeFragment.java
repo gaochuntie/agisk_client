@@ -52,10 +52,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import atms.app.agiskclient.ConfigBox.ActionBase;
+import atms.app.agiskclient.ConfigBox.DiskAction;
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.Data.romListData;
 import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaTools;
 import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
@@ -78,6 +81,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.home_page, container, false);
         myview = view;
         bindView(view);
+        ReservedAreaTools.initRepository();
         setUpRomCategoryList(view);
 
         ((MainActivity) getActivity()).setupLogPopWindows(view);
@@ -283,6 +287,9 @@ public class homeFragment extends Fragment implements View.OnClickListener {
     //  get romlist async
 
     private String[] getRomList(String category) {
+        //init reserved repository first
+        refreshReservedRepository();
+        //
         List<String> list = new ArrayList<>();
         romListData.clearRomList();
 
@@ -303,6 +310,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                 //parse xml failed
                 continue;
             }
+            //get
             String rom_name = origConfig.getAttributions().get("rom_name").toLowerCase();
             String category_min = category.toLowerCase();
             if (rom_name.equals(category_min) | category_min.equals("all")) {
@@ -311,7 +319,12 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                 rom.initRomFromOrigConfig();
                 list.add(rom.getRomname());
                 id++;
+                //set reserved state
+                //same id will ignore protection
+                rom.setIsReservedProtected();
+
             }
+
         }
 
         //
@@ -319,6 +332,62 @@ public class homeFragment extends Fragment implements View.OnClickListener {
         list.add("command::add");
 
         return list.toArray(strings);
+    }
+
+    /**
+     * check all xmls to get reserved area
+     */
+    private void refreshReservedRepository() {
+
+        ReservedAreaTools.blankRepository();
+
+        File xmldir = getActivity().getExternalFilesDir("home");
+
+        File[] filelist = xmldir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                String finename = s.toLowerCase();
+                return finename.endsWith(".xml") | finename.endsWith(".enxml");
+            }
+        });
+
+        for (File item : filelist) {
+            OrigConfig origConfig = new OrigConfig(item.getAbsolutePath());
+            if (!origConfig.isParseSuccess()) {
+                //parse xml failed
+                Log.d(TAG.HomeFragTag, "Parse " + item.getAbsolutePath() + " failed");
+                continue;
+            }
+            //get reserved
+            origConfig.setActionList();
+            List<ActionBase> actionBaseList = origConfig.getActionList();
+            for (ActionBase actionBase : actionBaseList) {
+                if (actionBase.actiontype == ActionBase.ActionType.ACTION_TYPE_DISK) {
+                    DiskAction diskAction = (DiskAction) actionBase;
+                    if (diskAction.type == DiskAction.Disk_Action_Type.DISK_ACTION_TYPE_RESERVE) {
+
+                        //put reserved area to Repository
+                        DiskAction.ReservedChunks reservedChunks = diskAction.getReservedChunks();
+                        if (reservedChunks == null) {
+                            continue;
+                        }
+
+                        //reserved found
+                        String id = origConfig.getAttributions().get("id");
+                        Log.d(TAG.HomeFragTag, "Reserved : " + reservedChunks.driver
+                                +"|"+reservedChunks.start
+                                +"|"+reservedChunks.length+" ID "+id);
+
+                        ReservedAreaTools.putArea(reservedChunks.driver,
+                                reservedChunks.start,
+                                reservedChunks.length,
+                                id);
+                    }
+                }
+            }
+
+
+        }
     }
 
     private void refreshSelectedCategoryRomList(int category) {
@@ -449,22 +518,27 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onBind(final CustomDialog dialog, View view) {
                         TextView name = view.findViewById(R.id.dialog_romname);
+                        Button action = view.findViewById(R.id.rom_detail_Action);
+                        action.setEnabled(true);
                         name.setText(rom.getRomname());
 
                         TextView author = view.findViewById(R.id.rom_detail_author);
                         TextView uuid = view.findViewById(R.id.rom_detail_uuid);
+                        TextView id = view.findViewById(R.id.rom_detail_id);
                         TextView mark = view.findViewById(R.id.rom_detail_mark);
                         TextView description = view.findViewById(R.id.rom_detail_description);
                         TextView xml_path = view.findViewById(R.id.rom_detail_xml_location);
+                        TextView state = view.findViewById(R.id.rom_detail_state);
                         //set value
                         author.setText(author.getText() + rom.getAuthor());
                         uuid.setText(uuid.getText() + rom.getUuid());
                         description.setText(description.getText() + rom.getDescription());
                         xml_path.setText(xml_path.getText() + rom.getXml_path());
                         mark.setText(mark.getText() + rom.getMark());
+                        id.setText(id.getText() + rom.getId());
 
                         Button cancel = view.findViewById(R.id.rom_detail_cancelBT);
-                        Button action = view.findViewById(R.id.rom_detail_Action);
+
 
                         cancel.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -478,7 +552,27 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                             action.setTextColor(Color.BLACK);
                             action.setBackgroundColor(Color.LTGRAY);
                             action.setHint("No root");
+                            action.setText("NO ROOT");
+                            state.setTextColor(Color.RED);
+                            state.setText(state.getText()+"Permission denied.");
+                            return;
                         }
+
+                        //check reserved
+                        if (rom.isReservedProtected()) {
+                            action.setEnabled(false);
+                            action.setTextColor(Color.BLACK);
+                            action.setBackgroundColor(Color.LTGRAY);
+                            action.setHint("INVALID");
+                            action.setText("INVALID");
+                            state.setTextColor(Color.RED);
+                            state.setText(state.getText()+"Broke reserved-area protection , forbidden. ");
+                            return;
+                        }
+
+                        action.setEnabled(true);
+                        state.setTextColor(Color.GREEN);
+                        state.setText(state.getText()+"VALID");
                         action.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
