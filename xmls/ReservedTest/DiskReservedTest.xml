@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskReserveA1</name>
+        <id>fdakfdcadn</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk reserve test</description>
+        <uuid>FJKSMVKSDMCKVTM</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <reserve length="10240" start="512" driver="/dev/block/sda" />
+        </DiskModification>
+    </Action>
+
+</config>

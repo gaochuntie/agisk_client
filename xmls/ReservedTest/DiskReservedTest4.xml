@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskReserveE2</name>
+        <id>dyndbdg</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk reserve test</description>
+        <uuid>TRDVRDNRT</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <reserve length="8242" start="456" driver="/dev/block/sde" />
+        </DiskModification>
+    </Action>
+
+</config>

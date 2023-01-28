@@ -60,6 +60,7 @@ import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.ReservedAreaKits.ReservedAreaTools;
 import atms.app.agiskclient.Settings;
+import atms.app.agiskclient.Tools.GlobalMsg;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
 import atms.app.agiskclient.Tools.clientNumListener;
@@ -377,6 +378,9 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                         Log.d(TAG.HomeFragTag, "Reserved : " + reservedChunks.driver
                                 +"|"+reservedChunks.start
                                 +"|"+reservedChunks.length+" ID "+id);
+                        GlobalMsg.appendLog("Put Reserved : " + reservedChunks.driver
+                                + "|" + reservedChunks.start
+                                + "|" + reservedChunks.length + " ID " + id, GlobalMsg.GLOBAL_LOG);
 
                         ReservedAreaTools.putArea(reservedChunks.driver,
                                 reservedChunks.start,
@@ -388,6 +392,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
 
         }
+        ReservedAreaTools.dPrintAllReserved();
     }
 
     private void refreshSelectedCategoryRomList(int category) {
