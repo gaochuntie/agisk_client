@@ -24,7 +24,9 @@ import java.util.Map;
 import atms.app.agiskclient.ConfigBox.ActionBase;
 import atms.app.agiskclient.ConfigBox.DiskAction;
 import atms.app.agiskclient.ConfigBox.OrigConfig;
+import atms.app.agiskclient.ConfigBox.PartitionAction;
 import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
+import atms.app.agiskclient.ReservedAreaKits.ReservedAreaTools;
 import atms.app.agiskclient.Tools.TAG;
 
 public class romListData {
@@ -68,10 +70,73 @@ public class romListData {
         return isReservedProtected;
     }
 
+
+    /**
+     * set isreservedprotected flag
+     * true protected,so such action will be forbidden
+     * Check DiskAction : format clone write
+     * Check PartitionAction : new
+     *
+     * Warning : you should better not reserve area already used by some else
+     * For example : you reserve a exist partition area
+     * but The protection won't work because it's you break other's law
+     *
+     * SO I only implement PartitionAction new's reserve protection
+     */
     public void setIsReservedProtected() {
-        //TODO implement is protected
+        Log.d(TAG.ROM_LIST_DATA, "SetIsReservedProtected "+uuid);
         //check all disk related actions
-        Log.d(TAG.ROM_LIST_DATA, "Checking reserved protection : " + uuid);
+        origConfig.setActionList();
+        for (ActionBase actionBase : getOrigConfig().getActionList()) {
+            Log.d(TAG.ROM_LIST_DATA, "Check 1");
+
+
+            //DiskAction
+            if (actionBase.actiontype == ActionBase.ActionType.ACTION_TYPE_DISK) {
+                DiskAction diskAction = (DiskAction) actionBase;
+                switch (diskAction.type) {
+                    case DISK_ACTION_TYPE_FORMAT0:
+                        Log.d(TAG.ROM_LIST_DATA, "Check format");
+                        isReservedProtected =
+                                ! ReservedAreaTools.checkArea(diskAction.driver
+                                ,Long.valueOf(diskAction.argv[0])
+                                ,Long.valueOf(diskAction.argv[1])
+                                ,id);
+                        break;
+                    case DISK_ACTION_TYPE_WRITE:
+                        Log.d(TAG.ROM_LIST_DATA, "Check write");
+                        isReservedProtected =
+                                ! ReservedAreaTools.checkArea(diskAction.driver
+                                        ,Long.valueOf(diskAction.argv[0])
+                                        ,Long.valueOf(diskAction.argv[1])
+                                        ,id);
+                        break;
+                    case DISK_ACTION_TYPE_CLONE:
+                        Log.d(TAG.ROM_LIST_DATA, "Check clone");
+                        isReservedProtected =
+                                ! ReservedAreaTools.checkArea(diskAction.driver
+                                        ,Long.valueOf(diskAction.argv[3])
+                                        ,Long.valueOf(diskAction.argv[2])
+                                        ,id);
+                        break;
+                }
+                continue;
+            }
+
+            //PartitionAction
+            PartitionAction partitionAction = (PartitionAction) actionBase;
+
+            switch (partitionAction.pt_type) {
+                case PARTITION_ACTION_TYPE_NEW:
+                    Log.d(TAG.ROM_LIST_DATA, "Check new part");
+                    isReservedProtected =
+                            !ReservedAreaTools.checkArea(partitionAction.driver
+                                    , Long.valueOf(partitionAction.argv[1])
+                                    , Long.valueOf(partitionAction.argv[2])
+                                    , id);
+                    break;
+            }
+        }
     }
 
     //parsed
@@ -219,7 +284,7 @@ public class romListData {
 
         PicType type = PicType.PIC_TYPE_INNER;
         int inpic = 0;
-        public Bitmap srcbitmap;
+        public Bitmap srcbitmap=null;
 
         public RomItemPicture(Resources resources, int pic_source) {
             type = PicType.PIC_TYPE_INNER;
@@ -233,6 +298,10 @@ public class romListData {
             type = PicType.PIC_TYPE_EXTRA;
         }
 
+        @Nullable
+        public Bitmap getSrcbitmap() {
+            return srcbitmap;
+        }
     }
 
 }

@@ -388,7 +388,6 @@ public class XmlProcessor {
                                                         , new String[]{
                                                         element3.getAttribute("start")
                                                         , element3.getAttribute("length")}
-
                                                         , element3.getAttribute("driver"));
 
                                                 diskAction.addReservedChunks(new DiskAction.ReservedChunks(

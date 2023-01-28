@@ -7,7 +7,8 @@
 #include "include/gpt/gpt.h"
 #include <android/log.h>
 #include "MyLog.h"
-
+#include <sys/mount.h>
+#include <errno.h>
 
 /**
  * partition create1
@@ -407,19 +408,55 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_clone(JNIEnv *env, jobject t
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_atms_app_agiskclient_ConfigBox_PartitionAction_format(JNIEnv *env, jobject thiz,
-                                                                  jstring driver,
-                                                                  jint partition_num,
-                                                                  jstring filesystem) {
-    // TODO: implement format()
-}
-extern "C"
-JNIEXPORT jint JNICALL
 Java_atms_app_agiskclient_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject thiz,
                                                                  jstring driver, jint number,
                                                                  jstring filesystem,
                                                                  jstring mount_point) {
-    // TODO: implement mount()
+    appendLogCutLine(PARTITION_LOG,"PARTITION MOUNT");
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    const char *filesystem_c = env->GetStringUTFChars(filesystem, nullptr);
+    const char *dir_c = env->GetStringUTFChars(mount_point, nullptr);
+    string driver_s(driver_c);
+    string fs_s(filesystem_c);
+    string dir_s(dir_c);
+
+    env->ReleaseStringUTFChars(driver, driver_c);
+    env->ReleaseStringUTFChars(filesystem, filesystem_c);
+    env->ReleaseStringUTFChars(mount_point, dir_c);
+
+    //get special device
+    driver_s = driver_s + to_string(number);
+    appendBaseLog(PARTITION_LOG, "Mounting device " + driver_s);
+    int ret = mount(driver_s.c_str(), dir_s.c_str(), fs_s.c_str(), MS_MGC_VAL, "");
+    if (!ret) {
+        appendBaseLog(PARTITION_LOG, "Mount " + driver_s + " to " + dir_s + " Successfully");
+        return 0;
+    }
+    switch (errno) {
+        case EPERM:
+            appendBaseLog(PARTITION_LOG, "Permission denied");
+            break;
+        case ENODEV:
+            appendBaseLog(PARTITION_LOG, "Unsupported filesystem type " + fs_s);
+            break;
+        case ENOTBLK:
+            appendBaseLog(PARTITION_LOG, "Not block device");
+            break;
+        case EBUSY:
+            appendBaseLog(PARTITION_LOG, "Device or mount point busy");
+            break;
+        case EINVAL:
+            appendBaseLog(PARTITION_LOG, "EINVAL");
+            break;
+        case EACCES:
+            appendBaseLog(PARTITION_LOG, "EACCESS");
+            break;
+        case EMFILE:
+            appendBaseLog(PARTITION_LOG, "EMFILE");
+            break;
+    }
+    return -1;
+
 }
 
 

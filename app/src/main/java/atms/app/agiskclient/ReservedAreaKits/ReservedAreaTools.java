@@ -88,6 +88,14 @@ public class ReservedAreaTools {
         return true;
     }
 
+    /**
+     * check if you can edit the area
+     * @param driver
+     * @param start
+     * @param length
+     * @param id
+     * @return true allow,false denied
+     */
     public static boolean checkArea(String driver, long start, long length,String id) {
         if (ReservedAreaRepository.driverList == null) {
             //Before init,refuse all

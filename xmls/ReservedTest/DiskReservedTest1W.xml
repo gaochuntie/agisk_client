@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskReserveA2W</name>
+        <id>kdrvtbyd</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk reserve test w</description>
+        <uuid>VFEDVCGDYBFTV</uuid>
+        <rom_name>Test</rom_name>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <format length="2458" start="5100" driver="/dev/block/sda" />
+        </DiskModification>
+    </Action>
+
+</config>

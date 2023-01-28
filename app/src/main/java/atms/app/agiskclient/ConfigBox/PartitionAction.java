@@ -9,7 +9,7 @@ import atms.app.agiskclient.Tools.TAG;
  * partition action,all action implement by jni
  */
 public class PartitionAction extends ActionBase {
-    enum PARTITION_ACTION_TYPE {
+    public enum PARTITION_ACTION_TYPE {
         PARTITION_ACTION_TYPE_NEW
         , PARTITION_ACTION_TYPE_DELETE
         , PARTITION_ACTION_TYPE_CLONE
@@ -168,13 +168,17 @@ public class PartitionAction extends ActionBase {
 
     /**
      * format a partition
+     * the filesystem type support is specialized on certain system
      *
      * @param driver
      * @param filesystem    support ext4 f2fs fat fat32 ...add here
      * @param partition_num
      * @return
      */
-    private native int format(String driver, int partition_num, String filesystem);
+    private  int format(String driver, int partition_num, String filesystem){
+
+        return 0;
+    }
 
 
     /**
