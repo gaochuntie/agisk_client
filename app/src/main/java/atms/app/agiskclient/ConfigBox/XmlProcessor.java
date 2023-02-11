@@ -235,7 +235,7 @@ public class XmlProcessor {
                         .item(0).getTextContent();
                 Log.d(TAG, "uuid : " + uuid);
 
-                String rom_name = element.getElementsByTagName("rom_name").item(0).getTextContent();
+                String filter = element.getElementsByTagName("filter").item(0).getTextContent();
 
                 String android_version = element.getElementsByTagName("android_version").item(0).getTextContent();
 
@@ -245,7 +245,7 @@ public class XmlProcessor {
                 map.put("author", author);
                 map.put("description", description);
                 map.put("mark", mark);
-                map.put("rom_name", rom_name);
+                map.put("filter", filter);
                 map.put("android_version", android_version);
             }
         }

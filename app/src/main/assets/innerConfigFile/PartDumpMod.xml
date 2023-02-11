@@ -7,7 +7,7 @@
         <mark>mod</mark>
         <description>part dump mod</description>
         <uuid>0</uuid>
-        <rom_name>mod</rom_name>
+        <filter>mod</filter>
         <android_version>android9</android_version>
     </attribute>
 

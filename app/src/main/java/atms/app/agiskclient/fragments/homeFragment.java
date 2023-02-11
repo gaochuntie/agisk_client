@@ -98,22 +98,12 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
         List<noticeListAdapter.NoticeItem> notice_list = new ArrayList<>();
 
-        notice_list.add(new noticeListAdapter
-                .NoticeItem("Update notes", "Provide basic function:\n" +
-                "DiskAction all\n" +
-                "PartitionAction new123 delete12 \n" +
-                "Provide some xmls :\n" +
-                "System Partition Expansion\n" +
-                "Virtual SD Card Maker\n" ));
+        notice_list.add(new noticeListAdapter.NoticeItem("Update notes", "Provide basic function:\n" + "DiskAction all\n" + "PartitionAction new123 delete12 \n" + "Provide some xmls :\n" + "System Partition Expansion\n" + "Virtual SD Card Maker\n"));
 
         notice_list.add(new noticeListAdapter.NoticeItem("Coffee", "paypal.me/gaochuntie\n"));
-        notice_list.add(new noticeListAdapter.NoticeItem("Warning","Partition Number start from 0 , not 1 as sgdisk"));
+        notice_list.add(new noticeListAdapter.NoticeItem("Warning", "Partition Number start from 0 , not 1 as sgdisk"));
 
-        notice_list.add(new noticeListAdapter.NoticeItem("Join Us","------So join us to show off your talent.\n" +
-                "jackmaxpale@gmail.com\n" +
-                "2041469901@qq.com\n" +
-                "https://t.me/+0Ouds6DUyhgwMDk1\n" +
-                "https://github.com/gaochuntie/agisk_client"));
+        notice_list.add(new noticeListAdapter.NoticeItem("Join Us", "------So join us to show off your talent.\n" + "jackmaxpale@gmail.com\n" + "2041469901@qq.com\n" + "https://t.me/+0Ouds6DUyhgwMDk1\n" + "https://github.com/gaochuntie/agisk_client"));
         noticeListRC.setAdapter(new noticeListAdapter(notice_list));
     }
 
@@ -144,24 +134,20 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
         Log.d(TAG.HomeFragTag, "Items length : " + items.length);
 
-        BottomMenu bottomMenu = BottomMenu.show(items)
-                .setMessage("Manage Category item ")
-                .setDialogLifecycleCallback(new DialogLifecycleCallback<BottomDialog>() {
-                    @Override
-                    public void onDismiss(BottomDialog dialog) {
-                        super.onDismiss(dialog);
-                        setUpRomCategoryList(myview);
-                        romCategoryTab.selectTab(romCategoryTab.getTabAt(0));
+        BottomMenu bottomMenu = BottomMenu.show(items).setMessage("Manage Category item ").setDialogLifecycleCallback(new DialogLifecycleCallback<BottomDialog>() {
+            @Override
+            public void onDismiss(BottomDialog dialog) {
+                super.onDismiss(dialog);
+                setUpRomCategoryList(myview);
+                romCategoryTab.selectTab(romCategoryTab.getTabAt(0));
 
-                    }
-                });
+            }
+        });
         bottomMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<BottomMenu>() {
             @Override
             public boolean onClick(BottomMenu dialog, CharSequence text, int index) {
                 if (text.equals("Add")) {
-                    InputDialog inputDialog = new InputDialog("Add one filter", "add a filter for rom,which " +
-                            "will be used to sort out your prefer rom s" +
-                            "uch as pixel,evolutionX...", "Confirm", "Cancel", "");
+                    InputDialog inputDialog = new InputDialog("Add one filter", "add a filter for rom,which " + "will be used to sort out your prefer rom s" + "uch as pixel,evolutionX...", "Confirm", "Cancel", "");
                     inputDialog.setCancelable(false);
                     inputDialog.setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                         @Override
@@ -182,20 +168,15 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                     inputDialog.show();
                     return true;
                 }
-                MessageDialog messageDialog = new MessageDialog("Manage"
-                        , "Delete this filter?"
-                        , "Delete", "Cancel")
-                        .setOkTextInfo(new TextInfo().setFontColor(Color.RED))
-                        .setButtonOrientation(LinearLayout.VERTICAL)
-                        .setOkButtonClickListener(new OnDialogButtonClickListener<MessageDialog>() {
-                            @Override
-                            public boolean onClick(MessageDialog baseDialog, View v) {
-                                list.remove(text);
-                                setRomCategoryList(list);
-                                bottomMenu.dismiss();
-                                return false;
-                            }
-                        });
+                MessageDialog messageDialog = new MessageDialog("Manage", "Delete this filter?", "Delete", "Cancel").setOkTextInfo(new TextInfo().setFontColor(Color.RED)).setButtonOrientation(LinearLayout.VERTICAL).setOkButtonClickListener(new OnDialogButtonClickListener<MessageDialog>() {
+                    @Override
+                    public boolean onClick(MessageDialog baseDialog, View v) {
+                        list.remove(text);
+                        setRomCategoryList(list);
+                        bottomMenu.dismiss();
+                        return false;
+                    }
+                });
                 messageDialog.show();
 
                 return true;
@@ -258,8 +239,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
      */
     private String[] getRomCategoryList() {
         Context context = getActivity();
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 
         Set<String> content = sharedPref.getStringSet(getString(R.string.romcategory_list_key), null);
         if (content == null) {
@@ -277,8 +257,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
     private void setRomCategoryList(List<String> list) {
         Context context = getActivity();
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putStringSet(getString(R.string.romcategory_list_key), new HashSet<String>(list));
         editor.apply();
@@ -312,9 +291,9 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                 continue;
             }
             //get
-            String rom_name = origConfig.getAttributions().get("rom_name").toLowerCase();
             String category_min = category.toLowerCase();
-            if (rom_name.equals(category_min) | category_min.equals("all")) {
+            if (romListData.isMatchFilter(origConfig.getAttributions().get("filter"), category_min)
+                    | category_min.equals("all")) {
                 romListData rom = romListData.addRom(id);
                 rom.setOrigConfig(origConfig);
                 rom.initRomFromOrigConfig();
@@ -375,17 +354,10 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
                         //reserved found
                         String id = origConfig.getAttributions().get("id");
-                        Log.d(TAG.HomeFragTag, "Reserved : " + reservedChunks.driver
-                                +"|"+reservedChunks.start
-                                +"|"+reservedChunks.length+" ID "+id);
-                        GlobalMsg.appendLog("Put Reserved : " + reservedChunks.driver
-                                + "|" + reservedChunks.start
-                                + "|" + reservedChunks.length + " ID " + id, GlobalMsg.GLOBAL_LOG);
+                        Log.d(TAG.HomeFragTag, "Reserved : " + reservedChunks.driver + "|" + reservedChunks.start + "|" + reservedChunks.length + " ID " + id);
+                        GlobalMsg.appendLog("Put Reserved : " + reservedChunks.driver + "|" + reservedChunks.start + "|" + reservedChunks.length + " ID " + id, GlobalMsg.GLOBAL_LOG);
 
-                        ReservedAreaTools.putArea(reservedChunks.driver,
-                                reservedChunks.start,
-                                reservedChunks.length,
-                                id);
+                        ReservedAreaTools.putArea(reservedChunks.driver, reservedChunks.start, reservedChunks.length, id);
                     }
                 }
             }
@@ -495,8 +467,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
             //文件中的内容
             String content = result.toString();
 
-            FileOutputStream os = new FileOutputStream(getContext().getExternalFilesDir("home")
-                    .getAbsoluteFile() + "/" + uri.getLastPathSegment());
+            FileOutputStream os = new FileOutputStream(getContext().getExternalFilesDir("home").getAbsoluteFile() + "/" + uri.getLastPathSegment());
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             bw.write(content.toCharArray());
             bw.flush();
@@ -520,96 +491,94 @@ public class homeFragment extends Fragment implements View.OnClickListener {
         }
 
         CustomDialog.show(new OnBindView<CustomDialog>(R.layout.rom_detail_dialog) {
+            @Override
+            public void onBind(final CustomDialog dialog, View view) {
+                TextView name = view.findViewById(R.id.dialog_romname);
+                Button action = view.findViewById(R.id.rom_detail_Action);
+                action.setEnabled(true);
+                name.setText(rom.getRomname());
+
+                TextView author = view.findViewById(R.id.rom_detail_author);
+                TextView uuid = view.findViewById(R.id.rom_detail_uuid);
+                TextView id = view.findViewById(R.id.rom_detail_id);
+                TextView mark = view.findViewById(R.id.rom_detail_mark);
+                TextView description = view.findViewById(R.id.rom_detail_description);
+                TextView xml_path = view.findViewById(R.id.rom_detail_xml_location);
+                TextView state = view.findViewById(R.id.rom_detail_state);
+                //set value
+                author.setText(author.getText() + rom.getAuthor());
+                uuid.setText(uuid.getText() + rom.getUuid());
+                description.setText(description.getText() + rom.getDescription());
+                xml_path.setText(xml_path.getText() + rom.getXml_path());
+                mark.setText(mark.getText() + rom.getMark());
+                id.setText(id.getText() + rom.getId());
+
+                Button cancel = view.findViewById(R.id.rom_detail_cancelBT);
+
+
+                cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onBind(final CustomDialog dialog, View view) {
-                        TextView name = view.findViewById(R.id.dialog_romname);
-                        Button action = view.findViewById(R.id.rom_detail_Action);
-                        action.setEnabled(true);
-                        name.setText(rom.getRomname());
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
 
-                        TextView author = view.findViewById(R.id.rom_detail_author);
-                        TextView uuid = view.findViewById(R.id.rom_detail_uuid);
-                        TextView id = view.findViewById(R.id.rom_detail_id);
-                        TextView mark = view.findViewById(R.id.rom_detail_mark);
-                        TextView description = view.findViewById(R.id.rom_detail_description);
-                        TextView xml_path = view.findViewById(R.id.rom_detail_xml_location);
-                        TextView state = view.findViewById(R.id.rom_detail_state);
-                        //set value
-                        author.setText(author.getText() + rom.getAuthor());
-                        uuid.setText(uuid.getText() + rom.getUuid());
-                        description.setText(description.getText() + rom.getDescription());
-                        xml_path.setText(xml_path.getText() + rom.getXml_path());
-                        mark.setText(mark.getText() + rom.getMark());
-                        id.setText(id.getText() + rom.getId());
+                if (!Settings.getRootAccess()) {
+                    action.setEnabled(false);
+                    action.setTextColor(Color.BLACK);
+                    action.setBackgroundColor(Color.LTGRAY);
+                    action.setHint("No root");
+                    action.setText("NO ROOT");
+                    state.setTextColor(Color.RED);
+                    state.setText(state.getText() + "Permission denied.");
+                    return;
+                }
 
-                        Button cancel = view.findViewById(R.id.rom_detail_cancelBT);
+                //check reserved
+                if (rom.isReservedProtected()) {
+                    action.setEnabled(false);
+                    action.setTextColor(Color.BLACK);
+                    action.setBackgroundColor(Color.LTGRAY);
+                    action.setHint("INVALID");
+                    action.setText("INVALID");
+                    state.setTextColor(Color.RED);
+                    state.setText(state.getText() + "Broke reserved-area protection , forbidden. ");
+                    return;
+                }
 
+                action.setEnabled(true);
+                state.setTextColor(Color.GREEN);
+                state.setText(state.getText() + "VALID");
+                action.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
 
-                        cancel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.dismiss();
-                            }
-                        });
+                        workClient client = null;
 
-                        if (!Settings.getRootAccess()) {
-                            action.setEnabled(false);
-                            action.setTextColor(Color.BLACK);
-                            action.setBackgroundColor(Color.LTGRAY);
-                            action.setHint("No root");
-                            action.setText("NO ROOT");
-                            state.setTextColor(Color.RED);
-                            state.setText(state.getText()+"Permission denied.");
-                            return;
+                        //Do action
+                        OrigConfig origConfig = rom.getOrigConfig();
+
+                        client = Worker.putTaskToRootService(origConfig, getActivity());
+                        ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                        ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                        if (client == null) {
+                            Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
                         }
 
-                        //check reserved
-                        if (rom.isReservedProtected()) {
-                            action.setEnabled(false);
-                            action.setTextColor(Color.BLACK);
-                            action.setBackgroundColor(Color.LTGRAY);
-                            action.setHint("INVALID");
-                            action.setText("INVALID");
-                            state.setTextColor(Color.RED);
-                            state.setText(state.getText()+"Broke reserved-area protection , forbidden. ");
-                            return;
-                        }
+                        //Mainly, worningbox listener only open the log viewer windows
 
-                        action.setEnabled(true);
-                        state.setTextColor(Color.GREEN);
-                        state.setText(state.getText()+"VALID");
-                        action.setOnClickListener(new View.OnClickListener() {
+                        ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                dialog.dismiss();
+                                ((MainActivity) getActivity()).showLogViewer();
 
-                                workClient client = null;
-
-                                //Do action
-                                OrigConfig origConfig = rom.getOrigConfig();
-
-                                client = Worker.putTaskToRootService(origConfig
-                                        , getActivity());
-                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
-                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
-                                if (client == null) {
-                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
-                                }
-
-                                //Mainly, worningbox listener only open the log viewer windows
-
-                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        ((MainActivity) getActivity()).showLogViewer();
-
-                                    }
-                                });
                             }
                         });
                     }
-                })
-                .setMaskColor(Color.parseColor("#4D000000"));
+                });
+            }
+        }).setMaskColor(Color.parseColor("#4D000000"));
     }
 
 

@@ -7,7 +7,7 @@
         <mark>virtualsdcard</mark>
         <description>Create 8gib virtual sdcard partition for emmc devices </description>
         <uuid>12f44165-b371-4c21-8983-f23164523dab</uuid>
-        <rom_name>VirtualSdcard</rom_name>
+        <filter>VirtualSdcard</filter>
         <android_version>android9</android_version>
     </attribute>
 

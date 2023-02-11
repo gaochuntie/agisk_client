@@ -11,7 +11,7 @@
         <mark>backup</mark>
         <description>disk backup test</description>
         <uuid>JKFUMHUNIOMJIO</uuid>
-        <rom_name>Test</rom_name>
+        <filter>Test</filter>
         <android_version>android12</android_version>
     </attribute>
     <Action>
@@ -38,7 +38,7 @@
 
     uuid : If modified the xml please update uuid, if modified in agisk_client app,will update uuid when saving
 
-    rom_name : as named ,such MIUI,Flyme,ColorOs ....
+    filter : as named ,such MIUI,Flyme,ColorOs,Test,Disk ....
 
     android_version : specific android_version for this xml, this won't affect action,only a tag
 

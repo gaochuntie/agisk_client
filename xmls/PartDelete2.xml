@@ -7,7 +7,7 @@
         <mark>test</mark>
         <description>part delete2 test loop31</description>
         <uuid>tdcgsrfsdfxf</uuid>
-        <rom_name>Test</rom_name>
+        <filter>Test</filter>
         <android_version>android12</android_version>
     </attribute>
 

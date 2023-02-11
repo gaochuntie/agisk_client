@@ -7,7 +7,7 @@
         <mark>test</mark>
         <description>disk write test</description>
         <uuid>BTDBDTVGRCDRVTDVFDC</uuid>
-        <rom_name>Test</rom_name>
+        <filter>Test</filter>
         <android_version>android12</android_version>
     </attribute>
 

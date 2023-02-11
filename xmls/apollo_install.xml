@@ -7,7 +7,7 @@
         <mark>install</mark>
         <description>test</description>
         <uuid>GSRE42V65C2S61V0</uuid>
-        <rom_name>flyme</rom_name>
+        <filter>flyme</filter>
         <android_version>android12</android_version>
     </attribute>
 

@@ -60,6 +60,7 @@ public class romListData {
     //orig
     String id;
     String author;
+    List<String> filter=new ArrayList<>();
     String uuid;
     String mark;
     String description;
@@ -174,6 +175,41 @@ public class romListData {
         setDescription(origConfig.getAttributions().get("description"));
         setXml_path(origConfig.getFile_path());
         setMark(origConfig.getAttributions().get("mark"));
+        setFilter(origConfig.getAttributions().get("filter"));
+    }
+
+    private void setFilter(String filter_list) {
+        String[] list = filter_list.split(";");
+        for (String item : list) {
+            if (!item.isEmpty()){
+                filter.add(item.toLowerCase());
+            }
+        }
+    }
+
+    public List<String> getFilter() {
+        return filter;
+    }
+
+    public boolean isMatchFilter(String _filter) {
+        for (String item : filter) {
+            if (_filter.toLowerCase().equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isMatchFilter(String filter_list_string, String _filter) {
+        String[] m = filter_list_string.split(";");
+        if (m != null) {
+            for (String item : m) {
+                if (item.toLowerCase().equals(_filter)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void setId(String id) {

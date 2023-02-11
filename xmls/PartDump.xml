@@ -7,7 +7,7 @@
         <mark>test</mark>
         <description>part dump test</description>
         <uuid>afcw4vscretvrec</uuid>
-        <rom_name>Test</rom_name>
+        <filter>Test;Part;Dump</filter>
         <android_version>android12</android_version>
     </attribute>
 
