@@ -9,6 +9,7 @@
 #include "MyLog.h"
 #include <sys/mount.h>
 #include <errno.h>
+#include <dirent.h>
 
 /**
  * partition create1
@@ -427,6 +428,17 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject t
     //get special device
     driver_s = driver_s + to_string(number);
     appendBaseLog(PARTITION_LOG, "Mounting device " + driver_s);
+
+    DIR* dir = opendir(dir_s.c_str());
+    if (dir) {
+        /* Directory exists. */
+        closedir(dir);
+    } else if (ENOENT == errno) {
+        string command = string("mkdir -p ") + dir_s.c_str();
+        system(command.c_str());
+    } else {
+        /* opendir() failed for some other reason. */
+    }
     int ret = mount(driver_s.c_str(), dir_s.c_str(), fs_s.c_str(), MS_MGC_VAL, "");
     if (!ret) {
         appendBaseLog(PARTITION_LOG, "Mount " + driver_s + " to " + dir_s + " Successfully");

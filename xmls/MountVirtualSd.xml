@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>MountVirtualSd</name>
+        <id>jiomcjfd</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>Mount virtual sdcard at /mnt/virtualsd</description>
+        <uuid>kjcsfjbtrsv</uuid>
+        <filter>virtualsd</filter>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <mount driver="/dev/block/sda" pt_number="22"
+            filesystem="ext4" mount_point="/mnt/virtualsd"/>
+        </PartitionModification>
+    </Action>
+
+</config>
