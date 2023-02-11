@@ -65,3 +65,5 @@
     clone:s_driver s_number t_start
     format:pt_number filesystem
     mount:pt_number filesystem mount_point
+# Note
+    Reserved Action will perform automaticly when refresh xml list in homefragment
