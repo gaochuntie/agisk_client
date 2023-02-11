@@ -5,7 +5,8 @@ partition
     new:name start size
     new:name start size pt_number
     new:name size pt_number
-    delete:name | pt_number
+    delete:name
+    delete:pt_number
     clone:s_driver s_number t_start
     format:pt_number filesystem
     mount:pt_number filesystem mount_point
