@@ -10,6 +10,10 @@ public class Settings {
 
     }
 
+    /**
+     * Check root permission
+     * @return 1 granted 0 rejected
+     */
     public static boolean getRootAccess() {
         return rootAccess.get();
 

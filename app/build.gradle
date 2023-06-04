@@ -100,7 +100,7 @@ dependencies {
     // Optional: Provides remote file system support
     implementation "com.github.topjohnwu.libsu:nio:${libsuVersion}"
     //expandable-cardview
-    compile 'com.alespero:expandable-cardview:0.8'
+    implementation 'com.alespero:expandable-cardview:0.8'
 
 
     implementation 'com.google.android.material:material:1.2.1'
@@ -115,5 +115,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0' // ViewPager 2 需要使用 RecycleView 的 adapter
 
     implementation 'com.github.pratikbutani:MultiSelectSpinner:1.0.1'
+
+    //implementation 'com.google.android.material:material:1.5.0'
+
 
 }

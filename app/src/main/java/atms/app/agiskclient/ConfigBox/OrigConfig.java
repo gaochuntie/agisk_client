@@ -32,6 +32,10 @@ public class OrigConfig {
         return actionList;
     }
 
+    public int getActionNum() {
+        return actionList.size();
+    }
+
 
     public Map<String, String> getAttributions() {
         return attributions;

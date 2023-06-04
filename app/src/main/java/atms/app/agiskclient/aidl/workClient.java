@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -24,15 +25,6 @@ import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 
 public class workClient {
-    static String TAG = "workClient";
-    //    static {
-//        Shell.enableVerboseLogging = BuildConfig.DEBUG;
-//        Shell.setDefaultBuilder(Shell.Builder.create()
-//                .setFlags(Shell.FLAG_REDIRECT_STDERR)
-//                .setInitializers(ExampleInitializer.class)
-//        );
-//    }
-    private final List<String> consoleList = new AppendCallbackList();
 
 
     // Demonstrate Shell.Initializer
@@ -47,11 +39,10 @@ public class workClient {
         }
     }
 
-    private AIDLConnection aidlConn;
-    private AIDLConnection daemonConn;
-    private FileSystemManager remoteFS;
-    private IWorkServicelInterface ipc;
 
+    /**
+     * AIDLConnection
+     */
     class AIDLConnection implements ServiceConnection {
 
         private final boolean isDaemon;
@@ -91,6 +82,7 @@ public class workClient {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            ipc = null;
             Log.d(TAG, "AIDL onServiceDisconnected");
             if (isDaemon) {
                 daemonConn = null;
@@ -106,6 +98,58 @@ public class workClient {
     }
 
     ////////////////////////////////////
+    /**
+     * WorkClient
+     */
+
+    static String TAG = "workClient";
+    //    static {
+//        Shell.enableVerboseLogging = BuildConfig.DEBUG;
+//        Shell.setDefaultBuilder(Shell.Builder.create()
+//                .setFlags(Shell.FLAG_REDIRECT_STDERR)
+//                .setInitializers(ExampleInitializer.class)
+//        );
+//    }
+    //////////////////
+    private AIDLConnection aidlConn;
+    private AIDLConnection daemonConn;
+    private FileSystemManager remoteFS;
+    private IWorkServicelInterface ipc;
+    //Set in constructor
+    private IWorkListener iWorkListener = null;
+    ///////////////////////
+    /**
+     * WorkClient states related variables
+     */
+    public static enum TASKSTATE{TASK_READY,TASK_RUNNING,TASK_SUCCESS,TASK_FAILED};
+
+    private int finished = 0;
+
+    private int total = 0;
+    TASKSTATE task_state=TASKSTATE.TASK_READY;
+
+    public int getFinished() {
+        return finished;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public TASKSTATE getTask_state() {
+        return task_state;
+    }
+
+    public int getProgressPercentage(){
+        return (int)(finished*100/total);
+    }
+    //////////////////////////////////////////
+
+    private final List<String> consoleList = new AppendCallbackList();
     Context context = null;
     String clientUUID = UUID.randomUUID().toString();
 
@@ -123,6 +167,57 @@ public class workClient {
     public workClient(Context context, String xml_content) {
         this.context = context;
         this.xmlcontent = xml_content;
+        iWorkListener = new IWorkListener.Stub() {
+            @Override
+            public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
+
+            }
+
+            @Override
+            public void onProgress(int finished, int total) throws RemoteException {
+                /**
+                 * Update progress bar
+                 */
+                ((MainActivity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, finished + "/" + total, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onCompleted(boolean success) throws RemoteException {
+                /**
+                 * Stop tasks
+                 */
+            }
+
+            @Override
+            public void onThrowInfo(String info) throws RemoteException {
+                /**
+                 * store info under client item,touch such item in client list to see
+                 */
+            }
+
+            @Override
+            public void onThrowWarning(String warn) throws RemoteException {
+                /**
+                 * Show warning in the head of client list
+                 * the tasks may be still processing normally
+                 * just some warnings
+                 */
+            }
+
+            @Override
+            public void OnThrowError(String error) throws RemoteException {
+                /**
+                 * Show error in the head of client(first priority)
+                 * The tasks were terminated already
+                 * Some error occured and disturbed the task processing
+                 */
+            }
+        };
     }
 
     public int getTaskNum() {
@@ -194,13 +289,15 @@ public class workClient {
         // Bind to a root service; IPC via AIDL
         /**
          * a workClient only handle a rootService
+         * This function runs out of ui thread
          */
 
         ((MainActivity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(context, AIDLService.class);
-                RootService.bind(intent, new AIDLConnection(false));
+                aidlConn = new AIDLConnection(false);
+                RootService.bind(intent, aidlConn);
             }
         });
 
@@ -234,7 +331,7 @@ public class workClient {
                 updateProgress("[CLIENT " + getClientUUID() + "] xml content is null.");
                 return false;
             } else {
-                result = ipc.doWork(xmlcontent);
+                result = ipc.doWork(xmlcontent, iWorkListener);
                 consoleList.add("[CLIENT  " + getClientUUID() + "] result : " + result);
                 return result;
             }

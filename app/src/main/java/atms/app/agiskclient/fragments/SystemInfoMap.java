@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.kongzue.dialogx.dialogs.InputDialog;
+import com.kongzue.dialogx.dialogs.MessageDialog;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.topjohnwu.superuser.Shell;
 
@@ -110,8 +111,13 @@ public class SystemInfoMap extends Fragment {
 
         Shell.cmd("blockdev /dev/block/by-name/userdata --getsize64").to(result).exec();
 
-        int size_gib = (int) (Long.valueOf(result.get(result.size() - 1)) / (1024 * 1024 * 1024));
-        userdata_size.setText(String.valueOf(size_gib) + "Gib");
+        try {
+            int size_gib = (int) (Long.valueOf(result.get(result.size() - 1)) / (1024 * 1024 * 1024));
+            userdata_size.setText(String.valueOf(size_gib) + "Gib");
+        } catch (Exception e) {
+            userdata_size.setText("Permission denied");
+        }
+
 
         Shell.cmd("ls -l /dev/block/by-name/userdata").to(result).exec();
         String data_location = result.get(result.size() - 1).substring(result.get(result.size() - 1).lastIndexOf("-> ")+3);
@@ -142,9 +148,14 @@ public class SystemInfoMap extends Fragment {
 
             Shell.cmd("blockdev /dev/block/by-name/virtual_sd --getsize64").to(result).exec();
 
-            int vsd_size = (int) (Long.valueOf(result.get(result.size() - 1)) / (1024 * 1024 * 1024));
-            virtualsd_size.setText(String.valueOf(vsd_size) + "Gib");
-        }else {
+            try {
+                int vsd_size = (int) (Long.valueOf(result.get(result.size() - 1)) / (1024 * 1024 * 1024));
+                virtualsd_size.setText(String.valueOf(vsd_size) + "Gib");
+            } catch (Exception e) {
+                virtualsd_size.setText("Permission denied");
+            }
+
+            }else {
             virtualsd_location.setText("No virtual sdcard found");
             virtualsd_size.setText("0");
 
@@ -188,6 +199,11 @@ public class SystemInfoMap extends Fragment {
 
                                 client = Worker.putTaskToRootService(origConfig
                                         , getActivity());
+
+                                if (client == null) {
+                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                    return false;
+                                }
                                 ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
                                 ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
                                 if (client == null) {

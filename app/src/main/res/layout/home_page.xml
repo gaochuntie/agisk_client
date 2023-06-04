@@ -5,6 +5,14 @@
     android:background="@color/white"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_tasksmanager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_fab_tasksmanager_foreground"
+        android:contentDescription="Submit"
+        android:layout_margin="16dp" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -14,7 +22,7 @@
             android:orientation="vertical"
             android:id="@+id/HomeContainerLL"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/romSelecterLL"

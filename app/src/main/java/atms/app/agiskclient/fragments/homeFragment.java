@@ -85,10 +85,21 @@ public class homeFragment extends Fragment implements View.OnClickListener {
         ReservedAreaTools.initRepository();
         setUpRomCategoryList(view);
 
-        ((MainActivity) getActivity()).setupLogPopWindows(view);
+        setupTaskManager(view);
 
         showNotice();
         return view;
+    }
+
+
+    private void setupTaskManager(View view) {
+        ((MainActivity) getActivity()).setupLogPopWindows(view);
+        view.findViewById(R.id.fab_tasksmanager).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).showLogViewer();
+            }
+        });
     }
 
     private void showNotice() {
@@ -560,9 +571,15 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                         OrigConfig origConfig = rom.getOrigConfig();
 
                         client = Worker.putTaskToRootService(origConfig, getActivity());
+
+                        if (client == null) {
+                            MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                            return;
+                        }
                         ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
                         ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
                         if (client == null) {
+                            //Client poll full
                             Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
                         }
 

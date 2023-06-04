@@ -65,11 +65,6 @@ class AIDLService extends RootService {
 
     native void writelogTag(String tag, String log);
 
-    public void onTasksSuccess() {
-        logList.add("[0] All task finished.\n");
-
-    }
-
 
     List<String> logList = new ArrayList<>();
 
@@ -164,7 +159,7 @@ class AIDLService extends RootService {
         }
 
         @Override
-        public boolean doWork(String xml) throws RemoteException {
+        public boolean doWork(String xml,IWorkListener iWorkListener) throws RemoteException {
             writelog("Dowork start work");
 
             try {
@@ -176,9 +171,11 @@ class AIDLService extends RootService {
                 List<ActionBase> actionBaseList = origConfig.getActionList();
                 writelogTag(atms.app.agiskclient.Tools.TAG.WorkerTAG, "List size:" + actionBaseList.size());
                 //
+                int finished=0;
                 int total_size = actionBaseList.size();
                 setTaskNumber(total_size);
                 writelogTag(TAG, "Worker.taskNum " + getTaskNumber());
+                boolean ret=false;
                 for (ActionBase actionBase : actionBaseList) {
 
                     writelogTag(atms.app.agiskclient.Tools.TAG.WorkerTAG, "Put a task : " + actionBase.getTaskID());
@@ -188,27 +185,37 @@ class AIDLService extends RootService {
                     switch (actionType) {
                         case ACTION_TYPE_PARTITION:
                             writelogTag(TAG, "Partition type");
-                            actionBase.doAction();
+                            ret=actionBase.doAction();
                             writelogTag(TAG, "Partition done");
                             break;
                         case ACTION_TYPE_DISK:
                             writelogTag(TAG, "Disk type");
-                            actionBase.doAction();
+                            ret=actionBase.doAction();
                             writelogTag(TAG, "Disk done");
                             break;
                         default:
                             writelogTag(TAG, "Default type");
-                            actionBase.doAction();
+                            ret=actionBase.doAction();
                             writelogTag(TAG, "Default done");
                             break;
                     }
                     int least = decrementTaskNumber();
                     writelogTag(TAG, "Left task [" + least + "]");
                     updateProgress(least, total_size, "Task [" + actionBase.getTaskID() + "] finished");
+                    finished++;
+                    if (!ret) {
+                        iWorkListener.onThrowWarning("Sub task failed : "+finished);
+                        iWorkListener.onCompleted(false);
+                        return false;
+                    }
+
+                    iWorkListener.onProgress(finished,total_size);
                 }
 
                 writelogTag(TAG, "All task finished.exit");
                 updateProgress(0, total_size, "All task finished.exit");
+
+                iWorkListener.onCompleted(true);
                 return true;
             } catch (Exception exception) {
                 writelogTag(TAG, exception.getMessage());

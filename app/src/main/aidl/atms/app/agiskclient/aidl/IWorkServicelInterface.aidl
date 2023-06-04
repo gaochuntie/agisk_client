@@ -1,6 +1,7 @@
 // IWorkServicelInterface.aidl
 package atms.app.agiskclient.aidl;
 
+import atms.app.agiskclient.aidl.IWorkListener;
 // Declare any non-default types here with import statements
 
 interface IWorkServicelInterface {
@@ -14,7 +15,7 @@ interface IWorkServicelInterface {
                 int getUid();
                 String getUUID();
                 IBinder getFileSystemService();
-                boolean doWork(String xml);
+                boolean doWork(String xml,IWorkListener listener);
                 int getTaskNum();
                 void terminateSelf();
                 String getTasksState();

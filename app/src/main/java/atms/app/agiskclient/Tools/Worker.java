@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.MyApplication;
+import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.aidl.workClient;
 
 /**
@@ -82,6 +83,10 @@ public class Worker {
         clientNumListenerList.remove(listener);
     }
 
+
+    /**
+     * Client loop listener
+     */
     static {
         new Thread(new Runnable() {
             @Override
@@ -180,11 +185,15 @@ public class Worker {
     /**
      * the method may be invoked concurrent
      * and this method is only useful in clearWorkClientList
+     * Note: Skip running task
      *
      * @param client
      */
     synchronized public static boolean removeClient(workClient client) {
         try {
+            if (client.getTask_state() == workClient.TASKSTATE.TASK_RUNNING) {
+                return true;
+            }
             clientLinkedBlockingDeque.remove(client);
             decrementClientNumber();
             Log.d(TAG.WorkerTAG, "Remove client :" + client.getClientUUID());
@@ -250,7 +259,15 @@ public class Worker {
     public static workClient putTaskToRootService(OrigConfig origConfig
             , Context context) {
         Log.d(TAG.WorkerTAG, " Try submit a client " + origConfig.getAttributions().get("id"));
+
+        /**
+         * Check root permission
+         */
+        if (!Settings.getRootAccess()) {
+            return null;
+        }
         workClient client = new workClient(context, origConfig.getXmlString());
+        client.setTotal(origConfig.getActionNum());
         boolean result = addWorkClient(client);
         if (result) {
             //I guess you may do this, I'm also

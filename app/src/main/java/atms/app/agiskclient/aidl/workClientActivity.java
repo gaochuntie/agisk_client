@@ -40,7 +40,7 @@ import java.util.List;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.Tools.MSGService;
 
-public class workClientActivity implements Handler.Callback {
+public class    workClientActivity implements Handler.Callback {
     private final Messenger me = new Messenger(new Handler(Looper.getMainLooper(), this));
     public static final String TAG = "EXAMPLE";
 
