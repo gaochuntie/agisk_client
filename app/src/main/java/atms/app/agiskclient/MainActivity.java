@@ -1,20 +1,30 @@
 package atms.app.agiskclient;
 
+import android.animation.FloatEvaluator;
+import android.animation.ObjectAnimator;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ReplacementSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
@@ -69,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActivityMainBinding binding;
     LinearLayout worning_box;
     TextView worning_tv;
+    TextView titleCodePrinter_tv;
     boolean result = false;
     ViewPager2 viewpage2;
     NavigationTabBar navigationTabBar;
@@ -86,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Preheat the main root shell in the splash screen
         // so the app can use it afterwards without interrupting
         // application flow (e.g. root permission prompt)
+
+
+        initUI();
         Shell.getShell(new Shell.GetShellCallback() {
             @Override
             public void onShell(@NonNull Shell shell) {
@@ -98,6 +112,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+
+
+    }
+    private void initUI(){
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActionBar actionBar = getSupportActionBar();
@@ -107,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Example of a call to a native method
         worning_box = binding.worningBox;
         worning_tv = binding.worningTv;
+        titleCodePrinter_tv=binding.titleCodePrinter;
         navigationTabBar = binding.navigateBar;
         colors = getResources().getStringArray(R.array.full_wite);
         viewpage2 = binding.viewpageContainer;
@@ -118,7 +137,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //setup ui
         setupNavBar();
         setupViewPage();
+    }
 
+
+    /**
+     * Progressively print string to a textview
+     * ChatGPT 4 generated
+     * @param textView
+     * @param text
+     */
+    private void displayTextProgressively(final TextView textView, final String text) {
+        final int delayMillis = 30; // Delay between character display (adjust as desired)
+        final int length = text.length();
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        textView.setText(""); // Clear the TextView before displaying the text
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            int counter = 0;
+
+            @Override
+            public void run() {
+                if (counter < length) {
+                    stringBuilder.append(text.charAt(counter));
+                    textView.setText(stringBuilder.toString());
+                    counter++;
+                    handler.postDelayed(this, delayMillis);
+                }
+            }
+        }, delayMillis);
     }
 
 
@@ -137,7 +185,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             "Read reserved disk block"
                     , "Ignore");
             showWorningMsg("No root permission.");
+            displayTextProgressively(titleCodePrinter_tv,"Shrink your imagination ! Your are denied by root.");
         }
+        displayTextProgressively(titleCodePrinter_tv,"Make full use of your imagination !");
     }
 
     private void setupViewPage() {

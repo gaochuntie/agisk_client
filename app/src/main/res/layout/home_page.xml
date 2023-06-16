@@ -44,7 +44,6 @@
                     android:text="Repository"
                     android:textSize="30dp"
                     android:textStyle="bold" />
-
                 <com.google.android.material.tabs.TabLayout
                     app:tabTextColor="@color/black"
                     android:id="@+id/romCategoryList"

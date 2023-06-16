@@ -7,6 +7,13 @@
     </style>
 
 
+    <style name="WhiteNavigationBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="backgroundColor">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+    </style>
+
     <style name="common_spinner">
         <!--设置弹窗背景为 系统设置的 应用主色调 在application 的colorPrimay 中配置的颜色, actionBar toolbar 默认使用这个为背景颜色-->
         <item name="android:popupBackground">@color/white</item>

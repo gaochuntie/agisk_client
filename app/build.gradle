@@ -1,13 +1,14 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     defaultConfig {
         applicationId "atms.app.agiskclient"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion 23
+        targetSdkVersion 33
         versionCode 1
         versionName "debug"
         renderscriptTargetApi 21
@@ -28,9 +29,7 @@ android {
 
     }
     sourceSets {
-        main{
-            jni.srcDirs = []
-        }
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     buildTypes {
@@ -38,6 +37,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    kotlin {
+        jvmToolchain(8)
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -50,13 +56,30 @@ android {
         }
     }
     buildFeatures {
+        compose true
+        composeOptions {
+            kotlinCompilerExtensionVersion = "1.4.6"
+        }
+
         viewBinding true
+        aidl true
     }
+
 }
 
 dependencies {
+    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    implementation composeBom
+    androidTestImplementation composeBom
+    implementation 'androidx.compose.material3:material3'
+    // Android Studio Preview support
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     testImplementation 'junit:junit:4.+'
@@ -70,6 +93,8 @@ dependencies {
 
 
 android {
+
+    namespace 'atms.app.agiskclient'
     compileOptions {
         // This library uses Java 8 features, this is required
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -77,6 +102,7 @@ android {
     }
 }
 repositories {
+    google()
     maven { url 'https://jitpack.io'
         uri("https://maven.pkg.github.com/GCX-HCI/tray")}
 

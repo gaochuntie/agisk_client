@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="atms.app.agiskclient">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:name="atms.app.agiskclient.MyApplication"
@@ -14,7 +13,9 @@
             android:name="atms.app.agiskclient.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
-        <activity android:name="atms.app.agiskclient.MainActivity">
+        <activity android:name="atms.app.agiskclient.MainActivity"
+            android:theme="@style/WhiteNavigationBarTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
