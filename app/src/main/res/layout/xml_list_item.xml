@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+    <TextView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:textColor="@color/black"
+        android:id="@+id/xml_item_index"
+        android:layout_width="20dp"
+        android:textSize="15dp"
+        android:gravity="right|center"
+        android:layout_height="match_parent"
+        android:text="0"/>
+    <TextView
+        android:id="@+id/xml_item_name"
+        android:gravity="center|left"
+        app:layout_constraintLeft_toRightOf="@id/xml_item_index"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        app:layout_constraintRight_toLeftOf="@id/xml_item_delete"
+        android:layout_height="match_parent"/>
+    <Button
+        android:layout_marginHorizontal="5dp"
+        android:id="@+id/xml_item_delete"
+        android:background="@drawable/ic_delete_foreground"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

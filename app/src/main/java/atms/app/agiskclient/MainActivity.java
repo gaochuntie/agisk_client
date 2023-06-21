@@ -1,30 +1,21 @@
 package atms.app.agiskclient;
 
-import android.animation.FloatEvaluator;
-import android.animation.ObjectAnimator;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ReplacementSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
@@ -48,7 +39,7 @@ import atms.app.agiskclient.databinding.ActivityMainBinding;
 import atms.app.agiskclient.fragments.SystemInfoMap;
 import atms.app.agiskclient.fragments.aboutFragment;
 import atms.app.agiskclient.fragments.homeFragment;
-import atms.app.agiskclient.fragments.installFragment;
+import atms.app.agiskclient.fragments.xmlManagerFragment;
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -147,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param text
      */
     private void displayTextProgressively(final TextView textView, final String text) {
-        final int delayMillis = 30; // Delay between character display (adjust as desired)
+        final int delayMillis = 20; // Delay between character display (adjust as desired)
         final int length = text.length();
         final StringBuilder stringBuilder = new StringBuilder();
 
@@ -194,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         List<Fragment> data = new ArrayList<>();
 
         data.add(new homeFragment());
-        data.add(new installFragment());
+        data.add(new xmlManagerFragment());
         data.add(new SystemInfoMap());
         data.add(new aboutFragment());
         ViewPageAdapter viewPageAdapter = new ViewPageAdapter(this, data);
@@ -292,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_install_foreground),
                         Color.parseColor(colors[1])
-                ).title("Install")
+                ).title("XML")
                         .build()
         );
         models.add(
@@ -312,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigationTabBar.setModels(models);
         navigationTabBar.setIsTitled(true);
         navigationTabBar.setIsScaled(true);
-        navigationTabBar.setTitleSize(40);
+        //navigationTabBar.setTitleSize(40);
         navigationTabBar.setIsBadged(true);
         //////////////////////////////////
         navigationTabBar.setOnTabBarSelectedIndexListener(new NavigationTabBar.OnTabBarSelectedIndexListener() {
@@ -404,6 +395,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * Log Viewer
+     */
     PopupWindow logPopWin = null;
 
     public void setupLogPopWindows(View v) {
@@ -419,6 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
 
         popWindow.setAnimationStyle(R.style.anim_logviewer);  //设置加载动画
+
         //这些为了点击非PopupWindow区域，PopupWindow会消失的，如果没有下面的
         //代码的话，你会发现，当你把PopupWindow显示出来了，无论你按多少次后退键
         //PopupWindow并不会关闭，而且退不出程序，加上下述代码可以解决这个问题

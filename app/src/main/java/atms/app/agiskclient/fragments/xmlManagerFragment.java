@@ -1,6 +1,7 @@
 package atms.app.agiskclient.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,9 @@ import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kongzue.dialogx.dialogs.BottomMenu;
 import com.kongzue.dialogx.dialogs.MessageDialog;
@@ -30,29 +34,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import atms.app.agiskclient.R;
-import atms.app.agiskclient.databinding.FragmentInstallBinding;
+import atms.app.agiskclient.adapter.xmlListAdapter;
+import atms.app.agiskclient.databinding.FragmentXmlManagerBinding;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link installFragment#newInstance} factory method to
+ * Use the {@link xmlManagerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class installFragment extends Fragment {
+public class xmlManagerFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int PICK_XML_FILE = 3;
-    FragmentInstallBinding fragmentInstallBinding;
+    FragmentXmlManagerBinding fragmentInstallBinding;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public installFragment() {
+    public xmlManagerFragment() {
         // Required empty public constructor
     }
 
@@ -62,16 +69,22 @@ public class installFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment installFragment.
+     * @return A new instance of fragment xmlManagerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static installFragment newInstance(String param1, String param2) {
-        installFragment fragment = new installFragment();
+    public static xmlManagerFragment newInstance(String param1, String param2) {
+        xmlManagerFragment fragment = new xmlManagerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        reloadXmlItem();
     }
 
     @Override
@@ -88,17 +101,18 @@ public class installFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_install, container, false);
-        fragmentInstallBinding = FragmentInstallBinding.bind(view);
+        View view = inflater.inflate(R.layout.fragment_xml_manager, container, false);
+        fragmentInstallBinding = FragmentXmlManagerBinding.bind(view);
         initComponents();
         return view;
     }
 
 
     private ImageButton addnewbt;
-    private ImageButton editbt;
     private ImageButton importbt;
     private ImageButton helpbt;
+
+    private RecyclerView xmlListManage;
 
     private void initComponents() {
         addnewbt = fragmentInstallBinding.installAddIbt;
@@ -106,13 +120,6 @@ public class installFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showAddAction();
-            }
-        });
-        editbt = fragmentInstallBinding.installEditIbt;
-        editbt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showEditWindows();
             }
         });
         importbt = fragmentInstallBinding.installGetIbt;
@@ -129,6 +136,36 @@ public class installFragment extends Fragment {
                 showHelpPopWin();
             }
         });
+        xmlListManage=fragmentInstallBinding.xmlManageList;
+
+        //show xml list
+        reloadXmlItem();
+    }
+    private void reloadXmlItem(){
+
+        Context context=this.getContext();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<xmlListAdapter.xmlItem> data=getxmllist();
+                if (data == null) {
+                    return;
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        xmlListAdapter adapter = new xmlListAdapter(data);
+                        xmlListManage.setAdapter(adapter);
+                        xmlListManage.setLayoutManager(new LinearLayoutManager(context));
+                        xmlListManage.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
+                    }
+                });
+            }
+        }).start();
+
+
+
     }
 
     private void showAddAction() {
@@ -166,38 +203,10 @@ public class installFragment extends Fragment {
 
     }
 
-    private void showEditWindows() {
-        String[] xmllist = getxmllist();
-        if (xmllist == null) {
-            MessageDialog.show("Edit xml", "(Null)No xml found and you cant edit" +
-                    " .enxml file. Try import first");
-            return;
-        }
-        if (xmllist.length == 0) {
-            MessageDialog.show("Edit xml", "(Length 0)No xml found and you cant edit" +
-                    " .enxml file. Try import first");
-            return;
-        }
-        BottomMenu.show(xmllist)
-                .setOnIconChangeCallBack(new OnIconChangeCallBack<BottomMenu>() {
-                    @Override
-                    public int getIcon(BottomMenu dialog, int index, String menuText) {
-                        return R.mipmap.file_icon;
-                    }
-                })
-                .setTitle("Choose a existed xml to edit")
-                .setOnMenuItemClickListener(new OnMenuItemClickListener<BottomMenu>() {
-                    @Override
-                    public boolean onClick(BottomMenu dialog, CharSequence text, int index) {
-                        editXml(text.toString());
-                        return false;
-                    }
-                });
-    }
 
-    private String[] getxmllist() {
+    private List<xmlListAdapter.xmlItem> getxmllist() {
         File xmldir = getActivity().getExternalFilesDir("home");
-
+        List<xmlListAdapter.xmlItem> xmlItemList = new ArrayList<>();
         String[] filelist = xmldir.list(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
@@ -205,12 +214,23 @@ public class installFragment extends Fragment {
                 return finename.endsWith(".xml");
             }
         });
-        return filelist;
+
+        for (int i = 0; i < filelist.length; i++) {
+            xmlListAdapter.xmlItem item=new xmlListAdapter.xmlItem(i,filelist[i]);
+            item.setPath(xmldir+"/"+filelist[i]);
+            xmlItemList.add(item);
+
+        }
+        return xmlItemList;
 
     }
 
     private void showDowloadDialog() {
-        MessageDialog.show("Download", "Follow my repo on github.");
+        final Uri uri = Uri.parse("https://github.com/gaochuntie/agisk_client/tree/dev/xmls/release");
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+
+        MessageDialog.show("Download", "Follow my release on github.");
     }
 
     private void showHelpPopWin() {
@@ -305,6 +325,7 @@ public class installFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK) {
                     copyXmlTOPrivateStorage(data.getData());
                     PopTip.show("Please reload rom list on your own").showLong();
+                    reloadXmlItem();
                 }
                 break;
             default:

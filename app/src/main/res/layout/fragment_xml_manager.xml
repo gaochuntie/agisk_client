@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
-    tools:context=".fragments.installFragment">
+    tools:context=".fragments.xmlManagerFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.core.widget.NestedScrollView
@@ -18,13 +18,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_margin="5dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/xml_manage_list"
                 android:layout_width="match_parent"
-                android:text="Try install follow the way below ."
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="25dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginBottom="15dp"
                 android:layout_height="wrap_content" />
 
             <androidx.cardview.widget.CardView
@@ -41,25 +39,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:src="@drawable/ic_install_button_foreground"
-                    android:scaleType="center"
-                    android:tooltipText="New"
-                    android:text="New" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:background="@color/white"
-                app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="15dp"
-                android:layout_height="180dp">
-
-                <ImageButton
-                    android:background="#00FF0000"
-                    android:id="@+id/install_edit_ibt"
-                    android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:src="@drawable/ic_install_edit_button_foreground"
                     android:scaleType="center"
                     android:tooltipText="New"
                     android:text="New" />

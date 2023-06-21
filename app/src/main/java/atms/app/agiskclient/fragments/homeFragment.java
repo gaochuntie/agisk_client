@@ -92,6 +92,11 @@ public class homeFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshSelectedCategoryRomList(0);
+    }
 
     private void setupTaskManager(View view) {
         ((MainActivity) getActivity()).setupLogPopWindows(view);
