@@ -1,3 +1,7 @@
+# Release
+  https://github.com/gaochuntie/agisk_client/releases
+  
+
 # Introduce : Agisk android app client
     This is a project regarding all disk/partition actions as xml configuration files.
     Such idea is the same as TWRP's ui-action.
