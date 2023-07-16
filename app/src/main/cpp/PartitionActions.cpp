@@ -10,6 +10,7 @@
 #include <sys/mount.h>
 #include <errno.h>
 #include <dirent.h>
+#include <sstream>
 
 /**
  * partition create1
@@ -58,7 +59,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2
         appendBaseLog(PARTITION_LOG, "Length " + to_string(
                 (last_sector - start_sector + 1) * gptData.GetBlockSize()));
         last_sector = gptData.FindLastInFree(start_sector);
-    }else{
+    } else {
         last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
     }
 
@@ -75,7 +76,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2
             return 1;
         }
         gptData.JustLooking(0);
-        if (!gptData.SaveGPTData(1)){
+        if (!gptData.SaveGPTData(1)) {
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
@@ -127,7 +128,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2
         appendBaseLog(PARTITION_LOG, "Length " + to_string(
                 (last_sector - start_sector + 1) * gptData.GetBlockSize()));
         last_sector = gptData.FindLastInFree(start_sector);
-    }else{
+    } else {
         last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
     }
 
@@ -146,7 +147,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2
             return 1;
         }
         gptData.JustLooking(0);
-        if (!gptData.SaveGPTData(1)){
+        if (!gptData.SaveGPTData(1)) {
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
@@ -266,20 +267,22 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_newPart__Ljava_lang_String_2
     if (length != 0) {
         appendBaseLog(PARTITION_LOG, "Smallest free segement is " + to_string(smallestSegement));
         appendBaseLog(PARTITION_LOG,
-                      "From " + to_string(smallest_start) + " to " + to_string(smallest_start + requiredBlocks - 1));
+                      "From " + to_string(smallest_start) + " to " +
+                      to_string(smallest_start + requiredBlocks - 1));
         appendLogCutLine(PARTITION_LOG, "Take the smallest free segement");
-    }else{
+    } else {
         appendBaseLog(PARTITION_LOG, "Length is 0 , take the largest chunk");
-        appendBaseLog(PARTITION_LOG, "Start " + to_string(largest_start) + " Length " + to_string(largestSegment));
+        appendBaseLog(PARTITION_LOG,
+                      "Start " + to_string(largest_start) + " Length " + to_string(largestSegment));
     }
 
     //create partition
-    int result=1;
+    int result = 1;
 
-    if (length==0){
+    if (length == 0) {
         result = gptData.CreatePartition(number, largest_start,
                                          largest_end);
-    }else{
+    } else {
         result = gptData.CreatePartition(number, smallest_start,
                                          smallest_start + requiredBlocks - 1);
     }
@@ -352,7 +355,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2L
         return 1;
     }
     gptData.JustLooking(0);
-    if (!gptData.SaveGPTData(1)){
+    if (!gptData.SaveGPTData(1)) {
         appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
         return 1;
     }
@@ -366,9 +369,9 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2L
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2I(JNIEnv *env,
-                                                                                        jobject thiz,
-                                                                                        jstring driver,
-                                                                                        jint number) {
+                                                                                 jobject thiz,
+                                                                                 jstring driver,
+                                                                                 jint number) {
     appendLogCutLine(PARTITION_LOG, "PARTITION DELETE2");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     string driver_s(driver_c);
@@ -387,7 +390,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2I
             return 1;
         }
         gptData.JustLooking(0);
-        if (!gptData.SaveGPTData(1)){
+        if (!gptData.SaveGPTData(1)) {
             appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
             return 1;
         }
@@ -402,18 +405,18 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_delete__Ljava_lang_String_2I
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_agiskclient_ConfigBox_PartitionAction_clone(JNIEnv *env, jobject thiz,
-                                                                 jstring driver,
-                                                                 jstring from_driver,
-                                                                 jint from_number, jlong t_start) {
+                                                          jstring driver,
+                                                          jstring from_driver,
+                                                          jint from_number, jlong t_start) {
     // TODO: implement clone()
 }
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_agiskclient_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject thiz,
-                                                                 jstring driver, jint number,
-                                                                 jstring filesystem,
-                                                                 jstring mount_point) {
-    appendLogCutLine(PARTITION_LOG,"PARTITION MOUNT");
+                                                          jstring driver, jint number,
+                                                          jstring filesystem,
+                                                          jstring mount_point) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION MOUNT");
     const char *driver_c = env->GetStringUTFChars(driver, nullptr);
     const char *filesystem_c = env->GetStringUTFChars(filesystem, nullptr);
     const char *dir_c = env->GetStringUTFChars(mount_point, nullptr);
@@ -429,7 +432,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject t
     driver_s = driver_s + to_string(number);
     appendBaseLog(PARTITION_LOG, "Mounting device " + driver_s);
 
-    DIR* dir = opendir(dir_s.c_str());
+    DIR *dir = opendir(dir_s.c_str());
     if (dir) {
         /* Directory exists. */
         closedir(dir);
@@ -475,7 +478,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_mount(JNIEnv *env, jobject t
 extern "C"
 JNIEXPORT jint JNICALL
 Java_atms_app_agiskclient_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobject thiz,
-                                                                    jstring device) {
+                                                             jstring device) {
     appendLogCutLine(PARTITION_DUMP_LOG, "PARTITION DUMP");
 
     const char *devname_C = env->GetStringUTFChars(device, nullptr);
@@ -522,12 +525,121 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_readInfo(JNIEnv *env, jobjec
             appendBaseLog(PARTITION_DUMP_LOG, to_string(i) + " : "
                                               + part.GetDescription() + " : "
                                               + to_string(part.GetFirstLBA()) + " : "
-                                              + to_string(part.GetLastLBA())+" : "
-                                              + to_string(part.GetLengthLBA()*gptdata.GetBlockSize()/(1024*1024))+"Mib");
+                                              + to_string(part.GetLastLBA()) + " : "
+                                              + to_string(
+                    part.GetLengthLBA() * gptdata.GetBlockSize() / (1024 * 1024)) + "Mib");
         }
 
     }
     appendBaseLog(PARTITION_DUMP_LOG, "[END]");
     appendBaseLog(PARTITION_LOG, "Done");
     return 0;
+}
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobject thiz,
+                                                             jstring device) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION DUMP - Direct Function");
+
+    const char *devname_C = env->GetStringUTFChars(device, nullptr);
+    string devname_s(devname_C);
+    env->ReleaseStringUTFChars(device, devname_C);
+    GPTData gptdata(devname_s);
+    GPTData &gptData = gptdata;
+    ////////////////////////////////////////////
+    gptdata.JustLooking();
+
+    //get total free
+
+    uint64_t start = UINT64_C(0); // starting point for each search
+    uint64_t totalFound = UINT64_C(0); // running total
+    uint64_t firstBlock = 0; // first block in a segment
+    uint64_t lastBlock = 0; // last block in a segment
+    uint64_t segmentSize = 0; // size of segment in blocks
+    uint32_t num = 0;
+
+    /**
+   * return format
+   * {block_size:sector_size:GUID:partLimit:total:free}{number:name:start:end:code:typeGUID}
+   */
+    stringstream rts;
+    rts << "{" << gptdata.GetBlockSize();
+    rts << ":" << gptdata.GetBlockSize();
+    rts << ":" << gptdata.GetDiskGUID().AsString();
+    rts << ":" << gptdata.GetNumParts();
+    rts << ":" << gptdata.GetLastUsableLBA() + 1;
+    rts << ":" << totalFound;
+    rts << "}";
+
+
+    /**
+     * add free segment
+     */
+    do {
+        firstBlock = gptData.FindFirstAvailable(start);
+        if (firstBlock != UINT64_C(0)) { // something's free...
+            lastBlock = gptData.FindLastInFree(firstBlock);
+
+            segmentSize = lastBlock - firstBlock + UINT64_C(1);
+
+            /**
+             * add free segment
+             * USE parttype "FREESPACE"
+             */
+            rts << "{";
+            rts << 0;
+            rts << ":";
+            rts << "*FREESPACE";
+            rts << ":";
+            rts << firstBlock;
+            rts << ":";
+            rts << lastBlock;
+            rts << ":";
+            rts << "0000";
+            rts << ":";
+            rts << "*FREESPACE";
+            rts << "}";
+
+            totalFound += segmentSize;
+            num++;
+            start = lastBlock + 1;
+        } // if
+    } while (firstBlock != 0);
+
+
+
+
+
+
+
+    /**
+     * add part
+     */
+    uint32_t low, high;
+    gptdata.GetPartRange(&low, &high);
+
+    //{number:name:start:end:code:typeGUID}
+    for (uint32_t i = low; i <= high; i++) {
+        if (gptdata.IsUsedPartNum(i)) {
+            GPTPart part = gptdata[i];
+            rts << "{";
+            rts << i;
+            rts << ":";
+            rts << part.GetDescription();
+            rts << ":";
+            rts << part.GetFirstLBA();
+            rts << ":";
+            rts << part.GetLastLBA();
+            rts << ":";
+            rts << part.GetHexType();
+            rts << ":";
+            rts << part.GetTypeName();
+            rts << "}";
+        }
+    }
+    string rt_value = rts.str();
+    appendBaseLog(PARTITION_LOG, "GetPartList : " + rt_value);
+
+    jstring jstring1 = env->NewStringUTF(rt_value.c_str());
+    return jstring1;
 }

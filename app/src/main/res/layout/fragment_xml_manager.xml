@@ -17,13 +17,39 @@
             android:divider="@drawable/linearlayout_divider"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/xml_manage_list"
+            <androidx.cardview.widget.CardView
+                android:background="@color/white"
+                app:cardBackgroundColor="#F8F8F8"
+                android:layout_margin="5dp"
+                app:cardCornerRadius="15dp"
                 android:layout_width="match_parent"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="30dp"
+                        android:textStyle="bold"
+                        android:layout_marginVertical="10dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:text="XML LIST"
+                        android:textColor="#4CAF50"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/xml_manage_list"
+                        android:layout_width="match_parent"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

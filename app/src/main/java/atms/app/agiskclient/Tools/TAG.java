@@ -7,4 +7,5 @@ public class TAG {
     public static final String RESERVED_AREA_TOOLS = "RESERVED_AREA_TOOLS:";
     public static String HomeFragTag = "Home";
     public static String WorkerTAG = "Worker:";
+    public static String SystemInforMap_TAG = "SystemInfo";
 }

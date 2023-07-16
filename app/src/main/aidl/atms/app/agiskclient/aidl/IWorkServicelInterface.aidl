@@ -20,4 +20,7 @@ interface IWorkServicelInterface {
                 void terminateSelf();
                 String getTasksState();
                 String getConclusionMsg();
+
+                //Direct function (Extended Function)
+                String direct_GetPartListString(String driver);
 }

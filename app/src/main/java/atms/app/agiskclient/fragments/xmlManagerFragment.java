@@ -324,7 +324,6 @@ public class xmlManagerFragment extends Fragment {
             case PICK_XML_FILE:
                 if (resultCode == Activity.RESULT_OK) {
                     copyXmlTOPrivateStorage(data.getData());
-                    PopTip.show("Please reload rom list on your own").showLong();
                     reloadXmlItem();
                 }
                 break;

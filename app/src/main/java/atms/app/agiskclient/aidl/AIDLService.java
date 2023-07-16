@@ -65,6 +65,8 @@ class AIDLService extends RootService {
 
     native void writelogTag(String tag, String log);
 
+    native String getPartListString(String driver);
+
 
     List<String> logList = new ArrayList<>();
 
@@ -156,6 +158,12 @@ class AIDLService extends RootService {
         @Override
         public IBinder getFileSystemService() {
             return FileSystemManager.getService();
+        }
+
+        @Override
+        public String direct_GetPartListString(String driver) throws RemoteException {
+
+            return getPartListString(driver);
         }
 
         @Override

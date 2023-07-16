@@ -232,7 +232,7 @@ public class Worker {
                         workClient client = scheduleAclient();
                         if (client != null) {
                             Log.d(TAG.WorkerTAG, "Schedule : " + client.getClientUUID());
-                            boolean result = client.submitWork();
+                            Object result = client.submitWork();
                             //FInished
                             Log.d(TAG.WorkerTAG, "[FINISH CLIENT] " + client.getClientUUID());
                             decrementClientNumber();

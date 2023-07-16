@@ -218,6 +218,7 @@ public class workClient {
                  */
             }
         };
+        //stub end
     }
 
     public int getTaskNum() {
@@ -284,8 +285,10 @@ public class workClient {
     /**
      * submit work and wait until it's finished
      * sync function
+     *
+     * return can be casted ,just check client_type
      */
-    public boolean submitWork() {
+    public Object submitWork() {
         // Bind to a root service; IPC via AIDL
         /**
          * a workClient only handle a rootService
@@ -331,9 +334,27 @@ public class workClient {
                 updateProgress("[CLIENT " + getClientUUID() + "] xml content is null.");
                 return false;
             } else {
-                result = ipc.doWork(xmlcontent, iWorkListener);
-                consoleList.add("[CLIENT  " + getClientUUID() + "] result : " + result);
-                return result;
+
+                /**
+                 * Switch client_type
+                 */
+                switch (client_type) {
+                    case COMMON:
+                        result = ipc.doWork(xmlcontent, iWorkListener);
+                        consoleList.add("[CLIENT  " + getClientUUID() + "] result : " + result);
+                        return new Boolean(result);
+                    case DIRECT1_PART_DUMP:
+                        String results = ipc.direct_GetPartListString(xmlcontent);
+
+                        consoleList.add("[CLIENT  " + getClientUUID() + "] result : "
+                                // @Deprecated
+                                + result //This is always too large,just for debug
+                        );
+                        return results;
+                    default:
+                        return new Boolean(false);
+                }
+
             }
         } catch (RemoteException e) {
 
@@ -354,5 +375,27 @@ public class workClient {
             Log.d(TAG, "onAddElement :" + s);
         }
     }
+
+
+
+    //////////////////////////////////////////////////////////////////
+    /**
+     * Extra part
+     * Direct function
+     */
+
+    public enum CLIENT_TYPE{
+        COMMON,// return Boolean
+        DIRECT1_PART_DUMP //return String
+    };
+    public CLIENT_TYPE client_type=CLIENT_TYPE.COMMON;
+
+    /**
+     * 1 Part list dumper
+     */
+    public void setDirect1_PART_DUMPER(){
+        this.client_type = CLIENT_TYPE.DIRECT1_PART_DUMP;
+    }
+
 
 }
