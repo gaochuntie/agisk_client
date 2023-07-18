@@ -539,7 +539,7 @@ extern "C"
 JNIEXPORT jstring JNICALL
 Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobject thiz,
                                                              jstring device) {
-    appendLogCutLine(PARTITION_LOG, "PARTITION DUMP - Direct Function");
+    appendLogCutLine(PARTITION_LOG, "PARTITION DUMP - Direct Function 1 ");
 
     const char *devname_C = env->GetStringUTFChars(device, nullptr);
     string devname_s(devname_C);
@@ -642,4 +642,42 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
 
     jstring jstring1 = env->NewStringUTF(rt_value.c_str());
     return jstring1;
+}
+
+
+
+/**
+ * Notice ! In c/c++ 1 or upper = true, 0 = false
+ */
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_atms_app_agiskclient_aidl_AIDLService_deletePart(JNIEnv *env, jobject thiz, jstring driver,
+                                                      jint number) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION DELETE2 - Direct Function 2 ");
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    string driver_s(driver_c);
+    env->ReleaseStringUTFChars(driver, driver_c);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_s);
+        return 1;
+    }
+
+    if (gptData.IsUsedPartNum(number)) {
+        if (!gptData.DeletePartition(number)) {
+            appendBaseLog(PARTITION_LOG, "Delete failed " + to_string(number));
+            return 1;
+        }
+        gptData.JustLooking(0);
+        if (!gptData.SaveGPTData(1)) {
+            appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+            return 1;
+        }
+        appendBaseLog(PARTITION_LOG, "Done");
+        return 0;
+    }
+    appendBaseLog(PARTITION_LOG, "Partition not exist. " + to_string(number));
+    return 1;
 }

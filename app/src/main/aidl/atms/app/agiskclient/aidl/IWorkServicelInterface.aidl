@@ -23,4 +23,5 @@ interface IWorkServicelInterface {
 
                 //Direct function (Extended Function)
                 String direct_GetPartListString(String driver);
+                boolean direct_DeletePart(String driver,int number);
 }

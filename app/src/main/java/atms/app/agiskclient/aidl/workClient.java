@@ -348,9 +348,17 @@ public class workClient {
 
                         consoleList.add("[CLIENT  " + getClientUUID() + "] result : "
                                 // @Deprecated
-                                + result //This is always too large,just for debug
+                                //+ result //This is always too large,just for debug
                         );
                         return results;
+                    case DIRECT2_PART_DELETE:
+                        boolean delete_result
+                                = ipc.direct_DeletePart(xmlcontent, direct2_number);
+                        consoleList.add("[CLIENT  " + getClientUUID() + "] result : "
+                                // @Deprecated
+                                + delete_result //just for debug
+                        );
+                        return delete_result;
                     default:
                         return new Boolean(false);
                 }
@@ -386,7 +394,8 @@ public class workClient {
 
     public enum CLIENT_TYPE{
         COMMON,// return Boolean
-        DIRECT1_PART_DUMP //return String
+        DIRECT1_PART_DUMP, //return String
+        DIRECT2_PART_DELETE //return boolean
     };
     public CLIENT_TYPE client_type=CLIENT_TYPE.COMMON;
 
@@ -397,5 +406,13 @@ public class workClient {
         this.client_type = CLIENT_TYPE.DIRECT1_PART_DUMP;
     }
 
+    /**
+     * set number
+     */
+    int direct2_number = 0;
+    public void setDirect2_PART_DELETE(int number) {
+        direct2_number = number;
+        this.client_type = CLIENT_TYPE.DIRECT2_PART_DELETE;
+    }
 
 }

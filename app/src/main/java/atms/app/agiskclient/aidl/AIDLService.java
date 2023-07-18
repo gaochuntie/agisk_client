@@ -67,6 +67,7 @@ class AIDLService extends RootService {
 
     native String getPartListString(String driver);
 
+    native boolean deletePart(String driver, int number);
 
     List<String> logList = new ArrayList<>();
 
@@ -164,6 +165,11 @@ class AIDLService extends RootService {
         public String direct_GetPartListString(String driver) throws RemoteException {
 
             return getPartListString(driver);
+        }
+
+        @Override
+        public boolean direct_DeletePart(String driver, int number) throws RemoteException {
+            return !deletePart(driver,number);
         }
 
         @Override

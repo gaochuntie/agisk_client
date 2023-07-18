@@ -31,6 +31,8 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.dialogs.TipDialog;
+import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.topjohnwu.superuser.Shell;
 
@@ -66,7 +68,7 @@ import atms.app.agiskclient.aidl.workClient;
  * Use the {@link SystemInfoMap#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SystemInfoMap extends Fragment implements OnChartValueSelectedListener,View.OnClickListener {
+public class SystemInfoMap extends Fragment implements OnChartValueSelectedListener, View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -121,7 +123,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
 
-
     /**
      * set up part actions
      */
@@ -130,6 +131,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     Button partNew_bt;
     Button partDelete_bt;
     Button partSettings_bt;
+
     private void setupPartActionButtons(View view) {
         partMount_bt = (Button) view.findViewById(R.id.part_mount_bt);
         partUmount_bt = (Button) view.findViewById(R.id.part_umount_bt);
@@ -149,11 +151,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     /**
      * used in part functions
      */
-    GPTDriver selectedDriver=null;
-    DiskChunk selectedChunk=null;
+    GPTDriver selectedDriver = null;
+    DiskChunk selectedChunk = null;
 
     /**
      * check chunk type in button listener
+     *
      * @return just judge return by the mount state of part
      * not the mount process
      */
@@ -169,7 +172,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         Shell.cmd("[ -e " + part.getMountPointString() + " ] " +
                 "&& echo dirExisted || mkdir -p " + part.getMountPointString());
         String readNum = String.valueOf(part.getNumber() + 1);
-        Shell.cmd("mount " + part.getDriver() + readNum+" "+part.getMountPointString());
+        Shell.cmd("mount " + part.getDriver() + readNum + " " + part.getMountPointString());
         if (part.isMounted()) {
             //already mounted
             return true;
@@ -178,9 +181,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
     /**
-     *
      * @return just judge return by the mount state of part
-     *      * not the umount process
+     * * not the umount process
      */
     private boolean partUmount() {
         if (selectedChunk == null) {
@@ -202,7 +204,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     /**
      * async task
      */
-    private void partNew(){
+    private void partNew() {
         //TODO
         //need DirectFunction
         //check in aide file
@@ -215,8 +217,32 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * async task
      */
     private void partDelete() {
-        //TODO
         //Need DirectFunction
+
+        WaitDialog.show("Deleting");
+        //disable all related ui
+        disablePartUIs();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                workClient client = new workClient(getContext(), selectedDriver.getPath());
+                client.setDirect2_PART_DELETE(((GPTPart) selectedChunk).getNumber());
+                boolean result = (Boolean) client.submitWork();
+                //resume ui s
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        enablePartUIs();
+                        if (result) {
+                            TipDialog.show("Success", WaitDialog.TYPE.SUCCESS);
+                            //reload partition table
+                            setData(selectedDriver.getPath());
+                        }
+                        TipDialog.show("Failed", WaitDialog.TYPE.ERROR);
+                    }
+                });
+            }
+        }).start();
         return;
     }
 
@@ -229,6 +255,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     /**
      * setup system info
+     *
      * @param view
      */
     void setInfo(View view) {
@@ -522,8 +549,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 String label;
                                 if (size < threshold) {
                                     //avoid label overlapped
-                                    label="";
-                                }else {
+                                    label = "";
+                                } else {
                                     label = "Unused";
                                 }
                                 entries.add(new PieEntry(size, label));
@@ -715,6 +742,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     @Override
     public void onNothingSelected() {
         Log.i("PieChart", "nothing selected");
+        selectedChunk=null;
     }
 
 
@@ -779,6 +807,52 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.part_mount_bt:
+        }
+    }
+
+    private void disablePartUIs() {
+        diskSpinner.setEnabled(false);
+        chart.setEnabled(false);
+        partMount_bt.setEnabled(false);
+        partUmount_bt.setEnabled(false);
+        partNew_bt.setEnabled(false);
+        partDelete_bt.setEnabled(false);
+        partSettings_bt.setEnabled(false);
+
+    }
+
+    private void enablePartUIs() {
+        diskSpinner.setEnabled(true);
+        chart.setEnabled(true);
+        partMount_bt.setEnabled(true);
+        partUmount_bt.setEnabled(true);
+        partNew_bt.setEnabled(true);
+        partDelete_bt.setEnabled(true);
+        partSettings_bt.setEnabled(true);
+    }
+
+    private void disableExistedPartActions() {
+        partMount_bt.setEnabled(false);
+        partUmount_bt.setEnabled(false);
+        partDelete_bt.setEnabled(false);
+        partSettings_bt.setEnabled(false);
+    }
+
+    private void enableExistedPartActions() {
+        partMount_bt.setEnabled(true);
+        partUmount_bt.setEnabled(true);
+        partDelete_bt.setEnabled(true);
+        partSettings_bt.setEnabled(true);
+    }
+
+    private void disableFreeChunkActions() {
+        partNew_bt.setEnabled(false);
+    }
+
+    private void enableFreeChunkActions() {
+        partNew_bt.setEnabled(true);
     }
 }
 
