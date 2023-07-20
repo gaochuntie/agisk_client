@@ -499,27 +499,20 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         diskSpinner.setEnabled(false);
         chart.setEnabled(false);
         chartNoticer.setText("Loading");
+        chartNoticer.setVisibility(View.VISIBLE);
         //get data in thread
         new Thread(new Runnable() {
             @Override
             public void run() {
                 GPTDriver driver_data = getPartList(driver);
-
-                //debug
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                //save for global usage
+                selectedDriver = driver_data;
 
                 //upddate ui
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //unblock spinner and chart
-                        diskSpinner.setEnabled(true);
-                        chart.setEnabled(true);
-                        chartNoticer.setVisibility(View.INVISIBLE);
+
 
                         //set chart
                         ////////////////////////////////////////////////////////////
@@ -553,7 +546,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 } else {
                                     label = "Unused";
                                 }
-                                entries.add(new PieEntry(size, label));
+                                PieEntry entry = new PieEntry(size, label);
+                                entry.setData(freeChunk);
+                                entries.add(entry);
 
                                 Log.d(TAG.SystemInforMap_TAG, "Add Chart Entry : "
                                         + "Unused "
@@ -567,7 +562,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                     continue;
                                 }
                                 String label = part.getNumber() + ":" + part.getName();
-                                entries.add(new PieEntry(size, label));
+                                PieEntry entry = new PieEntry(size, label);
+                                entry.setData(part);
+                                entries.add(entry);
 
                                 Log.d(TAG.SystemInforMap_TAG, "Add Chart Entry : "
                                         + part.getNumber()
@@ -613,7 +610,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         dataSet.setValueLinePart1OffsetPercentage(80.f);
                         dataSet.setValueLinePart1Length(0.2f);
                         dataSet.setValueLinePart2Length(0.4f);
-
                         //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
                         dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
@@ -626,9 +622,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                         // undo all highlights
                         chart.highlightValues(null);
-
-                        chart.invalidate();
                         chart.setCenterText(generateCenterSpannableText(driver));
+
+                        //unblock spinner and chart
+                        diskSpinner.setEnabled(true);
+                        chart.setEnabled(true);
+                        chartNoticer.setVisibility(View.INVISIBLE);
+                        chart.getLegend().setTextColor(Color.BLACK);
+                        chart.invalidate();
                     }
                 });
             }
@@ -685,7 +686,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         for (int i = 1; i < r1.length; i++) {
             String[] partData = r1[i].split(":");
 
-            if (partData[4].equals("*FREESPACE")) {
+            if (partData[5].equals("*FREESPACE")) {
                 DiskChunk freeChunk = new DiskChunk(
                         driver
                         , Long.valueOf(partData[2])
@@ -734,15 +735,36 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     public void onValueSelected(Entry e, Highlight h) {
         if (e == null)
             return;
-        Log.i("VAL SELECTED",
-                "Value: " + e.getY() + ", xIndex: " + e.getX()
-                        + ", DataSet index: " + h.getDataSetIndex());
+
+        DiskChunk chunk = (DiskChunk) e.getData();
+        if (chunk == null) {
+            //Other entry
+            Log.i("VAL SELECTED",
+                    "Value: " + e.getY() + ", xIndex: " + e.getX()
+                            + ", Other entry  ");
+            disableExistedPartActions();
+            disableFreeChunkActions();
+        } else {
+            Log.i("VAL SELECTED",
+                    "Value: " + e.getY() + ", xIndex: " + e.getX()
+                            + ", |  " + chunk.getPart_type().getPartType().toString());
+            if (chunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+                disableExistedPartActions();
+                enableFreeChunkActions();
+            }else{
+                disableFreeChunkActions();
+                enableExistedPartActions();
+            }
+        }
+        selectedChunk = chunk;
     }
 
     @Override
     public void onNothingSelected() {
         Log.i("PieChart", "nothing selected");
-        selectedChunk=null;
+        selectedChunk = null;
+        disableExistedPartActions();
+        disableFreeChunkActions();
     }
 
 
