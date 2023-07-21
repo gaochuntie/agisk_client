@@ -624,16 +624,30 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         chart.highlightValues(null);
                         chart.setCenterText(generateCenterSpannableText(driver));
 
+
+                        chart.getLegend().setTextColor(Color.BLACK);
+                        chart.invalidate();
+
+                        setUpPartListRecyclerView(driver_data);
                         //unblock spinner and chart
                         diskSpinner.setEnabled(true);
                         chart.setEnabled(true);
                         chartNoticer.setVisibility(View.INVISIBLE);
-                        chart.getLegend().setTextColor(Color.BLACK);
-                        chart.invalidate();
+
+                        selectOtherEntry();
                     }
                 });
             }
         }).start();
+
+    }
+
+
+    /**
+     * set up recyclerview for part list
+     * @param driver
+     */
+    private void setUpPartListRecyclerView(GPTDriver driver) {
 
     }
 
@@ -731,6 +745,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         return s;
     }
 
+
+
+    private void selectOtherEntry() {
+        int last_index = chart.getData().getDataSet().getEntryCount()-1;
+        chart.highlightValue(last_index,0);
+    }
     @Override
     public void onValueSelected(Entry e, Highlight h) {
         if (e == null)
