@@ -109,5 +109,5 @@ if [ "$1" = "-f" ] && [ -f "$2" ];then
 
 echo "MD5List is not existed.Generating..."
 generateMD5List
-echo "Done.Check $list_path"
+echo "Done.Check $file_path"
 exit 0
