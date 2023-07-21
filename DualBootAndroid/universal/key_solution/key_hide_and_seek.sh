@@ -5,7 +5,7 @@ export  file_path="$(pwd)/$list_name"
 export  key_part="$(pwd)/key_part.txt"
 #echo $file_path
 export  part_dir="/dev/block/by-name"
-export  exclusion="super sd* mmcblk* userdata virtual_sd"
+export  exclusion="super sd* mmcblk* userdata virtual_sd ubuntu gaochuntie recovery* boot boot* vender vender*"
 help() {
     echo "Android Dual System Key Tool"
     echo "Seek out the partitions related to key,so you can make them into dual status like your dual super,boot partitions"
