@@ -29,7 +29,7 @@ exclude_file() {
 generateMD5List() {
 
 # Find files in the directory (excluding partition devices and files matching the exclusion patterns) and generate the output
-find "$part_dir" -maxdepth 1 -type f -exec sh -c '
+find "$part_dir" -maxdepth 1 -exec sh -c '
     for file do
 
         # Check if the file is blank or a partition device
