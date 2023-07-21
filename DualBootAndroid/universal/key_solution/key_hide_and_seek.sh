@@ -25,17 +25,13 @@ exclude_file() {
     return 1 # File doesn't match any exclusion pattern
 }
 
+
 #first run
 generateMD5List() {
 
 # Find files in the directory (excluding partition devices and files matching the exclusion patterns) and generate the output
 find "$part_dir" -maxdepth 1 -exec sh -c '
     for file do
-
-        # Check if the file is blank or a partition device
-                    if [ -z "$file" ] || file "$file" | grep -q "block special"; then
-                        continue
-                    fi
 
         # Check if the file should be excluded
         skip=false
@@ -56,7 +52,6 @@ find "$part_dir" -maxdepth 1 -exec sh -c '
         if [ "$size" -gt 1000000000 ]; then
             continue
         fi
-
 
         # Calculate the clean MD5
         md5=$(md5sum "$file" | awk "{print \$1}")
