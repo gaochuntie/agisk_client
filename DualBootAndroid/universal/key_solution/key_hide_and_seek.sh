@@ -30,9 +30,8 @@ exclude_file() {
 generateMD5List() {
 
 # Find files in the directory (excluding partition devices and files matching the exclusion patterns) and generate the output
-find "$part_dir" -maxdepth 1 -exec sh -c '
+find "$part_dir" -maxdepth 1 ! -type d -exec sh -c '
     for file do
-
         # Check if the file should be excluded
         skip=false
         for pattern in $exclusion; do
