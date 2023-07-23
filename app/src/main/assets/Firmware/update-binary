@@ -1,0 +1,19 @@
+#!/sbin/sh
+ZIP=$3
+OUTFD=$2
+SDAT=/data/system
+
+ui_print() {
+  echo -n -e "ui_print $1\n" > /proc/self/fd/$OUTFD
+  echo -n -e "ui_print\n" > /proc/self/fd/$OUTFD
+}
+
+ui_print "*********************"
+ui_print "-  Firmware Restore  -"
+ui_print "*********************"
+ui_print "https://github.com/gaochuntie/agisk_client"
+ui_print "---Gaochuntie @ coolapk developer"
+ui_print "Really Start !"
+mkdir /agisk_tmp
+
+

@@ -21,7 +21,7 @@
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
                 android:layout_margin="5dp"
-                app:cardCornerRadius="15dp"
+                app:cardCornerRadius="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -38,7 +38,7 @@
                         android:layout_marginVertical="10dp"
                         android:layout_marginHorizontal="5dp"
                         android:text="XML LIST"
-                        android:textColor="#4CAF50"/>
+                        android:textColor="#000000"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/xml_manage_list"
@@ -56,7 +56,7 @@
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
                 android:layout_margin="5dp"
-                app:cardCornerRadius="15dp"
+                app:cardCornerRadius="3dp"
                 android:layout_height="180dp">
 
                 <ImageButton
@@ -75,7 +75,7 @@
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
                 android:layout_margin="5dp"
-                app:cardCornerRadius="15dp"
+                app:cardCornerRadius="3dp"
                 android:layout_height="180dp">
 
                 <ImageButton
@@ -94,7 +94,7 @@
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
                 android:layout_margin="5dp"
-                app:cardCornerRadius="15dp"
+                app:cardCornerRadius="3dp"
                 android:layout_height="180dp">
 
                 <ImageButton

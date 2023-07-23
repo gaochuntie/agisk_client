@@ -337,7 +337,15 @@
                 android:textColor="#000000"
                 android:textSize="15dp"
                 android:textStyle="bold" />
-
+            <Button
+                android:id="@+id/generate_firmware_updater_zip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="Generate Firmware Flashable"
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="match_parent"

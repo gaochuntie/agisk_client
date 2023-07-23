@@ -1,8 +1,15 @@
 package atms.app.agiskclient.fragments;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -11,10 +18,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.LongDef;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -25,14 +39,16 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.snackbar.Snackbar;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.dialogs.PopTip;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
+import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.topjohnwu.superuser.Shell;
 
@@ -40,14 +56,20 @@ import org.angmarch.views.NiceSpinner;
 import org.angmarch.views.OnSpinnerItemSelectedListener;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.ConfigBox.XMLmod;
@@ -58,7 +80,8 @@ import atms.app.agiskclient.GPTfdisk.PartType;
 import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.Settings;
-import atms.app.agiskclient.Tools.GlobalMsg;
+import atms.app.agiskclient.Tools.CompressUtils;
+import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
 import atms.app.agiskclient.aidl.workClient;
@@ -101,9 +124,21 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         return fragment;
     }
 
+
+    /**
+     * file picker
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
+
+    private ActivityResultLauncher<String> filePickerLauncher;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                this::onFilePicked);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -116,6 +151,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_system_info_map, container, false);
         setInfo(view);
+        setupFirmwareBackupBt(view);
         setupDiskSpinner(view);
         setupPieChart(view);
         setupPartActionButtons(view);
@@ -123,6 +159,343 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
 
+    /**
+     * set up generate firmware flashable
+     */
+
+
+    Button fwFlashable_gen_bt;
+
+    private void setupFirmwareBackupBt(View view) {
+        fwFlashable_gen_bt = (Button) view.findViewById(R.id.generate_firmware_updater_zip);
+        fwFlashable_gen_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                MessageDialog.show("Introduce", "Create backup of firmware partitions" +
+                        ",flash the zip to restore if necessary" +
+                        ". This can be a good way to prevent 基带(IMEI related) lost" +
+                        " caused by 格机(Wipe the whole flash)  ", "Learned").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
+                    @Override
+                    public boolean onClick(MessageDialog baseDialog, View v) {
+                        WaitDialog.show("Loading Block Device");
+                        showFirmwareList(view);
+                        return false;
+                    }
+                });
+            }
+        });
+    }
+
+
+    /**
+     * async function,a dialog will shown after finishing init list
+     */
+    Map<String, Long> block_dev = new HashMap<>();
+
+    private void showFirmwareList(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                InputStream block_dev_stream = FileUtils.getAssetsInputStream(view.getContext(), "Han.GJZS/Block_Device_Name.sh");
+                if (block_dev_stream == null) {
+                    TipDialog.show("Unable to load firmware list",-1);
+                    return;
+                }
+                Shell.Result result;
+                result = Shell.cmd(block_dev_stream).exec();
+
+                //close inputdtream
+                try {
+                    block_dev_stream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                List<String> out = result.getOut();  // stdout
+                int code = result.getCode();         // return code of the last command
+                boolean ok = result.isSuccess();     // return code == 0?
+                block_dev.clear();
+                for (String item : out) {
+                    Log.d(TAG.SystemInforMap_TAG, "Block Dev : " + item);
+                    String[] parts = item.split("=");
+                    if (parts.length == 2) {
+                        String filename = parts[0].trim();
+                        try {
+                            long size = Long.parseLong(parts[1].trim());
+                            block_dev.put(filename, size);
+                        } catch (NumberFormatException e) {
+                            // Handle the case when the size is not a valid long value
+                            // You can show an error message or handle it as needed
+                        }
+                    }
+                }
+
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WaitDialog.dismiss();
+                        showFirmwareFlashableGenDialog();
+                    }
+                });
+
+            }
+        }).start();
+
+    }
+
+    private List<String> selectedItems = new ArrayList<>();
+
+    private void showFirmwareFlashableGenDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select Items");
+
+        // Create a list to display filename (size) format
+        List<String> fileListWithSize = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : block_dev.entrySet()) {
+            String filename = entry.getKey();
+            Long size = entry.getValue();
+            fileListWithSize.add(filename + " (" + size + ")");
+        }
+
+        // Inflate the custom layout for the dialog
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogView = inflater.inflate(R.layout.dialog_list_items, null);
+        builder.setView(dialogView);
+
+        // Initialize the ListView
+        ListView listViewItems = dialogView.findViewById(R.id.listViewItems);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_multiple_choice, fileListWithSize);
+        listViewItems.setAdapter(adapter);
+
+        // Set the default checked items to false (unselected)
+        listViewItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        for (int i = 0; i < fileListWithSize.size(); i++) {
+            String filename = block_dev.keySet().toArray(new String[0])[i];
+            listViewItems.setItemChecked(i, selectedItems.contains(filename));
+        }
+        // Handle item selection in the ListView
+        listViewItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String filename = block_dev.keySet().toArray(new String[0])[position];
+                if (selectedItems.contains(filename)) {
+                    selectedItems.remove(filename);
+                } else {
+                    selectedItems.add(filename);
+                }
+            }
+        });
+
+        // Handle the Load button click
+        builder.setPositiveButton("Load", null);
+
+        // Create the custom "Action" button
+        builder.setNegativeButton("Action", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Create a new map for selected items in the same format (filename -> size)
+                Map<String, Long> selectedMap = new HashMap<>();
+                for (String filename : selectedItems) {
+                    if (block_dev.containsKey(filename)) {
+                        selectedMap.put(filename, block_dev.get(filename));
+                    }
+                }
+
+                // Call the function with the selected items map
+                generateFirmwareFlashable(selectedMap);
+            }
+        });
+
+        // Show the dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        readFilenamesFromFile();
+                        alertDialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        // Show the dialog
+        alertDialog.show();
+    }
+
+    /**
+     * load firmware list
+     */
+    private void readFilenamesFromFile() {
+        filePickerLauncher.launch("text/plain");
+    }
+
+    private void onFilePicked(Uri uri) {
+        if (uri != null) {
+            /**
+             * update selectedItem and redisplay dialog
+             */
+            selectedItems.clear();
+            try {
+                // Open the file using the file path
+                InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+                if (inputStream != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        selectedItems.add(line.trim());
+                    }
+                    reader.close();
+                } else {
+                    Log.d(TAG.SystemInforMap_TAG, "inputstream is null");
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+                // Handle the IOException if needed
+                // You can show an error message or handle it as needed
+            }
+        } else {
+            Log.d(TAG.SystemInforMap_TAG, "Url is null");
+            return;
+        }
+        showFirmwareFlashableGenDialog();
+
+    }
+
+
+    /**
+     * async function
+     *
+     * @param fw_list
+     */
+    private void generateFirmwareFlashable(Map<String, Long> fw_list) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean success = false;
+                for (String item : fw_list.keySet()) {
+                    Log.d(TAG.SystemInforMap_TAG, item);
+                }
+                WaitDialog.show("Backuping");
+                String root_dir=getContext().getExternalFilesDir("firmware").getAbsolutePath();
+                String fw_root = getContext().getExternalFilesDir("firmware/fw").getAbsolutePath();
+                String script_dir = fw_root + "/META-INF/com/google/android/";
+
+                if (!FileUtils.copyAssetFileToStorage(getContext(), "Firmware/update-binary"
+                        , script_dir + "/update-binary")
+                        && FileUtils.copyAssetFileToStorage(getContext(), "Firmware/update-script"
+                        , script_dir + "/update-script")
+                ) {
+                    //unable to copy file
+                    TipDialog.show("Unable to copy files",-1);
+                    return;
+                }
+                //write script
+
+                File file = new File(fw_root + "/backupList.list");
+                File restore = new File(fw_root + "restoreList.list");
+                File meta = new File(fw_root + "/META-INF");
+                File script = new File(script_dir + "/update-binary");
+                BufferedWriter bufferedWriter = null;
+                BufferedWriter bufferedWriter1 = null;
+                BufferedWriter scriptwriter = null;
+                List<String> cmd = new ArrayList<String>();
+                try {
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+                    if (!restore.exists()) {
+                        restore.createNewFile();
+                    }
+                    if (!script.exists()) {
+                        //error
+                        Log.d(TAG.SystemInforMap_TAG, "Script not found");
+                        return;
+                    }
+                    scriptwriter = new BufferedWriter(new FileWriter(script, true));
+
+
+                    //Log.d(log,"checked partitions 51315 : "+checkpartitions[0]);
+                    bufferedWriter = new BufferedWriter(new FileWriter(file));
+                    bufferedWriter1 = new BufferedWriter(new FileWriter(restore));
+                    for (String dev_path : fw_list.keySet()) {
+
+                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        Log.d(TAG.SystemInforMap_TAG, "writer 5585: " + dev_path);
+                        bufferedWriter1.write(dev_path + "\n");
+                        bufferedWriter1.flush();
+
+
+                        String filename_zip = dev_path.substring(dev_path.indexOf("/") + 1);
+                        Log.d(TAG.SystemInforMap_TAG, filename_zip);
+                        String filedir_zip = filename_zip.substring(0, filename_zip.lastIndexOf("/") + 1);
+                        Log.d(TAG.SystemInforMap_TAG, filedir_zip);
+
+                        //TODO : No free space to unzip imgs in /
+                        scriptwriter.write("unzip $3 " + filename_zip + " -d /agisk_tmp" + "\n");
+                        scriptwriter.write("dd if=/agisk_tmp/" + filename_zip + " of=" + dev_path + "\n");
+                        scriptwriter.write("rm -rf /agisk_tmp/" + filename_zip + "\n");
+                        scriptwriter.flush();
+
+
+                        /**
+                         * add cmd
+                         */
+                        cmd.add("mkdir -p " + fw_root +"/"+ filedir_zip);
+                        cmd.add("dd if=" + dev_path + " of=" + fw_root+"/"+filename_zip);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (bufferedWriter != null) {
+                        try {
+                            bufferedWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+
+                //run cmd
+                for (String execmd : cmd) {
+                    Log.d(TAG.SystemInforMap_TAG, execmd);
+                    Shell.cmd(execmd).exec();
+                }
+                //compress
+                try {
+                    CompressUtils.compressWithoutBaseDir(fw_root, root_dir + "/firmware_flashable.zip");
+
+                    //clean
+                    Shell.cmd("rm -rf " + fw_root);
+                    success = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.d(TAG.SystemInforMap_TAG, "Unable to compress file");
+
+                }
+                if (success) {
+                    TipDialog.show("Success See " + root_dir + "/firmware_flashable.zip", WaitDialog.TYPE.SUCCESS,-1);
+                    return;
+                }
+                TipDialog.show("Generate Failed", WaitDialog.TYPE.ERROR ,-1);
+
+            }
+        }).start();
+
+
+    }
+    //
+///////////////////////////////////////////////////////////////
     /**
      * set up part actions
      */
@@ -234,11 +607,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     public void run() {
                         enablePartUIs();
                         if (result) {
-                            TipDialog.show("Success", WaitDialog.TYPE.SUCCESS);
+                            TipDialog.show("Success", WaitDialog.TYPE.SUCCESS,-1);
                             //reload partition table
                             setData(selectedDriver.getPath());
                         }
-                        TipDialog.show("Failed", WaitDialog.TYPE.ERROR);
+                        TipDialog.show("Failed", WaitDialog.TYPE.ERROR,-1);
                     }
                 });
             }
@@ -645,6 +1018,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     /**
      * set up recyclerview for part list
+     *
      * @param driver
      */
     private void setUpPartListRecyclerView(GPTDriver driver) {
@@ -746,11 +1120,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
 
-
     private void selectOtherEntry() {
-        int last_index = chart.getData().getDataSet().getEntryCount()-1;
-        chart.highlightValue(last_index,0);
+        int last_index = chart.getData().getDataSet().getEntryCount() - 1;
+        chart.highlightValue(last_index, 0);
     }
+
     @Override
     public void onValueSelected(Entry e, Highlight h) {
         if (e == null)
@@ -771,7 +1145,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             if (chunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
                 disableExistedPartActions();
                 enableFreeChunkActions();
-            }else{
+            } else {
                 disableFreeChunkActions();
                 enableExistedPartActions();
             }
