@@ -48,6 +48,7 @@ import com.kongzue.dialogx.dialogs.MessageDialog;
 import com.kongzue.dialogx.dialogs.PopTip;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
+import com.kongzue.dialogx.interfaces.BaseDialog;
 import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.topjohnwu.superuser.Shell;
@@ -81,6 +82,7 @@ import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.Tools.CompressUtils;
+import atms.app.agiskclient.Tools.DateUtils;
 import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
@@ -155,6 +157,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         setupDiskSpinner(view);
         setupPieChart(view);
         setupPartActionButtons(view);
+        TipDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
         return view;
     }
 
@@ -175,7 +178,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 MessageDialog.show("Introduce", "Create backup of firmware partitions" +
                         ",flash the zip to restore if necessary" +
                         ". This can be a good way to prevent 基带(IMEI related) lost" +
-                        " caused by 格机(Wipe the whole flash)  ", "Learned").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
+                        " caused by 格机(Wipe the whole flash) ." +
+                        "Notice I recommand not to select big partitions such as super" +
+                        " because they have nothing to do with IMEI. Last Big Big Thanks to GJZS's script and my ATMS project(ported from here) ", "Learned").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
                     @Override
                     public boolean onClick(MessageDialog baseDialog, View v) {
                         WaitDialog.show("Loading Block Device");
@@ -472,11 +477,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     Shell.cmd(execmd).exec();
                 }
                 //compress
+                String date=DateUtils.getCurrentDateTimeString();
                 try {
-                    CompressUtils.compressWithoutBaseDir(fw_root, root_dir + "/firmware_flashable.zip");
+                    CompressUtils.compressWithoutBaseDir(fw_root, root_dir + "/firmware_flashable_"+  date+".zip");
 
                     //clean
-                    Shell.cmd("rm -rf " + fw_root);
+                    Shell.cmd("rm -rf " + fw_root).exec();
                     success = true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -484,7 +490,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                 }
                 if (success) {
-                    TipDialog.show("Success See " + root_dir + "/firmware_flashable.zip", WaitDialog.TYPE.SUCCESS,-1);
+                    TipDialog.show("Success-See " + root_dir + "/firmware_flashable_"+date+".zip"
+                            , WaitDialog.TYPE.SUCCESS,-1);
                     return;
                 }
                 TipDialog.show("Generate Failed", WaitDialog.TYPE.ERROR ,-1);
