@@ -16,6 +16,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,9 +29,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.LongDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.evrencoskun.tableview.TableView;
+import com.evrencoskun.tableview.listener.SimpleTableViewListener;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -81,11 +87,15 @@ import atms.app.agiskclient.GPTfdisk.PartType;
 import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.Settings;
+import atms.app.agiskclient.TableViewUI.DataModels.Cell;
+import atms.app.agiskclient.TableViewUI.DataModels.ColumnHeader;
+import atms.app.agiskclient.TableViewUI.DataModels.RowHeader;
 import atms.app.agiskclient.Tools.CompressUtils;
 import atms.app.agiskclient.Tools.DateUtils;
 import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
+import atms.app.agiskclient.adapter.MyTableViewAdapter;
 import atms.app.agiskclient.aidl.workClient;
 
 /**
@@ -152,6 +162,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_system_info_map, container, false);
+        setupBasicUi(view);
         setInfo(view);
         setupFirmwareBackupBt(view);
         setupDiskSpinner(view);
@@ -204,7 +215,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             public void run() {
                 InputStream block_dev_stream = FileUtils.getAssetsInputStream(view.getContext(), "Han.GJZS/Block_Device_Name.sh");
                 if (block_dev_stream == null) {
-                    TipDialog.show("Unable to load firmware list",-1);
+                    TipDialog.show("Unable to load firmware list", -1);
                     return;
                 }
                 Shell.Result result;
@@ -249,6 +260,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     }
 
+    //Firmware
     private List<String> selectedItems = new ArrayList<>();
 
     private void showFirmwareFlashableGenDialog() {
@@ -391,7 +403,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     Log.d(TAG.SystemInforMap_TAG, item);
                 }
                 WaitDialog.show("Backuping");
-                String root_dir=getContext().getExternalFilesDir("firmware").getAbsolutePath();
+                String root_dir = getContext().getExternalFilesDir("firmware").getAbsolutePath();
                 String fw_root = getContext().getExternalFilesDir("firmware/fw").getAbsolutePath();
                 String script_dir = fw_root + "/META-INF/com/google/android/";
 
@@ -401,7 +413,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         , script_dir + "/update-script")
                 ) {
                     //unable to copy file
-                    TipDialog.show("Unable to copy files",-1);
+                    TipDialog.show("Unable to copy files", -1);
                     return;
                 }
                 //write script
@@ -455,8 +467,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         /**
                          * add cmd
                          */
-                        cmd.add("mkdir -p " + fw_root +"/"+ filedir_zip);
-                        cmd.add("dd if=" + dev_path + " of=" + fw_root+"/"+filename_zip);
+                        cmd.add("mkdir -p " + fw_root + "/" + filedir_zip);
+                        cmd.add("dd if=" + dev_path + " of=" + fw_root + "/" + filename_zip);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -477,9 +489,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     Shell.cmd(execmd).exec();
                 }
                 //compress
-                String date=DateUtils.getCurrentDateTimeString();
+                String date = DateUtils.getCurrentDateTimeString();
                 try {
-                    CompressUtils.compressWithoutBaseDir(fw_root, root_dir + "/firmware_flashable_"+  date+".zip");
+                    CompressUtils.compressWithoutBaseDir(fw_root, root_dir + "/firmware_flashable_" + date + ".zip");
 
                     //clean
                     Shell.cmd("rm -rf " + fw_root).exec();
@@ -490,11 +502,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                 }
                 if (success) {
-                    TipDialog.show("Success-See " + root_dir + "/firmware_flashable_"+date+".zip"
-                            , WaitDialog.TYPE.SUCCESS,-1);
+                    TipDialog.show("Success-See " + root_dir + "/firmware_flashable_" + date + ".zip"
+                            , WaitDialog.TYPE.SUCCESS, -1);
                     return;
                 }
-                TipDialog.show("Generate Failed", WaitDialog.TYPE.ERROR ,-1);
+                TipDialog.show("Generate Failed", WaitDialog.TYPE.ERROR, -1);
 
             }
         }).start();
@@ -614,11 +626,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     public void run() {
                         enablePartUIs();
                         if (result) {
-                            TipDialog.show("Success", WaitDialog.TYPE.SUCCESS,-1);
+                            TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
                             //reload partition table
                             setData(selectedDriver.getPath());
                         }
-                        TipDialog.show("Failed", WaitDialog.TYPE.ERROR,-1);
+                        TipDialog.show("Failed", WaitDialog.TYPE.ERROR, -1);
                     }
                 });
             }
@@ -794,7 +806,15 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     private void setupPieChart(View view) {
 
         chartNoticer = view.findViewById(R.id.chartNotiverTv);
-
+        partListTableView = view.findViewById(R.id.part_list_tableview);
+        partListTableView.setTableViewListener(new SimpleTableViewListener() {
+            @Override
+            public void onCellClicked(@NonNull RecyclerView.ViewHolder cellView, int column, int row) {
+                //super.onCellClicked(cellView, column, row);
+                Log.d(TAG.SystemInforMap_TAG, "Click Table View ROW : " + row);
+                tableViewChooseDiskChunk(row);
+            }
+        });
         chart = view.findViewById(R.id.chart1);
         chart.setUsePercentValues(true);
         chart.getDescription().setEnabled(false);
@@ -1008,7 +1028,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         chart.getLegend().setTextColor(Color.BLACK);
                         chart.invalidate();
 
-                        setUpPartListRecyclerView(driver_data);
+                        setUpPartListTableView(driver_data);
                         //unblock spinner and chart
                         diskSpinner.setEnabled(true);
                         chart.setEnabled(true);
@@ -1028,9 +1048,102 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      *
      * @param driver
      */
-    private void setUpPartListRecyclerView(GPTDriver driver) {
 
+    private List<RowHeader> mRowHeaderList = new ArrayList<>();
+    private List<ColumnHeader> mColumnHeaderList = new ArrayList<>();
+    private List<List<Cell>> mCellList = new ArrayList<>();
+    TableView partListTableView = null; //fuck on in piechart setup
+
+    private void setUpPartListTableView(GPTDriver driver) {
+        setCellList(driver);
+        // Create our custom TableView Adapter
+        MyTableViewAdapter adapter = new MyTableViewAdapter(getContext());
+
+        // Set this adapter to the our TableView
+        partListTableView.setAdapter(adapter);
+
+        // Let's set datas of the TableView on the Adapter
+        adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
     }
+
+    private void setCellList(GPTDriver driver) {
+        mRowHeaderList.clear();
+        mColumnHeaderList.clear();
+        mCellList.clear();
+
+        /**
+         * supported column number:name:start:end:code:typeGUID
+         */
+        mColumnHeaderList.add(new ColumnHeader("Number"));
+        mColumnHeaderList.add(new ColumnHeader("Name"));
+        mColumnHeaderList.add(new ColumnHeader("StartLBA"));
+        mColumnHeaderList.add(new ColumnHeader("EndLBA"));
+        mColumnHeaderList.add(new ColumnHeader("CODE"));
+        mColumnHeaderList.add(new ColumnHeader("Filesystem"));
+
+        for (int counter = 0; counter < driver.getPartList().size(); counter++) {
+            DiskChunk chunk=driver.getPartList().get(counter);
+            List<Cell> subcell_list = new ArrayList<>();
+            switch (chunk.getPart_type().getPartType()) {
+                case TYPE_FREESPACE:
+                    //freespace
+                    //number:name:start:end:code:typeGUID
+                    subcell_list.add(new Cell("-1"));
+                    subcell_list.add(new Cell("*Unused"));
+                    subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
+                    subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
+                    subcell_list.add(new Cell(""));
+                    subcell_list.add(new Cell(""));
+                    break;
+                case TYPE_TODOPART:
+                    //other
+                    //number:name:start:end:code:typeGUID
+                    GPTPart part = (GPTPart) chunk;
+                    subcell_list.add(new Cell(String.valueOf(part.getNumber())));
+                    subcell_list.add(new Cell(part.getName()));
+                    subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
+                    subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
+                    subcell_list.add(new Cell(part.getCode()));
+                    subcell_list.add(new Cell(part.getPart_type().getFilesystemName()));
+                    break;
+                default:
+                    break;
+            }
+            mRowHeaderList.add(new RowHeader(String.valueOf(counter)));
+            mCellList.add(subcell_list);
+        }
+    }
+
+    private void tableViewChooseDiskChunk(int index) {
+        if (index >= selectedDriver.getPartList().size()) {
+            selectedChunk = null;
+            disableExistedPartActions();
+            disableFreeChunkActions();
+            return;
+        }
+        selectedChunk = selectedDriver.getPartList().get(index);
+
+        //set pie chart select
+        switch (selectedChunk.getPart_type().getPartType()) {
+            case TYPE_TODOPART:
+                GPTPart part = (GPTPart) selectedChunk;
+                if (part.getSize_sector() < (long) (0.1 * selectedDriver.getTotal_size_sector())) {
+                    // smaller part
+                    selectOtherEntry();
+                }else{
+                    selectEntry(index);
+                }
+                disableFreeChunkActions();
+                enableExistedPartActions();
+                break;
+            case TYPE_FREESPACE:
+                selectEntry(index);
+                disableExistedPartActions();
+                enableFreeChunkActions();
+        }
+    }
+
+    ///////////////////////////////////////
 
     private GPTDriver getPartList(String driver) {
         workClient client = new workClient(getActivity(), driver);
@@ -1127,6 +1240,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
 
+    private void selectEntry(int index) {
+        chart.highlightValue(index, 0);
+    }
     private void selectOtherEntry() {
         int last_index = chart.getData().getDataSet().getEntryCount() - 1;
         chart.highlightValue(last_index, 0);
@@ -1276,6 +1392,20 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void enableFreeChunkActions() {
         partNew_bt.setEnabled(true);
+    }
+
+    /////////////////////////////////////////////////////
+    NestedScrollView nestedScrollView;
+    private void setupBasicUi(View view) {
+        nestedScrollView = view.findViewById(R.id.map_container_ns);
+    }
+
+    private void disableContainerScroll() {
+        nestedScrollView.setNestedScrollingEnabled(false);
+    }
+
+    private void enableContainerScroll() {
+        nestedScrollView.setNestedScrollingEnabled(true);
     }
 }
 

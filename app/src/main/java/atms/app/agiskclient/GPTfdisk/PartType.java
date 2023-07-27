@@ -23,4 +23,10 @@ public class PartType {
     public Part_Type getPartType() {
         return this.part_type;
     }
+
+
+    //TODO
+    public String getFilesystemName() {
+        return "TODO";
+    }
 }

@@ -221,45 +221,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            /////////////////////////////////////////
-//            case R.id.button1:
-//
-//                //debug worning box
-//                if (worning_box.getVisibility()==View.VISIBLE){
-//                    YoYo.with(Techniques.SlideOutDown)
-//                            .duration(500)
-//                            .onEnd(new YoYo.AnimatorCallback() {
-//                                @Override
-//                                public void call(Animator animator) {
-//                                    worning_box.setVisibility(View.GONE);
-//                                }
-//                            })
-//                            .playOn(worning_box)
-//
-//                    ;
-//                }else{
-//                    YoYo.with(Techniques.SlideInUp)
-//                            .duration(500)
-//                            .onStart(new YoYo.AnimatorCallback() {
-//                                @Override
-//                                public void call(Animator animator) {
-//                                    worning_box.setVisibility(View.VISIBLE);
-//                                }
-//                            })
-//                            .playOn(worning_box);
-//
-//                }
-//                //
-//                boolean result=jniObj.checkPasswd(edit_pass.getText().toString());
-//                if (result) {
-//                    tv.setText("Password correct.");
-//                    edit_pass.setText("");
-//                }else {
-//                    tv.setText("Password incorrect.");
-//                    edit_pass.setText("");
-//                }
-//                break;
-            //////////////////////////////////////
             default:
                 break;
 
@@ -614,5 +575,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TextView textView = logPopWin.getContentView().findViewById(R.id.log_content);
             textView.append(log);
         }
+    }
+
+
+    //TODO
+    public void disableViewPagerScroll() {
+
     }
 }

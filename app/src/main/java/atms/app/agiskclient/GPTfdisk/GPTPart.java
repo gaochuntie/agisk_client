@@ -23,6 +23,9 @@ public class GPTPart extends DiskChunk{
     private boolean isMounted=false;
 
 
+    @Nullable
+    private PartAttribute attribute;
+
 
     /**
      * Constructor
@@ -131,5 +134,14 @@ public class GPTPart extends DiskChunk{
 
     public String getMountPointString() {
         return "/mnt/agisk_" + number + "_" + name;
+    }
+
+    public void setAttribute(@Nullable PartAttribute attribute) {
+        this.attribute = attribute;
+    }
+
+    @Nullable
+    public PartAttribute getAttribute() {
+        return attribute;
     }
 }

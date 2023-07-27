@@ -8,6 +8,7 @@
     tools:context=".fragments.SystemInfoMap">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/map_container_ns"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
@@ -398,6 +399,14 @@
                         android:layout_marginVertical="16dp"
                         app:textTint="@color/black" />
 
+
+
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/chart1"
+                        android:layout_width="match_parent"
+                        android:layout_height="400dp"
+                        android:layout_gravity="top|center" />
                     <HorizontalScrollView
                         android:layout_width="wrap_content"
                         android:layout_height="50dp">
@@ -439,14 +448,28 @@
 
                     </HorizontalScrollView>>
 
-
-                    <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/chart1"
+                    <androidx.core.widget.NestedScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="400dp"
-                        android:layout_gravity="top|center" />
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="300dp" >
 
+                        <com.evrencoskun.tableview.TableView
+                            android:textAlignment="center"
+                            android:id="@+id/part_list_tableview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
 
+                            app:allow_click_inside_cell="true"
+                            app:allow_click_inside_row_header="true"
+                            app:allow_click_inside_column_header="true"
+                            app:column_header_height="@dimen/default_column_header_height"
+                            app:row_header_width="@dimen/default_row_header_width"
+                            app:selected_color="@color/table_view_default_selected_background_color"
+                            app:shadow_color="@color/table_view_default_shadow_background_color"
+                            app:unselected_color="@color/table_view_default_unselected_background_color"
+                            />
+                    </androidx.core.widget.NestedScrollView>
 
 
                 </LinearLayout>
