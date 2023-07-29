@@ -1033,7 +1033,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         chart.setEnabled(true);
                         chartNoticer.setVisibility(View.INVISIBLE);
 
-                        selectOtherEntry();
                     }
                 });
             }
@@ -1122,12 +1121,16 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      */
     private void tableViewChooseDiskChunk(int origin_index) {
         if (origin_index >= selectedDriver.getPartList().size() | origin_index < 0) {
+            Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 1");
             selectedChunk = null;
             disableExistedPartActions();
             disableFreeChunkActions();
             return;
         }
         selectedChunk = selectedDriver.getPartList().get(origin_index);
+        if (selectedChunk == null) {
+            Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 2");
+        }
         /**
          * calcuate piechart index
          */
@@ -1275,6 +1278,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void selectOtherEntry() {
         int last_index = chart.getData().getDataSet().getEntryCount() - 1;
+        preventPieReselect = true;
         chart.highlightValue(last_index, 0);
     }
 
@@ -1282,6 +1286,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     public void onValueSelected(Entry e, Highlight h) {
         //prevent reselect tableview cell
         if (preventPieReselect) {
+            Log.d(TAG.SystemInforMap_TAG, "Prevented onvalueselected");
             preventPieReselect = false;
             return;
         }
@@ -1328,11 +1333,16 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             }
         }
         selectedChunk = chunk;
+        if (selectedChunk == null) {
+            Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 3");
+        }
+
     }
 
     @Override
     public void onNothingSelected() {
         Log.i("PieChart", "nothing selected");
+        Log.d(TAG.SystemInforMap_TAG, "NothingSelected set selectedChunk null");
         selectedChunk = null;
         partListTableView.getSelectionHandler().clearSelection();
         disableExistedPartActions();
@@ -1434,11 +1444,28 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         partSettings_bt.setEnabled(false);
     }
 
+    /**
+     * enable existed parts actions
+     * auto enable/disable mount/umount button
+     */
     private void enableExistedPartActions() {
-        partMount_bt.setEnabled(true);
-        partUmount_bt.setEnabled(true);
         partDelete_bt.setEnabled(true);
         partSettings_bt.setEnabled(true);
+        if (selectedChunk != null) {
+            GPTPart part = (GPTPart) selectedChunk;
+            if (part.isMounted()) {
+                Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : PART Mounted");
+                partMount_bt.setEnabled(false);
+                partUmount_bt.setEnabled(true);
+            } else {
+                Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : PART not Mounted");
+                partMount_bt.setEnabled(true);
+                partUmount_bt.setEnabled(false);
+            }
+        }else{
+            Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : NULL");
+        }
+
     }
 
     private void disableFreeChunkActions() {

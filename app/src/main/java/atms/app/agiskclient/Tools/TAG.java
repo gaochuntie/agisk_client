@@ -8,4 +8,5 @@ public class TAG {
     public static String HomeFragTag = "Home";
     public static String WorkerTAG = "Worker:";
     public static String SystemInforMap_TAG = "SystemInfo";
+    public static String GPTPart_TAG = "GPTPart";
 }

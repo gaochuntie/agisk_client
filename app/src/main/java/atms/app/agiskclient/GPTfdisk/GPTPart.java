@@ -1,5 +1,8 @@
 package atms.app.agiskclient.GPTfdisk;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.topjohnwu.superuser.Shell;
@@ -9,9 +12,13 @@ import java.io.FilePermission;
 import java.util.ArrayList;
 import java.util.List;
 
+import atms.app.agiskclient.Tools.TAG;
+
 public class GPTPart extends DiskChunk{
     private int number;
     private String code;
+
+    @NonNull
     private String name="";
 
 
@@ -125,6 +132,7 @@ public class GPTPart extends DiskChunk{
         if (rts.equals("Y")) {
             //mounted
             isMounted = true;
+            Log.d(TAG.GPTPart_TAG, "Part mounted "+number+":"+name);
             return true;
         }
         isMounted = false;

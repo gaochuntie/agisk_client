@@ -72,6 +72,10 @@ public class GPTDriver {
         if (partList==null) {
             partList = new ArrayList<>();
         }
+        //check ismounted
+        if (part.getPart_type().getPartType() != PartType.Part_Type.TYPE_FREESPACE) {
+            ((GPTPart) (part)).checIskMounted();
+        }
         partList.add(part);
     }
 
