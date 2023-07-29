@@ -105,7 +105,6 @@ import atms.app.agiskclient.aidl.workClient;
  */
 public class SystemInfoMap extends Fragment implements OnChartValueSelectedListener, View.OnClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -1082,7 +1081,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         mColumnHeaderList.add(new ColumnHeader("Filesystem"));
 
         for (int counter = 0; counter < driver.getPartList().size(); counter++) {
-            DiskChunk chunk=driver.getPartList().get(counter);
+            DiskChunk chunk = driver.getPartList().get(counter);
             List<Cell> subcell_list = new ArrayList<>();
             switch (chunk.getPart_type().getPartType()) {
                 case TYPE_FREESPACE:
@@ -1114,14 +1113,36 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         }
     }
 
-    private void tableViewChooseDiskChunk(int index) {
-        if (index >= selectedDriver.getPartList().size()) {
+    /**
+     * The origin_index is the index of item in list
+     * but in piechart I grouped small part into [other] entry
+     * so the origin_index won't fit piechart
+     *
+     * @param origin_index
+     */
+    private void tableViewChooseDiskChunk(int origin_index) {
+        if (origin_index >= selectedDriver.getPartList().size() | origin_index < 0) {
             selectedChunk = null;
             disableExistedPartActions();
             disableFreeChunkActions();
             return;
         }
-        selectedChunk = selectedDriver.getPartList().get(index);
+        selectedChunk = selectedDriver.getPartList().get(origin_index);
+        /**
+         * calcuate piechart index
+         */
+        int piechart_index = -1;
+        long threshold = (long) (0.1 * selectedDriver.getTotal_size_sector());
+        for (int i = 0; i <= origin_index; i++) {
+            DiskChunk chunk = selectedDriver.getPartList().get(i);
+            if (chunk.getSize_sector() < threshold) {
+                if (chunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+                    piechart_index++;
+                }
+                continue;
+            }
+            piechart_index++;
+        }
 
         //set pie chart select
         switch (selectedChunk.getPart_type().getPartType()) {
@@ -1130,14 +1151,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 if (part.getSize_sector() < (long) (0.1 * selectedDriver.getTotal_size_sector())) {
                     // smaller part
                     selectOtherEntry();
-                }else{
-                    selectEntry(index);
+                } else {
+                    selectEntry(piechart_index);
                 }
                 disableFreeChunkActions();
                 enableExistedPartActions();
                 break;
             case TYPE_FREESPACE:
-                selectEntry(index);
+                selectEntry(piechart_index);
                 disableExistedPartActions();
                 enableFreeChunkActions();
         }
@@ -1240,9 +1261,18 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
 
+    boolean preventPieReselect = false;
+
     private void selectEntry(int index) {
+        if (index > chart.getData().getEntryCount() - 1) {
+            //out of range
+            TipDialog.show("Out of range");
+            return;
+        }
+        preventPieReselect = true;
         chart.highlightValue(index, 0);
     }
+
     private void selectOtherEntry() {
         int last_index = chart.getData().getDataSet().getEntryCount() - 1;
         chart.highlightValue(last_index, 0);
@@ -1250,6 +1280,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     @Override
     public void onValueSelected(Entry e, Highlight h) {
+        //prevent reselect tableview cell
+        if (preventPieReselect) {
+            preventPieReselect = false;
+            return;
+        }
         if (e == null)
             return;
 
@@ -1265,6 +1300,25 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             Log.i("VAL SELECTED",
                     "Value: " + e.getY() + ", xIndex: " + e.getX()
                             + ", |  " + chunk.getPart_type().getPartType().toString());
+            int pie_index = chart.getData().getDataSet().getEntryIndex((PieEntry) e);
+            Log.d(TAG.SystemInforMap_TAG, "Piechart index " + pie_index);
+            /**
+             * calcuate original index and select in tableview
+             */
+            int origin_index = 0;
+            long threshold = (long) (0.1 * selectedDriver.getTotal_size_sector());
+            int counter = 0;
+            origin_index = selectedDriver.getPartList().indexOf(chunk);
+            Log.d(TAG.SystemInforMap_TAG, "Piechart origin index " + origin_index);
+//            for (; origin_index < selectedDriver.getPartList().size(); origin_index++) {
+//                DiskChunk ctmp=selectedDriver.getPartList().get(origin_index);
+//            }
+
+
+            partListTableView.setSelectedCell(1, origin_index);
+
+            //
+
             if (chunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
                 disableExistedPartActions();
                 enableFreeChunkActions();
@@ -1280,6 +1334,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     public void onNothingSelected() {
         Log.i("PieChart", "nothing selected");
         selectedChunk = null;
+        partListTableView.getSelectionHandler().clearSelection();
         disableExistedPartActions();
         disableFreeChunkActions();
     }
@@ -1396,6 +1451,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     /////////////////////////////////////////////////////
     NestedScrollView nestedScrollView;
+
     private void setupBasicUi(View view) {
         nestedScrollView = view.findViewById(R.id.map_container_ns);
     }
