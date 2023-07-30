@@ -7,8 +7,6 @@ import androidx.annotation.Nullable;
 
 import com.topjohnwu.superuser.Shell;
 
-import java.io.File;
-import java.io.FilePermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,12 +116,40 @@ public class GPTPart extends DiskChunk{
         isMounted = mounted;
     }
 
-    public boolean isMounted() {
+    /**
+     * This just care about the inner mount status
+     * @return
+     */
+    public boolean isMountedInner() {
         return isMounted;
     }
 
-    public boolean checIskMounted() {
+    /**
+     * This just care about the inner mount status
+     * @return
+     */
+    public boolean checIsMountedInner() {
 
+        List<String> resultList = new ArrayList<>();
+        String mountPoint_t = "/mnt/agisk_" + number + "_" + name;
+        Shell.cmd("grep -e \" "+mountPoint_t+" \" /proc/mounts >>/dev/null  && echo \"Y\" || echo \"N\"")
+                .to(resultList).exec();
+        String rts = resultList.get(resultList.size() - 1);
+        if (rts.equals("Y")) {
+            //mounted
+            isMounted = true;
+            Log.d(TAG.GPTPart_TAG, "Part mounted "+number+":"+name);
+            return true;
+        }
+        isMounted = false;
+        return false;
+    }
+
+    /**
+     * This check if the partition is mounted anywhere
+     * @return
+     */
+    public boolean checkIsMountedGlobal() {
         List<String> resultList = new ArrayList<>();
         String mountPoint_t = "/mnt/agisk_" + number + "_" + name;
         Shell.cmd("grep -e \" "+mountPoint_t+" \" /proc/mounts >>/dev/null  && echo \"Y\" || echo \"N\"")

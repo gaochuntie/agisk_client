@@ -1,22 +1,17 @@
 package atms.app.agiskclient.fragments;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,9 +23,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,10 +41,8 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.android.material.snackbar.Snackbar;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
-import com.kongzue.dialogx.dialogs.PopTip;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.kongzue.dialogx.interfaces.BaseDialog;
@@ -65,7 +56,6 @@ import org.angmarch.views.OnSpinnerItemSelectedListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +66,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.ConfigBox.XMLmod;
@@ -553,21 +542,29 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      */
     private boolean partMount() {
         if (selectedChunk == null) {
+            MessageDialog.show("Null", "No part selected", "Cancel");
             return false;
         }
         GPTPart part = (GPTPart) selectedChunk;
-        if (part.isMounted()) {
+
+        //this check is unnecessary
+        if (part.isMountedInner()) {
             //already mounted
+            autoHandleActions();
+            MessageDialog.show("Mounted", "Already mounted.See " + part.getMountPointString());
             return true;
         }
         Shell.cmd("[ -e " + part.getMountPointString() + " ] " +
                 "&& echo dirExisted || mkdir -p " + part.getMountPointString());
         String readNum = String.valueOf(part.getNumber() + 1);
         Shell.cmd("mount " + part.getDriver() + readNum + " " + part.getMountPointString());
-        if (part.isMounted()) {
-            //already mounted
+        if (part.isMountedInner()) {
+            // mounted
+            autoHandleActions();
+            MessageDialog.show("Mounted", "See " + part.getMountPointString());
             return true;
         }
+        MessageDialog.show("Failed", "Unable to mount "+part.getName()+"@"+part.getDriver());
         return false;
     }
 
@@ -577,17 +574,20 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      */
     private boolean partUmount() {
         if (selectedChunk == null) {
+            MessageDialog.show("Null", "No part selected");
             return false;
         }
         GPTPart part = (GPTPart) selectedChunk;
-        if (part.isMounted()) {
+        if (part.isMountedInner()) {
             //already mounted
             Shell.cmd("umount " + part.getMountPointString());
-            if (part.isMounted()) {
+            if (part.isMountedInner()) {
                 return false;
             }
+            autoHandleActions();
             return true;
         }
+        autoHandleActions();
         return true;
     }
 
@@ -611,13 +611,17 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         //Need DirectFunction
 
         WaitDialog.show("Deleting");
+        GPTPart part = (GPTPart) selectedChunk;
+        if (part.isMountedInner()) {
+            MessageDialog.show("Invalid", "Part is already mounted");
+        }
         //disable all related ui
         disablePartUIs();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 workClient client = new workClient(getContext(), selectedDriver.getPath());
-                client.setDirect2_PART_DELETE(((GPTPart) selectedChunk).getNumber());
+                client.setDirect2_PART_DELETE(part.getNumber());
                 boolean result = (Boolean) client.submitWork();
                 //resume ui s
                 getActivity().runOnUiThread(new Runnable() {
@@ -1413,6 +1417,22 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.part_mount_bt:
+                partMount();
+                break;
+            case R.id.part_umount_bt:
+                partUmount();
+                break;
+            case R.id.part_delete_bt:
+                partDelete();
+                break;
+            case R.id.part_new_bt:
+                partNew();
+                break;
+            case R.id.part_settings_bt:
+                partSettings(view);
+                break;
+            default:
+                break;
         }
     }
 
@@ -1453,12 +1473,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         partSettings_bt.setEnabled(true);
         if (selectedChunk != null) {
             GPTPart part = (GPTPart) selectedChunk;
-            if (part.isMounted()) {
-                Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : PART Mounted");
+            if (part.isMountedInner()) {
                 partMount_bt.setEnabled(false);
                 partUmount_bt.setEnabled(true);
             } else {
-                Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : PART not Mounted");
                 partMount_bt.setEnabled(true);
                 partUmount_bt.setEnabled(false);
             }
@@ -1474,6 +1492,29 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void enableFreeChunkActions() {
         partNew_bt.setEnabled(true);
+    }
+
+    private void autoHandleActions() {
+        if (selectedChunk == null) {
+            disableFreeChunkActions();
+            disableExistedPartActions();
+            return;
+        }
+        if (selectedChunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+            //free space
+            enableFreeChunkActions();
+            disableExistedPartActions();
+            return;
+        }
+        GPTPart part = (GPTPart) selectedChunk;
+        disableFreeChunkActions();
+        enableExistedPartActions();
+        if (part.isMountedInner()) {
+            partMount_bt.setEnabled(false);
+            return;
+        }
+        partUmount_bt.setEnabled(false);
+
     }
 
     /////////////////////////////////////////////////////
