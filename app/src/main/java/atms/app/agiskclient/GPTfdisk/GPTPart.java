@@ -129,6 +129,7 @@ public class GPTPart extends DiskChunk{
      * @return
      */
     public boolean checIsMountedInner() {
+        Log.d(TAG.GPTPart_TAG, "CheckIsMountedInner called");
 
         List<String> resultList = new ArrayList<>();
         String mountPoint_t = "/mnt/agisk_" + number + "_" + name;

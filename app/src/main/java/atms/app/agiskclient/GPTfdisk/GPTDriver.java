@@ -72,10 +72,17 @@ public class GPTDriver {
         if (partList==null) {
             partList = new ArrayList<>();
         }
+
+        /**
+         * This is a time cost function
+         * Only invoke if need
+         * But I droped the fuck addPart into a thread ^_^
+         */
         //check ismounted
         if (part.getPart_type().getPartType() != PartType.Part_Type.TYPE_FREESPACE) {
             ((GPTPart) (part)).checIsMountedInner();
         }
+        //
         partList.add(part);
     }
 

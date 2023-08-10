@@ -6,18 +6,23 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,11 +46,13 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.kongzue.dialogx.dialogs.FullScreenDialog;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.kongzue.dialogx.interfaces.BaseDialog;
+import com.kongzue.dialogx.interfaces.OnBindView;
 import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.topjohnwu.superuser.Shell;
@@ -62,6 +69,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,6 +87,7 @@ import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.TableViewUI.DataModels.Cell;
 import atms.app.agiskclient.TableViewUI.DataModels.ColumnHeader;
 import atms.app.agiskclient.TableViewUI.DataModels.RowHeader;
+import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.CompressUtils;
 import atms.app.agiskclient.Tools.DateUtils;
 import atms.app.agiskclient.Tools.FileUtils;
@@ -490,8 +499,16 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                 }
                 if (success) {
-                    TipDialog.show("Success-See " + root_dir + "/firmware_flashable_" + date + ".zip"
-                            , WaitDialog.TYPE.SUCCESS, -1);
+                    WaitDialog.dismiss();
+                    MessageDialog.show("Success",
+                            "See " + root_dir + "/firmware_flashable_" + date + ".zip",
+                            "Copy Path").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
+                        @Override
+                        public boolean onClick(MessageDialog baseDialog, View v) {
+                            ClipboardUtil.copyToClipboard(getContext(), root_dir + "/firmware_flashable_" + date + ".zip");
+                            return false;
+                        }
+                    });
                     return;
                 }
                 TipDialog.show("Generate Failed", WaitDialog.TYPE.ERROR, -1);
@@ -555,16 +572,23 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             return true;
         }
         Shell.cmd("[ -e " + part.getMountPointString() + " ] " +
-                "&& echo dirExisted || mkdir -p " + part.getMountPointString());
+                "&& echo dirExisted || mkdir -p " + part.getMountPointString()).exec();
         String readNum = String.valueOf(part.getNumber() + 1);
-        Shell.cmd("mount " + part.getDriver() + readNum + " " + part.getMountPointString());
+        Shell.cmd("mount " + part.getDriver() + readNum + " " + part.getMountPointString()).exec();
+        part.checIsMountedInner();
         if (part.isMountedInner()) {
             // mounted
             autoHandleActions();
-            MessageDialog.show("Mounted", "See " + part.getMountPointString());
+            MessageDialog.show("Mounted", "See " + part.getMountPointString(), "Copy Path").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
+                @Override
+                public boolean onClick(MessageDialog baseDialog, View v) {
+                    ClipboardUtil.copyToClipboard(v.getContext(), part.getMountPointString() + "/");
+                    return false;
+                }
+            });
             return true;
         }
-        MessageDialog.show("Failed", "Unable to mount "+part.getName()+"@"+part.getDriver());
+        MessageDialog.show("Failed", "Unable to mount " + part.getName() + "@" + part.getDriver());
         return false;
     }
 
@@ -580,8 +604,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         GPTPart part = (GPTPart) selectedChunk;
         if (part.isMountedInner()) {
             //already mounted
-            Shell.cmd("umount " + part.getMountPointString());
+            String cmd = "umount " + part.getMountPointString();
+            Shell.cmd(cmd).exec();
+            Log.d(TAG.SystemInforMap_TAG, cmd);
+            part.checIsMountedInner();
             if (part.isMountedInner()) {
+                MessageDialog.show("Failed", "Unable to umount");
                 return false;
             }
             autoHandleActions();
@@ -592,14 +620,146 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
 
-    /**
-     * async task
-     */
-    private void partNew() {
+    private void partNew(View mview) {
         //TODO
         //need DirectFunction
         //check in aide file
+        FullScreenDialog.show(new OnBindView<FullScreenDialog>(R.layout.part_new_dialog) {
+            @Override
+            public void onBind(FullScreenDialog dialog, View view) {
+                //View childView = v.findViewById(resId)...
+                TextView rangeStart = view.findViewById(R.id.newDialog_start_tv);
+                TextView sectorSize_tv = view.findViewById(R.id.newDialog_sector_size_tv);
+                TextView rangeEnd = view.findViewById(R.id.newDialog_end_tv);
+                EditText setStart = view.findViewById(R.id.newDialog_start_et);
+                EditText setEnd = view.findViewById(R.id.newDialog_end_et);
+                TextView totalTv = view.findViewById(R.id.newDialog_total_tv);
+                TextView total_byte_tv = view.findViewById(R.id.newDialog_total_byte_tv);
+                TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
+                EditText sizeEt = view.findViewById(R.id.newDialog_size_et);
+                NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
+                SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
 
+                List<String> dataset = new LinkedList<>(Arrays.asList("byte", "sector", "kib", "gib"));
+                niceSpinner.attachDataSource(dataset);
+
+                //set data
+                sectorSize_tv.setText(String.valueOf(selectedDriver.getBlock_size()));
+                rangeStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
+                rangeEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
+                setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
+                setEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
+                totalTv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                total_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                sizeEt.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+
+                //
+                seekBar.setMax(100);
+                seekBar.setProgress(100);
+
+                //
+                long minStart = selectedChunk.getStartSector() * selectedDriver.getBlock_size();
+                long maxEnd = ((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1;
+
+                setStart.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+
+                            String s = setStart.getText().toString();
+                            if (s != null && !s.equals("")) {
+                                if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
+                                    long a = 0;
+                                    try {
+                                        a = Long.parseLong(s.toString());
+                                    } catch (NumberFormatException e) {
+                                        a = 0;
+                                    }
+                                    if (a < minStart) {
+                                        setStart.setText(String.valueOf(minStart));
+                                    }
+                                    if (a > maxEnd) {
+                                        setStart.setText(String.valueOf(maxEnd));
+                                    }
+
+                                }
+                            }else {
+                                setStart.setText(String.valueOf(selectedChunk.getStartSector()*selectedDriver.getBlock_size()));
+                            }
+                        long available_total = Long.parseLong(rangeEnd.getText().toString())-Long.parseLong(setStart.getText().toString())+1;
+                        sizeEt.setText(String.valueOf(available_total));
+                        }
+
+                });
+                setEnd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        String s = setEnd.getText().toString();
+                        if (s != null && !s.equals("")) {
+                            if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
+                                long a = 0;
+                                try {
+                                    a = Long.parseLong(s.toString());
+                                } catch (NumberFormatException e) {
+                                    a = 0;
+                                }
+
+                                long start=0;
+                                try {
+                                    start = Long.parseLong(setStart.getText().toString());
+                                } catch (NumberFormatException e) {
+                                    start = maxEnd;
+                                }
+                                if (a < start) {
+                                    setEnd.setText(String.valueOf(start));
+                                }
+                                if (a > maxEnd) {
+                                    setEnd.setText(String.valueOf(maxEnd));
+
+                                }
+
+                            }
+                        }else{
+                            setEnd.setText(rangeEnd.getText());
+                        }
+
+                        //update sizeEt
+                        long available_total = Long.parseLong(rangeEnd.getText().toString())-Long.parseLong(setStart.getText().toString())+1;
+                        sizeEt.setText(String.valueOf(available_total));
+                    }
+                });
+                sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        String s = sizeEt.getText().toString();
+                        long available_total = 0;
+                        try {
+                            available_total = Long.parseLong(rangeEnd.getText().toString())-Long.parseLong(setStart.getText().toString())+1;
+                        } catch (NumberFormatException e) {
+                            available_total = 0;
+                        }
+                        if (s != null && !s.equals("")) {
+                            if ( available_total > 0) {
+                                long a = 0;
+                                try {
+                                    a = Long.parseLong(s.toString());
+                                } catch (NumberFormatException e) {
+                                    a = 0;
+                                }
+
+                                if (a > available_total) {
+                                    sizeEt.setText(String.valueOf(available_total));
+                                    return;
+                                }
+
+                            }
+                        }else{
+                            sizeEt.setText("0");
+                        }
+                    }
+                });
+            }
+        });
         return;
     }
 
@@ -612,6 +772,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
         WaitDialog.show("Deleting");
         GPTPart part = (GPTPart) selectedChunk;
+        part.checIsMountedInner();
         if (part.isMountedInner()) {
             MessageDialog.show("Invalid", "Part is already mounted");
         }
@@ -1417,18 +1578,23 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.part_mount_bt:
+                Log.d(TAG.SystemInforMap_TAG, "Mount Clicked");
                 partMount();
                 break;
             case R.id.part_umount_bt:
+                Log.d(TAG.SystemInforMap_TAG, "Umount Clicked");
                 partUmount();
                 break;
             case R.id.part_delete_bt:
+                Log.d(TAG.SystemInforMap_TAG, "Delete Clicked");
                 partDelete();
                 break;
             case R.id.part_new_bt:
-                partNew();
+                Log.d(TAG.SystemInforMap_TAG, "New Clicked");
+                partNew(view);
                 break;
             case R.id.part_settings_bt:
+                Log.d(TAG.SystemInforMap_TAG, "Settings Clicked");
                 partSettings(view);
                 break;
             default:
@@ -1480,7 +1646,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 partMount_bt.setEnabled(true);
                 partUmount_bt.setEnabled(false);
             }
-        }else{
+        } else {
             Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : NULL");
         }
 
@@ -1509,6 +1675,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         GPTPart part = (GPTPart) selectedChunk;
         disableFreeChunkActions();
         enableExistedPartActions();
+        part.checIsMountedInner();
         if (part.isMountedInner()) {
             partMount_bt.setEnabled(false);
             return;
