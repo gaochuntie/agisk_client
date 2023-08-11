@@ -90,6 +90,7 @@ import atms.app.agiskclient.TableViewUI.DataModels.RowHeader;
 import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.CompressUtils;
 import atms.app.agiskclient.Tools.DateUtils;
+import atms.app.agiskclient.Tools.DirectFunctionUtils;
 import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
@@ -629,6 +630,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             public void onBind(FullScreenDialog dialog, View view) {
                 //View childView = v.findViewById(resId)...
                 TextView rangeStart = view.findViewById(R.id.newDialog_start_tv);
+                TextView driver_tv = view.findViewById(R.id.newDialog_driver_tv);
                 TextView sectorSize_tv = view.findViewById(R.id.newDialog_sector_size_tv);
                 TextView rangeEnd = view.findViewById(R.id.newDialog_end_tv);
                 EditText setStart = view.findViewById(R.id.newDialog_start_et);
@@ -636,6 +638,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 TextView totalTv = view.findViewById(R.id.newDialog_total_tv);
                 TextView total_byte_tv = view.findViewById(R.id.newDialog_total_byte_tv);
                 TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
+                TextView available_tv = view.findViewById(R.id.newDialog_available_tv);
                 EditText sizeEt = view.findViewById(R.id.newDialog_size_et);
                 NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
                 SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
@@ -644,6 +647,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 niceSpinner.attachDataSource(dataset);
 
                 //set data
+                driver_tv.setText(selectedDriver.getPath());
                 sectorSize_tv.setText(String.valueOf(selectedDriver.getBlock_size()));
                 rangeStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
                 rangeEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
@@ -653,7 +657,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 total_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
                 new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
                 sizeEt.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
-
+                available_tv.setText(total_byte_tv.getText());
                 //
                 seekBar.setMax(100);
                 seekBar.setProgress(100);
@@ -666,29 +670,39 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     @Override
                     public void onFocusChange(View view, boolean b) {
 
-                            String s = setStart.getText().toString();
-                            if (s != null && !s.equals("")) {
-                                if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
-                                    long a = 0;
-                                    try {
-                                        a = Long.parseLong(s.toString());
-                                    } catch (NumberFormatException e) {
-                                        a = 0;
-                                    }
-                                    if (a < minStart) {
-                                        setStart.setText(String.valueOf(minStart));
-                                    }
-                                    if (a > maxEnd) {
-                                        setStart.setText(String.valueOf(maxEnd));
-                                    }
-
+                        String s = setStart.getText().toString();
+                        if (s != null && !s.equals("")) {
+                            if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
+                                long a = 0;
+                                try {
+                                    a = Long.parseLong(s.toString());
+                                } catch (NumberFormatException e) {
+                                    a = 0;
                                 }
-                            }else {
-                                setStart.setText(String.valueOf(selectedChunk.getStartSector()*selectedDriver.getBlock_size()));
+                                if (a < minStart) {
+                                    setStart.setText(String.valueOf(minStart));
+                                }
+                                if (a > maxEnd) {
+                                    setStart.setText(String.valueOf(maxEnd));
+                                }
+
                             }
-                        long available_total = Long.parseLong(rangeEnd.getText().toString())-Long.parseLong(setStart.getText().toString())+1;
-                        sizeEt.setText(String.valueOf(available_total));
+                        } else {
+                            setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
                         }
+                        //update sizeEt
+                        long size_set = Long.parseLong(setEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
+                        long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+                        sizeEt.setText(String.valueOf(size_set));
+                        //update available
+                        available_tv.setText(String.valueOf(Long.valueOf(rangeEnd.getText().toString())
+                                -
+                                Long.valueOf(setStart.getText().toString()) + 1));
+                        //update seekbar
+                        int seekbar_value = (int) (size_set / available_total) * 100;
+                        seekBar.setProgress(seekbar_value);
+                    }
+
 
                 });
                 setEnd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -704,7 +718,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                     a = 0;
                                 }
 
-                                long start=0;
+                                long start = 0;
                                 try {
                                     start = Long.parseLong(setStart.getText().toString());
                                 } catch (NumberFormatException e) {
@@ -719,13 +733,21 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 }
 
                             }
-                        }else{
+                        } else {
                             setEnd.setText(rangeEnd.getText());
                         }
 
                         //update sizeEt
-                        long available_total = Long.parseLong(rangeEnd.getText().toString())-Long.parseLong(setStart.getText().toString())+1;
-                        sizeEt.setText(String.valueOf(available_total));
+                        long size_set = Long.parseLong(setEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
+                        long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+                        sizeEt.setText(String.valueOf(size_set));
+                        //update available
+                        available_tv.setText(String.valueOf(Long.valueOf(rangeEnd.getText().toString())
+                                -
+                                Long.valueOf(setStart.getText().toString()) + 1));
+                        //update seekbar
+                        int seekbar_value = (int) (size_set / available_total) * 100;
+                        seekBar.setProgress(seekbar_value);
                     }
                 });
                 sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -734,12 +756,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         String s = sizeEt.getText().toString();
                         long available_total = 0;
                         try {
-                            available_total = Long.parseLong(rangeEnd.getText().toString())-Long.parseLong(setStart.getText().toString())+1;
+                            available_total = Long.parseLong(rangeEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
                         } catch (NumberFormatException e) {
                             available_total = 0;
                         }
                         if (s != null && !s.equals("")) {
-                            if ( available_total > 0) {
+                            if (available_total > 0) {
                                 long a = 0;
                                 try {
                                     a = Long.parseLong(s.toString());
@@ -753,9 +775,35 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 }
 
                             }
-                        }else{
+                        } else {
                             sizeEt.setText("0");
                         }
+                    }
+                });
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+                        if (fromUser) {
+                            long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+                            long start = Long.valueOf(setStart.getText().toString());
+                            long size = (available_total * i / 100);
+                            long end = start + size - 1;
+                            if (i == 0) {
+                                end++;
+                            }
+                            setEnd.setText(String.valueOf(end));
+                            sizeEt.setText(String.valueOf(size));
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
                     }
                 });
             }
@@ -781,9 +829,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                workClient client = new workClient(getContext(), selectedDriver.getPath());
-                client.setDirect2_PART_DELETE(part.getNumber());
-                boolean result = (Boolean) client.submitWork();
+                boolean result = DirectFunctionUtils.Direct2_PART_DELETE(getContext(), selectedDriver.getPath(), part.getNumber());
                 //resume ui s
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -1335,9 +1381,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     ///////////////////////////////////////
 
     private GPTDriver getPartList(String driver) {
-        workClient client = new workClient(getActivity(), driver);
-        client.setDirect1_PART_DUMPER();
-        String result = (String) client.submitWork();
+        String result = DirectFunctionUtils.Direct1_PART_DUMPER(getActivity(), driver);
         Log.d(TAG.SystemInforMap_TAG, "GPart list string : " + result);
         /**
          * result format
