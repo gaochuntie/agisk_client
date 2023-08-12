@@ -6,14 +6,11 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.SpannableString;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +75,7 @@ import java.util.Map;
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.ConfigBox.XMLmod;
 import atms.app.agiskclient.GPTfdisk.DiskChunk;
+import atms.app.agiskclient.GPTfdisk.DiskUsageView;
 import atms.app.agiskclient.GPTfdisk.GPTDriver;
 import atms.app.agiskclient.GPTfdisk.GPTPart;
 import atms.app.agiskclient.GPTfdisk.PartType;
@@ -641,10 +639,20 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 TextView available_tv = view.findViewById(R.id.newDialog_available_tv);
                 EditText sizeEt = view.findViewById(R.id.newDialog_size_et);
                 NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
+                NiceSpinner filesystemSp = view.findViewById(R.id.newDialog_filesystem_type_sp);
                 SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
+                DiskUsageView space_usage = view.findViewById(R.id.newDialog_space_usage);
 
                 List<String> dataset = new LinkedList<>(Arrays.asList("byte", "sector", "kib", "gib"));
                 niceSpinner.attachDataSource(dataset);
+                //set filesystem selector
+                List<String> filesystems = new LinkedList<>();
+                for (PartType partType : PartType.getSupportedPartType()) {
+                    if (partType.getName().contains("Android")) {
+                        filesystems.add(partType.getName());
+                    }
+                }
+                filesystemSp.attachDataSource(filesystems);
 
                 //set data
                 driver_tv.setText(selectedDriver.getPath());
@@ -658,6 +666,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
                 sizeEt.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
                 available_tv.setText(total_byte_tv.getText());
+
+
                 //
                 seekBar.setMax(100);
                 seekBar.setProgress(100);
@@ -701,6 +711,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         //update seekbar
                         int seekbar_value = (int) (size_set / available_total) * 100;
                         seekBar.setProgress(seekbar_value);
+                        //update diskusage
+                        space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
+                        ,Long.valueOf(rangeStart.getText().toString())
+                        ,Long.valueOf(rangeStart.getText().toString())
+                        ,Long.valueOf(setStart.getText().toString())
+                        ,Long.valueOf(setEnd.getText().toString()));
+                        space_usage.invalidate();
                     }
 
 
@@ -748,6 +765,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         //update seekbar
                         int seekbar_value = (int) (size_set / available_total) * 100;
                         seekBar.setProgress(seekbar_value);
+                        //update diskusage
+                        space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
+                                ,Long.valueOf(rangeStart.getText().toString())
+                                ,Long.valueOf(rangeStart.getText().toString())
+                                ,Long.valueOf(setStart.getText().toString())
+                                ,Long.valueOf(setEnd.getText().toString()));
+                        space_usage.invalidate();
                     }
                 });
                 sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -793,6 +817,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                             }
                             setEnd.setText(String.valueOf(end));
                             sizeEt.setText(String.valueOf(size));
+                            //update diskusage
+                            space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
+                                    ,Long.valueOf(rangeStart.getText().toString())
+                                    ,Long.valueOf(rangeStart.getText().toString())
+                                    ,Long.valueOf(setStart.getText().toString())
+                                    ,Long.valueOf(setEnd.getText().toString()));
+                            space_usage.invalidate();
                         }
                     }
 
@@ -1145,7 +1176,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                          */
                         for (int i = 0; i < partCount; i++) {
 
-                            if (partList.get(i).getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+                            if (partList.get(i).getPart_type().getPartType() == PartType.PartEnum.TYPE_FREESPACE) {
                                 //free chunk
                                 DiskChunk freeChunk = partList.get(i);
                                 long size = partList.get(i).getSize_sector();
@@ -1350,7 +1381,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         for (int i = 0; i <= origin_index; i++) {
             DiskChunk chunk = selectedDriver.getPartList().get(i);
             if (chunk.getSize_sector() < threshold) {
-                if (chunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+                if (chunk.getPart_type().getPartType() == PartType.PartEnum.TYPE_FREESPACE) {
                     piechart_index++;
                 }
                 continue;
@@ -1432,7 +1463,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         driver
                         , Long.valueOf(partData[2])
                         , Long.valueOf(partData[3]));
-                freeChunk.setPart_type(new PartType("*FREESPACE"));
+                freeChunk.setPart_type(PartType.getPartType("*FREESPACE"));
                 m_driver.addPart(freeChunk);
             } else {
 
@@ -1444,7 +1475,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         , Long.valueOf(partData[3]));
                 part.setName(partData[1]);
                 part.setCode(partData[4]);
-                part.setPart_type(new PartType(partData[4]));
+                part.setPart_type(PartType.getPartType(partData[4]));
 
                 m_driver.addPart(part);
             }
@@ -1533,7 +1564,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
             //
 
-            if (chunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+            if (chunk.getPart_type().getPartType() == PartType.PartEnum.TYPE_FREESPACE) {
                 disableExistedPartActions();
                 enableFreeChunkActions();
             } else {
@@ -1710,7 +1741,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             disableExistedPartActions();
             return;
         }
-        if (selectedChunk.getPart_type().getPartType() == PartType.Part_Type.TYPE_FREESPACE) {
+        if (selectedChunk.getPart_type().getPartType() == PartType.PartEnum.TYPE_FREESPACE) {
             //free space
             enableFreeChunkActions();
             disableExistedPartActions();

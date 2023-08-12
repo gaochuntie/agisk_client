@@ -79,7 +79,7 @@ public class GPTDriver {
          * But I droped the fuck addPart into a thread ^_^
          */
         //check ismounted
-        if (part.getPart_type().getPartType() != PartType.Part_Type.TYPE_FREESPACE) {
+        if (part.getPart_type().getPartType() != PartType.PartEnum.TYPE_FREESPACE) {
             ((GPTPart) (part)).checIsMountedInner();
         }
         //

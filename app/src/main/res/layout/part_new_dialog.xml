@@ -237,17 +237,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="5"
                     android:width="0dp"
-                    android:gravity="center"
+                    android:gravity="right"
                     android:text="5014515"
                     android:textColor="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:width="0dp"
-                    android:gravity="center"
-                    android:textColor="@color/black"></TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -283,7 +275,26 @@
                     android:gravity="center"
                     android:textColor="@color/black"></org.angmarch.views.NiceSpinner>
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_marginRight="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Filesystem "
+                    android:textColor="@color/black" />
+
+
+                <org.angmarch.views.NiceSpinner
+                    android:id="@+id/newDialog_filesystem_type_sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/black"></org.angmarch.views.NiceSpinner>
+            </LinearLayout>
             <SeekBar
                 android:id="@+id/newDialog_setsize_sb"
                 android:max="100"
@@ -291,6 +302,12 @@
                 android:secondaryProgress="0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+            <atms.app.agiskclient.GPTfdisk.DiskUsageView
+                android:id="@+id/newDialog_space_usage"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -305,6 +322,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:text="Cancel"
             android:background="@android:color/darker_gray" />
 
         <Button
@@ -313,6 +331,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="8dp"
             android:layout_weight="1"
+            android:text="Confirm"
             android:background="@android:color/holo_green_light" />
     </LinearLayout>
 
