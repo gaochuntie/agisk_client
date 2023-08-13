@@ -1,6 +1,7 @@
 package atms.app.agiskclient.Tools;
 
 import android.content.Context;
+import android.util.Log;
 
 import atms.app.agiskclient.aidl.workClient;
 
@@ -19,8 +20,9 @@ public class DirectFunctionUtils {
         return result;
     }
 
-    public static boolean Direct3_PART_NEW(Context context, String driver, long start_byte, long end_byte, String code) {
+    public static boolean Direct3_PART_NEW(Context context, String driver, long start_byte, long end_byte, String code,String name) {
         //TODO
+        Log.d(TAG.DIRECTFUNCTION_TAG, "Direct3: " + driver + " " + start_byte + " " + end_byte + " " + code+" "+name);
         return true;
     }
 }

@@ -605,13 +605,6 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
             start = lastBlock + 1;
         } // if
     } while (firstBlock != 0);
-
-
-
-
-
-
-
     /**
      * add part
      */
@@ -633,7 +626,7 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
             rts << ":";
             rts << part.GetHexType();
             rts << ":";
-            rts << part.GetTypeName();
+            rts << part.GetUniqueGUID();
             rts << "}";
         }
     }

@@ -158,6 +158,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_system_info_map, container, false);
+        if (Settings.getRootAccess() == false) {
+            Toast.makeText(view.getContext(), "Root Required", Toast.LENGTH_LONG).show();
+            return view;
+        }
         setupBasicUi(view);
         setInfo(view);
         setupFirmwareBackupBt(view);
@@ -632,8 +636,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 TextView sectorSize_tv = view.findViewById(R.id.newDialog_sector_size_tv);
                 TextView rangeEnd = view.findViewById(R.id.newDialog_end_tv);
                 EditText setStart = view.findViewById(R.id.newDialog_start_et);
+                Button cancel = view.findViewById(R.id.newDialog_cancel_bt);
+                Button confirm = view.findViewById(R.id.newDialog_confirm_bt);
                 EditText setEnd = view.findViewById(R.id.newDialog_end_et);
                 TextView totalTv = view.findViewById(R.id.newDialog_total_tv);
+                EditText name_et = view.findViewById(R.id.newDialog_name_et);
+                TextView percentage_tv = view.findViewById(R.id.newDialog_new_percentage_tv);
                 TextView total_byte_tv = view.findViewById(R.id.newDialog_total_byte_tv);
                 TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
                 TextView available_tv = view.findViewById(R.id.newDialog_available_tv);
@@ -648,8 +656,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 //set filesystem selector
                 List<String> filesystems = new LinkedList<>();
                 for (PartType partType : PartType.getSupportedPartType()) {
-                    if (partType.getName().contains("Android")) {
-                        filesystems.add(partType.getName());
+                    if (partType.getName().contains("Linux")) {
+                        filesystems.add(partType.getName()+
+                                " (0x"+Integer.toHexString(partType.getMbrType()).toUpperCase()
+                        +")");
                     }
                 }
                 filesystemSp.attachDataSource(filesystems);
@@ -795,7 +805,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                 if (a > available_total) {
                                     sizeEt.setText(String.valueOf(available_total));
-                                    return;
+                                } else if (a > 0) {
+                                    setEnd.setText(String.valueOf(a + Long.valueOf(setStart.getText().toString()) - 1));
                                 }
 
                             }
@@ -807,6 +818,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+                        percentage_tv.setText(String.valueOf(i));
                         if (fromUser) {
                             long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
                             long start = Long.valueOf(setStart.getText().toString());
@@ -837,8 +849,27 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                     }
                 });
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DirectFunctionUtils.Direct3_PART_NEW(getActivity(), selectedDriver.getPath(),
+                                Long.valueOf(setStart.getText().toString()),
+                                Long.valueOf(setEnd.getText().toString()),
+                                (String) filesystemSp.getSelectedItem(),
+                                name_et.getText().toString());
+                        dialog.dismiss();
+                    }
+                });
+
             }
-        });
+        }
+        );
         return;
     }
 
@@ -1343,8 +1374,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     subcell_list.add(new Cell(part.getName()));
                     subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
-                    subcell_list.add(new Cell(part.getCode()));
-                    subcell_list.add(new Cell(part.getPart_type().getFilesystemName()));
+                    String code = "0x" + Integer.toHexString(Integer.parseInt(part.getCode())).toUpperCase();
+                    subcell_list.add(new Cell(code));
+                    subcell_list.add(new Cell(part.getPart_type().getName()));
                     break;
                 default:
                     break;
@@ -1463,7 +1495,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         driver
                         , Long.valueOf(partData[2])
                         , Long.valueOf(partData[3]));
-                freeChunk.setPart_type(PartType.getPartType("*FREESPACE"));
+                freeChunk.setPart_type(PartType.getPartType(0));
                 m_driver.addPart(freeChunk);
             } else {
 
@@ -1475,7 +1507,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         , Long.valueOf(partData[3]));
                 part.setName(partData[1]);
                 part.setCode(partData[4]);
-                part.setPart_type(PartType.getPartType(partData[4]));
+                part.setPart_type(PartType.getPartType(Integer.parseInt(partData[4])));
 
                 m_driver.addPart(part);
             }

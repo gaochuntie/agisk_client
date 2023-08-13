@@ -284,7 +284,7 @@
                     android:layout_marginRight="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Filesystem "
+                    android:text="PartType "
                     android:textColor="@color/black" />
 
 
@@ -295,13 +295,55 @@
                     android:gravity="center"
                     android:textColor="@color/black"></org.angmarch.views.NiceSpinner>
             </LinearLayout>
-            <SeekBar
-                android:id="@+id/newDialog_setsize_sb"
-                android:max="100"
-                android:progress="100"
-                android:secondaryProgress="0"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/newDialog_new_percentage_tv"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:text="100"
+                    android:textColor="@color/black" />
+                <TextView
+                    android:layout_marginRight="8dp"
+                    android:layout_width="16dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:text="%"
+                    android:textColor="@color/black" />
+                <SeekBar
+                    android:layout_gravity="center"
+                    android:layout_marginRight="18dp"
+                    android:id="@+id/newDialog_setsize_sb"
+                    android:max="100"
+                    android:progress="100"
+                    android:secondaryProgress="0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                 </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_height="wrap_content"
+                    android:text="Name : "
+                    android:textColor="@color/black" />
+                <EditText
+                    android:id="@+id/newDialog_name_et"
+                    android:layout_marginRight="8dp"
+                    android:layout_width="match_parent"
+                    android:text=""
+                    android:hint="partition name (allow blank)"
+                    android:textColorHint="@color/gray"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
 
             <atms.app.agiskclient.GPTfdisk.DiskUsageView
                 android:id="@+id/newDialog_space_usage"
@@ -326,7 +368,7 @@
             android:background="@android:color/darker_gray" />
 
         <Button
-            android:id="@+id/newDialog_ok_bt"
+            android:id="@+id/newDialog_confirm_bt"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="8dp"

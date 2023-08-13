@@ -1,9 +1,13 @@
 package atms.app.agiskclient.GPTfdisk;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import atms.app.agiskclient.Tools.TAG;
 
 /**
  * Copied from below
@@ -313,6 +317,7 @@ public class PartType {
 
     public static PartType getPartType(String guidData) {
         initPartTypes();
+        Log.d(TAG.PART_TYPE_TAG, "Given guidData: " + guidData);
         if (guidData.equals("*FREESPACE")) {
             PartType partType = new PartType();
             partType.part_enum = PartEnum.TYPE_FREESPACE;
@@ -320,6 +325,27 @@ public class PartType {
         }
         for (PartType ppt : supportedPartType) {
             if (ppt.getGuidData().equals(guidData)) {
+                return ppt;
+            }
+        }
+        //unsupported part type
+        PartType unknown = new PartType();
+        unknown.part_enum = PartEnum.TYPE_TODOPART;
+        unknown.setName("Unknown Partition");
+        unknown.setMbrType(0xffff);
+        unknown.setGuidData("");
+        return unknown;
+    }
+    public static PartType getPartType(int code) {
+        Log.d(TAG.PART_TYPE_TAG, "Given mbrCode: " + Integer.toHexString(code));
+        initPartTypes();
+        if (code==0) {
+            PartType partType = new PartType();
+            partType.part_enum = PartEnum.TYPE_FREESPACE;
+            return partType;
+        }
+        for (PartType ppt : supportedPartType) {
+            if (ppt.getMbrType()==code) {
                 return ppt;
             }
         }
