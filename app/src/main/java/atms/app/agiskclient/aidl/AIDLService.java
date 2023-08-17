@@ -69,6 +69,8 @@ class AIDLService extends RootService {
 
     native boolean deletePart(String driver, int number);
 
+    native boolean newPart(String driver, long start_byte, long end_byte, String code, String name);
+
     List<String> logList = new ArrayList<>();
 
     StringBuilder logstring = new StringBuilder();
@@ -171,6 +173,12 @@ class AIDLService extends RootService {
         public boolean direct_DeletePart(String driver, int number) throws RemoteException {
             return !deletePart(driver,number);
         }
+
+        @Override
+        public boolean direct_NewPart(String driver, long start_byte, long end_byte, String code,String name) throws RemoteException {
+            return !newPart(driver,start_byte,end_byte,code,name);
+        }
+
 
         @Override
         public boolean doWork(String xml,IWorkListener iWorkListener) throws RemoteException {

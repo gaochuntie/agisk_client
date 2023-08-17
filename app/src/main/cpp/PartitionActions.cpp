@@ -674,3 +674,74 @@ Java_atms_app_agiskclient_aidl_AIDLService_deletePart(JNIEnv *env, jobject thiz,
     appendBaseLog(PARTITION_LOG, "Partition not exist. " + to_string(number));
     return 1;
 }
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_atms_app_agiskclient_aidl_AIDLService_newPart(JNIEnv *env, jobject thiz, jstring driver,
+                                                   jlong start, jlong end, jstring code,
+                                                   jstring name) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION NEW3 - Direct Function 3 ");
+    const char *name_c = env->GetStringUTFChars(name, nullptr);
+    string name_s(name_c);
+    env->ReleaseStringUTFChars(name, name_c);
+
+    const char *driver_c = env->GetStringUTFChars(driver, nullptr);
+    string driver_s(driver_c);
+    env->ReleaseStringUTFChars(driver, driver_c);
+    uint32_t usedPartNum = -1;
+
+    long length = end - start + 1;
+
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_s);
+        return 1;
+    }
+
+    uint64_t number = gptData.FindFirstFreePart();
+    if (number == -1) {
+        appendBaseLog(PARTITION_LOG, "All partition num " + to_string(number) + " is used");
+        return 1;
+    }
+    uint64_t start_sector = (uint64_t) (start / gptData.GetBlockSize());
+    uint64_t last_sector = 0;
+
+    /**
+     * 0 to take the largest chunk
+     */
+    if (length == 0) {
+        appendBaseLog(PARTITION_LOG, "Length is 0 , take the largest chunk");
+        appendBaseLog(PARTITION_LOG, "Length " + to_string(
+                (last_sector - start_sector + 1) * gptData.GetBlockSize()));
+        last_sector = gptData.FindLastInFree(start_sector);
+    } else {
+        last_sector = (uint64_t) (start + length - 1) / gptData.GetBlockSize();
+    }
+
+    for (uint64_t i = start_sector; i <= last_sector; ++i) {
+        if (!gptData.IsFree(i, &usedPartNum)) {
+            appendBaseLog(PARTITION_LOG,
+                          "Required area is used by other partition " + to_string(usedPartNum));
+            return 1;
+        }
+    }
+
+
+    if (gptData.CreatePartition(number, start_sector, last_sector)) {
+        if (!gptData.SetName(number, name_s)) {
+            appendBaseLog(PARTITION_LOG, "Unable to set name");
+            return 1;
+        }
+        gptData.JustLooking(0);
+        if (!gptData.SaveGPTData(1)) {
+            appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+            return 1;
+        }
+        appendBaseLog(PARTITION_LOG, "Done");
+        return 0;
+    }
+
+    appendBaseLog(PARTITION_LOG, "Create partition failed.");
+    return 1;
+}

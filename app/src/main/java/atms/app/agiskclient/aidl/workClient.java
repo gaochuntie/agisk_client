@@ -359,6 +359,15 @@ public class workClient {
                                 + delete_result //just for debug
                         );
                         return delete_result;
+                    case DIRECT3_PART_NEW:
+                        boolean new_result
+                                = ipc.direct_NewPart(xmlcontent, direct3_start_byte, direct3_end_byte, direct3_code, direct3_name);
+                        consoleList.add("[CLIENT  " + getClientUUID() + "] result : "
+                                // @Deprecated
+                                + new_result//just for debug
+                        );
+                        return new_result;
+
                     default:
                         return new Boolean(false);
                 }
@@ -395,7 +404,8 @@ public class workClient {
     public enum CLIENT_TYPE{
         COMMON,// return Boolean
         DIRECT1_PART_DUMP, //return String
-        DIRECT2_PART_DELETE //return boolean
+        DIRECT2_PART_DELETE ,//return boolean
+        DIRECT3_PART_NEW//return boolean
     };
     public CLIENT_TYPE client_type=CLIENT_TYPE.COMMON;
 
@@ -413,6 +423,21 @@ public class workClient {
     public void setDirect2_PART_DELETE(int number) {
         direct2_number = number;
         this.client_type = CLIENT_TYPE.DIRECT2_PART_DELETE;
+    }
+
+    /**
+     * part new
+     */
+    long direct3_start_byte=-1;
+    long direct3_end_byte=-1;
+    String direct3_code = null;
+    String direct3_name = null;
+    public void setDirect3_PART_NEW(long start_byte, long end_byte, String code,String name) {
+        direct3_start_byte = start_byte;
+        direct3_end_byte = end_byte;
+        direct3_code = code;
+        direct3_name = name;
+        this.client_type = CLIENT_TYPE.DIRECT3_PART_NEW;
     }
 
 }

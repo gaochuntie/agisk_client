@@ -21,8 +21,10 @@ public class DirectFunctionUtils {
     }
 
     public static boolean Direct3_PART_NEW(Context context, String driver, long start_byte, long end_byte, String code,String name) {
-        //TODO
         Log.d(TAG.DIRECTFUNCTION_TAG, "Direct3: " + driver + " " + start_byte + " " + end_byte + " " + code+" "+name);
-        return true;
+        workClient client = new workClient(context, driver);
+        client.setDirect3_PART_NEW(start_byte, end_byte, code, name);
+        boolean result = (Boolean) client.submitWork();
+        return result;
     }
 }

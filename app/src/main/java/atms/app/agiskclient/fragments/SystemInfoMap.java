@@ -43,6 +43,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.snackbar.Snackbar;
 import com.kongzue.dialogx.dialogs.FullScreenDialog;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
@@ -857,13 +858,41 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 });
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        DirectFunctionUtils.Direct3_PART_NEW(getActivity(), selectedDriver.getPath(),
-                                Long.valueOf(setStart.getText().toString()),
-                                Long.valueOf(setEnd.getText().toString()),
-                                (String) filesystemSp.getSelectedItem(),
-                                name_et.getText().toString());
+                    public void onClick(View view_i) {
+                        //async block
                         dialog.dismiss();
+                        WaitDialog.show("Creating partition on " + selectedDriver.getPath());
+                        disablePartUIs();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                boolean result=DirectFunctionUtils.Direct3_PART_NEW(getActivity(), selectedDriver.getPath(),
+                                        Long.valueOf(setStart.getText().toString()),
+                                        Long.valueOf(setEnd.getText().toString()),
+                                        (String) filesystemSp.getSelectedItem(),
+                                        name_et.getText().toString());
+                                WaitDialog.dismiss();
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //failed
+                                        if (!result) {
+                                            MessageDialog.show("Create Part", "Failed to create partition on " + selectedDriver.getPath());
+                                            enablePartUIs();
+                                            disableExistedPartActions();
+                                            return;
+                                        }
+                                        TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
+                                        enablePartUIs();
+                                        disableExistedPartActions();
+                                        disableFreeChunkActions();
+                                        setData(selectedDriver.getPath());
+                                    }
+                                });
+
+
+                            }
+                        }).start();
                     }
                 });
 
@@ -878,36 +907,49 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * async task
      */
     private void partDelete() {
-        //Need DirectFunction
 
+        //Need DirectFunction
         WaitDialog.show("Deleting");
         GPTPart part = (GPTPart) selectedChunk;
         part.checIsMountedInner();
         if (part.isMountedInner()) {
             MessageDialog.show("Invalid", "Part is already mounted");
+            return;
         }
-        //disable all related ui
-        disablePartUIs();
-        new Thread(new Runnable() {
+        MessageDialog.show("Delete Part", "Are you sure to delete part " + part.getName() + ":"
+                + part.getNumber() + " on " + selectedDriver.getPath(),"Delete").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
             @Override
-            public void run() {
-                boolean result = DirectFunctionUtils.Direct2_PART_DELETE(getContext(), selectedDriver.getPath(), part.getNumber());
-                //resume ui s
-                getActivity().runOnUiThread(new Runnable() {
+            public boolean onClick(MessageDialog baseDialog, View v) {
+                //disable all related ui
+                disablePartUIs();
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        enablePartUIs();
-                        if (result) {
-                            TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
-                            //reload partition table
-                            setData(selectedDriver.getPath());
-                        }
-                        TipDialog.show("Failed", WaitDialog.TYPE.ERROR, -1);
+                        boolean result = DirectFunctionUtils.Direct2_PART_DELETE(getContext(), selectedDriver.getPath(), part.getNumber());
+                        //resume ui s
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result) {
+                                    TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
+                                    //reload partition table
+                                    enablePartUIs();
+                                    disableFreeChunkActions();
+                                    disableExistedPartActions();
+                                    setData(selectedDriver.getPath());
+                                    return;
+                                }
+                                enablePartUIs();
+                                disableFreeChunkActions();
+                                enableExistedPartActions();
+                                TipDialog.show("Failed", WaitDialog.TYPE.ERROR, -1);
+                            }
+                        });
                     }
-                });
+                }).start();
+                return false;
             }
-        }).start();
-        return;
+        });
     }
 
     private void partSettings(View view) {
