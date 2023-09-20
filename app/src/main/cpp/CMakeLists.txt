@@ -30,6 +30,8 @@ add_library( # Sets the name of the library.
         DiskActions.h
         MyLog.cpp
         MyLog.h
+        SingleTools.h
+        SingleTools.cpp
         )
 
 #add_library(gpt STATIC IMPORTED)
