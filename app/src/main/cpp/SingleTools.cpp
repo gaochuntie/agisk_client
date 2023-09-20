@@ -24,6 +24,8 @@ int formatPartition(string driver,string code,string name,uint64_t number){
      * string drive_s  --the disk driver
      * string name_s --the partition name
      * uint64 number --the newly created partition number,0 start,not 1,so this is the actrue number
+     * eg: /dev/block/sda 0x8300 new_part1 32
+     * so the partition file is /dev/block/sda33
      */
 
     //failed
