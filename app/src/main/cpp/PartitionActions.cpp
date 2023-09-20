@@ -679,6 +679,7 @@ JNIEXPORT jboolean JNICALL
 Java_atms_app_agiskclient_aidl_AIDLService_newPart(JNIEnv *env, jobject thiz, jstring driver,
                                                    jlong start, jlong end, jstring code,
                                                    jstring name) {
+    //TODO implement filesystem support
     appendLogCutLine(PARTITION_LOG, "PARTITION NEW3 - Direct Function 3 ");
     const char *name_c = env->GetStringUTFChars(name, nullptr);
     string name_s(name_c);
