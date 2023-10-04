@@ -2,8 +2,8 @@
   https://github.com/gaochuntie/agisk_client/releases
   
 
-# Introduce : Agisk android app client
-    This is a project regarding all disk/partition actions as xml configuration files.
+# Introduce : Agisk android app client & GPT Partition Manager
+    This is a project regarding all disk/partition actions as xml configuration files.And include a GUI GPT Partition Manager.
     Such idea is the same as TWRP's ui-action.
     For example:
         <Action>
@@ -19,8 +19,9 @@
 # Updating progress (Workable functions and not work functions)
   * All DiskAction , note : Reserved action is enhanced to be integrated into the whole app's action. Reserved Repository is stored only in App Progress,not include Root Service Progress
   * PartitionAction :  new(1,2,3) ; delete(1,2) ; mount
+  * GPT Manager : new delete mount umount
   * Not Work : install page,advenced action,agisk twrp,settings(just useless now)
-  ** Update date 202302112327
+  ** Update date 202310040930
   
 # Developing stage.
   This project is still in developing stage,You may not be able to run it as expected.
