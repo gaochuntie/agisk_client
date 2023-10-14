@@ -211,7 +211,7 @@ public class xmlManagerFragment extends Fragment {
             @Override
             public boolean accept(File file, String s) {
                 String finename = s.toLowerCase();
-                return finename.endsWith(".xml");
+                return finename.endsWith(".xml") | finename.endsWith(".enxml");
             }
         });
 

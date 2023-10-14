@@ -166,6 +166,7 @@ public class romListData {
 
     /**
      * Must call this to set needed values from origconfig
+     * only attributions
      */
     public void initRomFromOrigConfig() {
         setId(origConfig.getAttributions().get("id"));

@@ -31,3 +31,25 @@ int formatPartition(string driver,string code,string name,uint64_t number){
     //failed
     return 1;
 }
+
+/**
+ * decrypt a encrypted string using des
+ * @param en_content is the encrypted string
+ * @param key is the des key
+ * @return decrypted string
+ */
+string doDecryptString(string en_content,string key){
+
+}
+
+/**
+ * like above
+ * @param de_content
+ * @param key
+ * @return
+ */
+string doEncryptString(string de_content,string key);
+///////
+
+string doEncryptAgiskSubXml(string de_content,string key,int flag);
+string doDecryptAgiskSubXml(string en_content,string key,int flag);

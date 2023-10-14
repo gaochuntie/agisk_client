@@ -52,6 +52,8 @@ public class XmlProcessor {
     private boolean isEncrypted = false;
     private boolean isParseSuccess = false;
 
+    private boolean isDecrypted = false;
+
     public boolean isParseSuccess() {
         return isParseSuccess;
     }
@@ -60,8 +62,13 @@ public class XmlProcessor {
         return isEncrypted;
     }
 
+    public boolean isDecrypted() {
+        return isDecrypted;
+    }
+
     /**
      * simply check file suffix, .enxml is encrypted others false
+     *
      * @param extra_path
      * @return
      */
@@ -75,7 +82,7 @@ public class XmlProcessor {
         return result;
     }
 
-    private native String decryptXml(String extra_path);
+    private native String decryptXml(String extra_path, String key, int flag);
 
     /**
      * default constructor
@@ -103,37 +110,54 @@ public class XmlProcessor {
 
     }
 
+    public XmlProcessor(String extra_path, String key, int flag) {
+        this.filename = extra_path;
+        String xmlStr = decryptXml(extra_path, key, flag);
+        if (xmlStr.length() == 0) {
+            //decrypt failed
+            isEncrypted = true;
+            isDecrypted = false;
+            isParseSuccess = false;
+            return;
+        }
+        //Log.d(TAG, "de xml : " + xmlStr);
+        StringReader sr = new StringReader(xmlStr);
+        InputSource is = new InputSource(sr);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(is);
+            isParseSuccess = true;
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            GlobalMsg.addMsg(e.getMessage());
+            e.printStackTrace();
+        }
+        isEncrypted = true;
+        isDecrypted = true;
+        isParseSuccess = true;
+    }
+
     public XmlProcessor(String extra_path) {
         this.filename = extra_path;
         if (checkIsEncrypted(extra_path)) {
-            String xmlStr = decryptXml(extra_path);
-            //Log.d(TAG, "de xml : " + xmlStr);
-            StringReader sr = new StringReader(xmlStr);
-            InputSource is = new InputSource(sr);
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = null;
-            try {
-                builder = factory.newDocumentBuilder();
-                doc = builder.parse(is);
-                isParseSuccess = true;
-            } catch (ParserConfigurationException | IOException | SAXException e) {
-                GlobalMsg.addMsg(e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            DocumentBuilderFactory factory =
-                    DocumentBuilderFactory.newInstance();
-            InputStream inputStream;
-            try {
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                inputStream = new FileInputStream(extra_path);
-                //creat a doc
-                doc = builder.parse(inputStream);
-                isParseSuccess = true;
-            } catch (ParserConfigurationException | IOException | SAXException e) {
-                GlobalMsg.addMsg(e.getMessage());
-                e.printStackTrace();
-            }
+            //no key
+            isDecrypted = false;
+            isEncrypted = true;
+
+        }
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        InputStream inputStream;
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            inputStream = new FileInputStream(extra_path);
+            //creat a doc
+            doc = builder.parse(inputStream);
+            isParseSuccess = true;
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            GlobalMsg.addMsg(e.getMessage());
+            e.printStackTrace();
         }
 
     }
@@ -256,13 +280,19 @@ public class XmlProcessor {
     }
 
 
-
     /**
      * set action list and get reserved chunks
      *
      * @param actions
      */
     public void setActions(List<ActionBase> actions) {
+
+        if (isEncrypted) {
+            if (!isDecrypted) {
+                actions.clear();
+                return;
+            }
+        }
 
         NodeList nodeList = doc.getElementsByTagName("Action");
 
@@ -301,7 +331,7 @@ public class XmlProcessor {
                                                         element3.getAttribute("name")
                                                         , element3.getAttribute("start")
                                                         , element3.getAttribute("size")
-                                                        ,element3.getAttribute("pt_number")}
+                                                        , element3.getAttribute("pt_number")}
 
                                                         , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_NEW
                                                         , element3.getAttribute("driver"))

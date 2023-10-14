@@ -31,6 +31,7 @@ import com.kongzue.dialogx.dialogs.BottomMenu;
 import com.kongzue.dialogx.dialogs.CustomDialog;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.interfaces.DialogLifecycleCallback;
 import com.kongzue.dialogx.interfaces.OnBindView;
 import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
@@ -103,7 +104,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.fab_tasksmanager).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity)getActivity()).showLogViewer();
+                ((MainActivity) getActivity()).showLogViewer();
             }
         });
     }
@@ -310,6 +311,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
     //  get romlist async
 
+
     private String[] getRomList(String category) {
         //init reserved repository first
         refreshReservedRepository();
@@ -326,27 +328,47 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                 return finename.endsWith(".xml") | finename.endsWith(".enxml");
             }
         });
-
         int id = 0;
+        id = 0;
         for (File item : filelist) {
             OrigConfig origConfig = new OrigConfig(item.getAbsolutePath());
-            if (!origConfig.isParseSuccess()) {
-                //parse xml failed
-                continue;
-            }
-            //get
-            String category_min = category.toLowerCase();
-            if (romListData.isMatchFilter(origConfig.getAttributions().get("filter"), category_min)
-                    | category_min.equals("all")) {
-                romListData rom = romListData.addRom(id);
-                rom.setOrigConfig(origConfig);
-                rom.initRomFromOrigConfig();
-                list.add(rom.getRomname());
-                id++;
-                //set reserved state
-                //same id will ignore protection
-                rom.setIsReservedProtected();
+            if (!origConfig.isEncrypted()) {
+                if (!origConfig.isParseSuccess()) {
+                    //parse xml failed
+                    continue;
+                }
+                //encrypted
+                //only attributions are available
+                //get
+                String category_min = category.toLowerCase();
+                if (romListData.isMatchFilter(origConfig.getAttributions().get("filter"), category_min)
+                        | category_min.equals("all")) {
+                    romListData rom = romListData.addRom(id);
+                    rom.setOrigConfig(origConfig);
+                    rom.initRomFromOrigConfig();
+                    list.add(rom.getRomname());
+                    id++;
+                    //set reserved state
+                    //same id will ignore protection
 
+                    //encrypted only attributions are available
+                    //rom.setIsReservedProtected();
+                }
+            } else {
+                //get
+                String category_min = category.toLowerCase();
+                if (romListData.isMatchFilter(origConfig.getAttributions().get("filter"), category_min)
+                        | category_min.equals("all")) {
+                    romListData rom = romListData.addRom(id);
+                    rom.setOrigConfig(origConfig);
+                    rom.initRomFromOrigConfig();
+                    list.add(rom.getRomname());
+                    id++;
+                    //set reserved state
+                    //same id will ignore protection
+                    rom.setIsReservedProtected();
+
+                }
             }
 
         }
@@ -359,10 +381,9 @@ public class homeFragment extends Fragment implements View.OnClickListener {
     }
 
     /**
-     * check all xmls to get reserved area
+     * check all xmls to get reserved area except [Encrypted Xml]
      */
     private void refreshReservedRepository() {
-
         ReservedAreaTools.blankRepository();
 
         File xmldir = getActivity().getExternalFilesDir("home");
@@ -371,7 +392,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean accept(File file, String s) {
                 String finename = s.toLowerCase();
-                return finename.endsWith(".xml") | finename.endsWith(".enxml");
+                return finename.endsWith(".xml") ;
             }
         });
 
@@ -577,56 +598,141 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                     state.setText(state.getText() + "Permission denied.");
                     return;
                 }
-
-                //check reserved
-                if (rom.isReservedProtected()) {
-                    action.setEnabled(false);
-                    action.setTextColor(Color.BLACK);
-                    action.setBackgroundColor(Color.LTGRAY);
-                    action.setHint("INVALID");
-                    action.setText("INVALID");
-                    state.setTextColor(Color.RED);
-                    state.setText(state.getText() + "Broke reserved-area protection , forbidden. ");
-                    return;
-                }
-
-                action.setEnabled(true);
-                state.setTextColor(Color.GREEN);
-                state.setText(state.getText() + "VALID");
-                action.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-
-                        workClient client = null;
-
-                        //Do action
-                        OrigConfig origConfig = rom.getOrigConfig();
-
-                        client = Worker.putTaskToRootService(origConfig, getActivity());
-
-                        if (client == null) {
-                            MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
-                            return;
-                        }
-                        ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
-                        ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
-                        if (client == null) {
-                            //Client poll full
-                            Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
-                        }
-
-                        //Mainly, worningbox listener only open the log viewer windows
-
-                        ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                //check encryption
+                if (rom.getOrigConfig().isEncrypted()) {
+                    if (!rom.getOrigConfig().isDecrypted()) {
+                        //encrypted
+                        action.setEnabled(true);
+                        state.setTextColor(Color.YELLOW);
+                        state.setText(state.getText() + "ENCRYPTED");
+                        action.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                ((MainActivity) getActivity()).showLogViewer();
 
+                                new InputDialog("Decrypt", "Input key to decrypt this xml " +
+                                        "and then process reserved protect check and do actions of this xml.", "go", "cancel", "")
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                int flag=-1;
+                                                try {
+                                                    flag = Integer.parseInt(String.valueOf(inputStr.charAt(0)));
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    MessageDialog.show("Error", "Invalid key");
+                                                    return false;
+                                                }
+                                                String key = inputStr.substring(1);
+                                                //dialog.dismiss();
+
+                                                Log.d(TAG.HomeFragTag, "Flag " + flag + " Key " + key);
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = rom.getOrigConfig();
+                                                switch (origConfig.doDecrypt(key, flag)) {
+                                                    case 0:
+                                                        break;
+                                                    case 1:
+                                                        //parse failed
+                                                        MessageDialog.show("FAILED", "Parse failed,maybe the key is invalid or the original xml is invalid");
+                                                        return false;
+                                                    case 2:
+                                                        //wrong key
+                                                        MessageDialog.show("FAILED", "Wrong key");
+                                                        return false;
+                                                    default:
+                                                        return false;
+                                                }
+
+                                                //devrypt success
+                                                dialog.dismiss();
+                                                client = Worker.putTaskToRootService(origConfig, getActivity());
+
+                                                if (client == null) {
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    //Client poll full
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer();
+
+                                                    }
+                                                });
+                                                //
+                                                return false;
+                                            }
+                                        })
+                                        .show();
                             }
                         });
+
+                        return;
                     }
-                });
+                    //no such situation at here
+                } else {
+                    //check reserved
+                    if (rom.isReservedProtected()) {
+                        action.setEnabled(false);
+                        action.setTextColor(Color.BLACK);
+                        action.setBackgroundColor(Color.LTGRAY);
+                        action.setHint("INVALID");
+                        action.setText("INVALID");
+                        state.setTextColor(Color.RED);
+                        state.setText(state.getText() + "Broke reserved-area protection , forbidden. ");
+                        return;
+                    }
+
+                    action.setEnabled(true);
+                    state.setTextColor(Color.GREEN);
+                    state.setText(state.getText() + "VALID");
+                    action.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+
+                            workClient client = null;
+
+                            //Do action
+                            OrigConfig origConfig = rom.getOrigConfig();
+
+                            client = Worker.putTaskToRootService(origConfig, getActivity());
+
+                            if (client == null) {
+                                MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                return;
+                            }
+                            ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                            ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                            if (client == null) {
+                                //Client poll full
+                                Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                            }
+
+                            //Mainly, worningbox listener only open the log viewer windows
+
+                            ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ((MainActivity) getActivity()).showLogViewer();
+
+                                }
+                            });
+                        }
+                    });
+                }
+
             }
         }).setMaskColor(Color.parseColor("#4D000000"));
     }

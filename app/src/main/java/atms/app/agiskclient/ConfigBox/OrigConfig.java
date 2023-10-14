@@ -20,6 +20,10 @@ public class OrigConfig {
     XmlProcessor m_xmlProcessor;
     private boolean isEncrypted = false;
 
+    public boolean isDecrypted(){
+        return m_xmlProcessor.isDecrypted();
+    }
+
     public boolean isParseSuccess() {
         return m_xmlProcessor.isParseSuccess();
     }
@@ -48,6 +52,39 @@ public class OrigConfig {
         return file_path;
     }
 
+
+    /**
+     * decrypt xml if need,this only support extra_path xml
+     * for xml_content ,it must be decrypted
+     * so there is no mean to decrypt it
+     * @param key
+     * @param flag
+     * @return 1 decrypt failed - wrong key
+     *         2 parse failed
+     *         0 ok
+     */
+    public int doDecrypt(String key,int flag){
+        if (!isEncrypted) {
+            return 0;
+        }
+        XmlProcessor xmlProcessor = new XmlProcessor(m_xmlProcessor.filename, key, flag);
+        if (!xmlProcessor.isDecrypted()){
+            //Decrypt failed
+            //TODO
+            return 1;
+        }
+        if (!xmlProcessor.isParseSuccess()){
+            //parse failed
+            //TODO
+            return 2;
+        }
+        //decrypt ok
+        attributions = xmlProcessor.getAttributes();
+        m_xmlProcessor = xmlProcessor;
+        isEncrypted = xmlProcessor.isEncrypted();
+        return 0;
+    }
+
     /**
      * extra file constructor
      *
@@ -58,9 +95,9 @@ public class OrigConfig {
         file_type = FILE_TYPE.FILE_TYPE_EXTRA;
         //parse config
         XmlProcessor xmlProcessor = new XmlProcessor(extra_path);
-        attributions = xmlProcessor.getAttributes();
         m_xmlProcessor = xmlProcessor;
         isEncrypted = xmlProcessor.isEncrypted();
+        attributions = xmlProcessor.getAttributes();
     }
 
     /**
@@ -77,7 +114,7 @@ public class OrigConfig {
         XmlProcessor xmlProcessor = new XmlProcessor(xml_content, "UTF-8");
         attributions = xmlProcessor.getAttributes();
         m_xmlProcessor = xmlProcessor;
-        isEncrypted = xmlProcessor.isEncrypted();
+        //isEncrypted = xmlProcessor.isEncrypted();
     }
 
 
