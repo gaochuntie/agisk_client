@@ -32,6 +32,12 @@ add_library( # Sets the name of the library.
         MyLog.h
         SingleTools.h
         SingleTools.cpp
+        des/b64.cpp
+        des/b64.h
+        des/encrypt.cpp
+        des/encrypt.h
+        des/vigenere.cpp
+        des/vigenere.h
         )
 
 #add_library(gpt STATIC IMPORTED)
