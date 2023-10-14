@@ -39,7 +39,8 @@ int formatPartition(string driver,string code,string name,uint64_t number){
  * @return decrypted string
  */
 string doDecryptString(string en_content,string key){
-
+    string dec = decrypt(en_content, key);
+    return dec;
 }
 
 /**
@@ -48,7 +49,10 @@ string doDecryptString(string en_content,string key){
  * @param key
  * @return
  */
-string doEncryptString(string de_content,string key);
+string doEncryptString(string de_content,string key) {
+    string enc = encrypt(de_content, key);
+    return enc;
+}
 ///////
 
 string doEncryptAgiskSubXml(string de_content,string key,int flag);
