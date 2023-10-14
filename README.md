@@ -21,6 +21,10 @@
   * PartitionAction :  new(1,2,3) ; delete(1,2) ; mount
   * GPT Manager : new delete mount umount
   * Not Work : install page,advenced action,agisk twrp,settings(just useless now)
+  * ![Image](https://github.com/gaochuntie/agisk_client/blob/dev/imgs/gpt_manager_1.jpg)
+  * ![Image](https://github.com/gaochuntie/agisk_client/blob/dev/imgs/gpt_manager_2.jpg)
+  * ![Image](https://github.com/gaochuntie/agisk_client/blob/dev/imgs/gpt_manager_new_1.jpg)
+  * ![Image](https://github.com/gaochuntie/agisk_client/blob/dev/imgs/gpt_manager_new_1.jpg)
   ** Update date 202310040930
   
 # Developing stage.
