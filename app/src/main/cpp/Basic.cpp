@@ -98,7 +98,7 @@ jstring str2jstring(JNIEnv *env, const char *pat) {
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_atms_app_agiskclient_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, jobject thiz,
-                                                                   jstring extra_path,jstring key,jint flag) {
+                                                                   jstring extra_path,jstring key,jint flag,jstring sn) {
     // TODO: implement decryptXml()
     using namespace std;
     const char *filepath = env->GetStringUTFChars(extra_path, nullptr);

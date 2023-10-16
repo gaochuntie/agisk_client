@@ -55,5 +55,7 @@ string doEncryptString(string de_content,string key) {
 }
 ///////
 
-string doEncryptAgiskSubXml(string de_content,string key,int flag);
-string doDecryptAgiskSubXml(string en_content,string key,int flag);
+string doEncryptAgiskSubXml(string de_content,string key,int flag,string sn){
+
+}
+string doDecryptAgiskSubXml(string en_content,string key,int flag,string sn);

@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // so the app can use it afterwards without interrupting
         // application flow (e.g. root permission prompt)
 
-
+        initSettings();
         initUI();
         Shell.getShell(new Shell.GetShellCallback() {
             @Override
@@ -104,6 +104,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
+
+    }
+    private void initSettings(){
+        if (Settings.getRootAccess()) {
+            List<String> result = new ArrayList<>();
+            Shell.cmd("cat /sys/devices/soc0/serial_number").to(result).exec();
+            String result_s = result.get(result.size() - 1);
+            Settings.setSerial_number(result_s);
+        }
 
     }
     private void initUI(){

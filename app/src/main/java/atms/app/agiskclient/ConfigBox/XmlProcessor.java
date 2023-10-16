@@ -33,6 +33,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
+import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.Tools.GlobalMsg;
 
 
@@ -82,7 +83,7 @@ public class XmlProcessor {
         return result;
     }
 
-    private native String decryptXml(String extra_path, String key, int flag);
+    private native String decryptXml(String extra_path, String key, int flag,String sn);
 
     /**
      * default constructor
@@ -112,7 +113,7 @@ public class XmlProcessor {
 
     public XmlProcessor(String extra_path, String key, int flag) {
         this.filename = extra_path;
-        String xmlStr = decryptXml(extra_path, key, flag);
+        String xmlStr = decryptXml(extra_path, key, flag, Settings.getSerial_number());
         if (xmlStr.length() == 0) {
             //decrypt failed
             isEncrypted = true;
