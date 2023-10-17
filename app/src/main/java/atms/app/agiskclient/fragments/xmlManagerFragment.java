@@ -9,7 +9,12 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -104,6 +109,9 @@ public class xmlManagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_xml_manager, container, false);
         fragmentInstallBinding = FragmentXmlManagerBinding.bind(view);
         initComponents();
+        setupXmlEncrypt();
+        //show xml list
+        reloadXmlItem();
         return view;
     }
 
@@ -113,7 +121,12 @@ public class xmlManagerFragment extends Fragment {
     private ImageButton helpbt;
 
     private RecyclerView xmlListManage;
-
+    private EditText enXml_path;
+    private EditText enXml_key;
+    private EditText enXml_arg;
+    private RadioGroup enXml_rg;
+    private Button enXml_en;
+    private TextView enXml_log;
     private void initComponents() {
         addnewbt = fragmentInstallBinding.installAddIbt;
         addnewbt.setOnClickListener(new View.OnClickListener() {
@@ -138,8 +151,36 @@ public class xmlManagerFragment extends Fragment {
         });
         xmlListManage=fragmentInstallBinding.xmlManageList;
 
-        //show xml list
-        reloadXmlItem();
+        enXml_en=fragmentInstallBinding.xmlEncryptBtDoencrypt;
+        enXml_arg=fragmentInstallBinding.xmlEncryptEtArgs;
+        enXml_rg=fragmentInstallBinding.xmlEncryptRg;
+        enXml_log=fragmentInstallBinding.xmlEncryptTvLog;
+        enXml_key=fragmentInstallBinding.xmlEncryptEtKey;
+        enXml_path=fragmentInstallBinding.xmlEncryptEtPath;
+        enXml_arg.setVisibility(View.GONE);
+
+
+    }
+    private void setupXmlEncrypt(){
+        enXml_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.xml_encrypt_rb_need_sn:
+                        enXml_arg.setVisibility(View.VISIBLE);
+                        break;
+                    case R.id.xml_encrypt_rb_noneed_sn:
+                        enXml_arg.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+        enXml_en.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
     private void reloadXmlItem(){
 

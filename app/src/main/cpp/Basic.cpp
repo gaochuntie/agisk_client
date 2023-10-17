@@ -129,13 +129,14 @@ Java_atms_app_agiskclient_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, jobject
     strcpy(tmp, xmlcontent);
     delete[] xmlcontent;
     //do decryption
-    //TODO decrypt xml
-
     tmp[length] = '\0';
+    const char *key_s = env->GetStringUTFChars(key, nullptr);
+    const char *sn_s = env->GetStringUTFChars(sn, nullptr);
+    string de_xml = doDecryptAgiskSubXml(tmp, key_s, flag, sn_s);
     //
     //__android_log_print(ANDROID_LOG_DEBUG,BASIC_TAG,"Xml %s", tmp);
 
-    jstring rt = str2jstring(env, tmp);
+    jstring rt = str2jstring(env, de_xml.c_str());
     delete[] tmp;
     return rt;
 

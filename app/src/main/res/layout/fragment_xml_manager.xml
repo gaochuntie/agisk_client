@@ -49,7 +49,135 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:background="@color/white"
+                app:cardBackgroundColor="#F8F8F8"
+                android:layout_margin="5dp"
+                app:cardCornerRadius="3dp"
+                android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:layout_marginLeft="4dp"
+                    android:orientation="vertical"
+                    android:background="#00FF0000"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Encrypt a xml"
+                        android:textColor="@color/black"
+                        android:textSize="18dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:text="Path : "
+                            android:gravity="center"/>
+                        <EditText
+                            android:id="@+id/xml_encrypt_et_path"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:text=""
+                            android:hint="xml to be encrypted"
+                            android:textColorHint="@color/gray"
+
+                            android:layout_height="match_parent"
+                            android:gravity="left"/>
+                        <Button
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/ic_file_foreground"/>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:text="Key  : "
+                            android:gravity="center"/>
+                        <EditText
+                            android:text=""
+                            android:id="@+id/xml_encrypt_et_key"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:hint="key for des encryption"
+                            android:textColorHint="@color/gray"
+                            android:layout_height="match_parent"
+                            android:gravity="left"/>
+
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Need serial number for encryption?"
+                        android:textColor="@color/black"/>
+                    <RadioGroup
+                        android:id="@+id/xml_encrypt_rg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/xml_encrypt_rb_need_sn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Yes"
+                            android:textColor="@color/black"
+                            android:checked="false"/>
+
+                        <RadioButton
+                            android:id="@+id/xml_encrypt_rb_noneed_sn"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            android:text="No"/>
+                    </RadioGroup>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:text="Arg  : "
+                            android:gravity="center"/>
+                        <EditText
+                            android:text=""
+                            android:id="@+id/xml_encrypt_et_args"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:hint="Serial number for des encryption"
+                            android:textColorHint="@color/gray"
+                            android:layout_height="match_parent"
+                            android:gravity="left"/>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/xml_encrypt_bt_doencrypt"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Encrypt"/>
+                    <TextView
+                        android:id="@+id/xml_encrypt_tv_log"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="log here"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

@@ -113,7 +113,18 @@ public class XmlProcessor {
 
     public XmlProcessor(String extra_path, String key, int flag) {
         this.filename = extra_path;
-        String xmlStr = decryptXml(extra_path, key, flag, Settings.getSerial_number());
+        String xmlStr="";
+        try {
+             xmlStr= decryptXml(extra_path, key, flag, Settings.getSerial_number());
+        } catch (Exception e) {
+            e.printStackTrace();
+            //decrypt failed
+            isEncrypted = true;
+            isDecrypted = false;
+            isParseSuccess = false;
+            return;
+        }
+
         if (xmlStr.length() == 0) {
             //decrypt failed
             isEncrypted = true;
