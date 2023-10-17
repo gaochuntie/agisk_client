@@ -12,6 +12,7 @@
 #include <fstream>
 #include "Basic.h"
 #include "MyLog.h"
+#include "SingleTools.h"
 
 #define BASIC_TAG "Basic.cpp"
 

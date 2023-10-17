@@ -7,6 +7,7 @@
 #include "include/gpt/gptpart.h"
 #include "include/gpt/parttypes.h"
 #include "des/encrypt.h"
+#include "tinyxml2/tinyxml2.h"
 /**
  *
  * @param driver
@@ -55,7 +56,73 @@ string doEncryptString(string de_content,string key) {
 }
 ///////
 
-string doEncryptAgiskSubXml(string de_content,string key,int flag,string sn){
+string doEncryptAgiskSubXml(string de_content,string o_key,int flag,string sn){
 
+    //parse action node
+    string action_content = ExtractActionNodeContent(de_content.c_str());
+    tinyxml2::XMLDocument xmlDoc;
+    xmlDoc.Parse(de_content.c_str());
+    string key=o_key;
+    //parse key
+    switch (flag) {
+        case 0:
+            break;
+        case 1:
+            key = doEncryptString(o_key, sn);
+            break;
+    }
+    ReplaceActionWithString(xmlDoc, doEncryptString(action_content, key));
+    tinyxml2::XMLPrinter printer;
+    xmlDoc.Print(&printer);
+    return printer.CStr();
 }
-string doDecryptAgiskSubXml(string en_content,string key,int flag,string sn);
+string doDecryptAgiskSubXml(string en_content,string o_key,int flag,string sn){
+    //parse action node
+    string action_content = ExtractActionNodeContent(en_content.c_str());
+    tinyxml2::XMLDocument xmlDoc;
+    xmlDoc.Parse(en_content.c_str());
+    string key=o_key;
+    //parse key
+    switch (flag) {
+        case 0:
+            break;
+        case 1:
+            key = doDecryptString(o_key, sn);
+            break;
+    }
+    ReplaceActionWithString(xmlDoc, doDecryptString(action_content, key));
+    tinyxml2::XMLPrinter printer;
+    xmlDoc.Print(&printer);
+    return printer.CStr();
+}
+
+std::string ExtractActionNodeContent(const char* xmlString) {
+    tinyxml2::XMLDocument xmlDoc;
+    tinyxml2::XMLError parseResult = xmlDoc.Parse(xmlString);
+
+    if (parseResult == tinyxml2::XML_SUCCESS) {
+        tinyxml2::XMLElement* rootElement = xmlDoc.FirstChildElement();
+        if (rootElement) {
+            // Assuming there's only one <Action> node, if there can be multiple, you may need to iterate through them.
+            tinyxml2::XMLElement* actionElement = rootElement->FirstChildElement("Action");
+            if (actionElement) {
+                tinyxml2::XMLPrinter printer;
+                actionElement->Accept(&printer);
+                return printer.CStr();
+            }
+        }
+    }
+
+    // Return an empty string or handle errors as needed.
+    return "";
+}
+void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string subcontent) {
+    tinyxml2::XMLElement* rootElement = xmlDoc.FirstChildElement("config");
+    if (rootElement) {
+        tinyxml2::XMLElement* actionElement = rootElement->FirstChildElement("Action");
+        if (actionElement) {
+            // Replace the content of <Action> with the encrypted string.
+            actionElement->SetText(subcontent.c_str());
+        }
+    }
+}

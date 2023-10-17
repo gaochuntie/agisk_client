@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <string>
+#include "tinyxml2/tinyxml2.h"
 
 using namespace std;
 int formatPartition(string driver,string code,string name,uint64_t number);
@@ -22,5 +23,10 @@ string doEncryptString(string de_content,string key);
 
 string doEncryptAgiskSubXml(string de_content,string key,int flag,string sn);
 string doDecryptAgiskSubXml(string en_content,string key,int flag,string sn);
+
+
+
+std::string ExtractActionNodeContent(const char* xmlString);
+void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string en_subcontent);
 #endif //MY_APPLICATION_C_SINGLETOOLS_H
 

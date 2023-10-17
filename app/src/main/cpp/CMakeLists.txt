@@ -38,6 +38,8 @@ add_library( # Sets the name of the library.
         des/encrypt.h
         des/vigenere.cpp
         des/vigenere.h
+        tinyxml2/tinyxml2.cpp
+        tinyxml2/tinyxml2.h
         )
 
 #add_library(gpt STATIC IMPORTED)
