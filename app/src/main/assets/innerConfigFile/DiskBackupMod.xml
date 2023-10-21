@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskBackupVdd</name>
+        <id>favrgawexa</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk backup vdd test</description>
+        <uuid>DVYDRCFDNFUVRTF</uuid>
+        <filter>Test</filter>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <backup length="REPLACE_LENGTH_KEY" start="REPLACE_START_KEY" destfile="REPLACE_DESTFILE_KEY"
+                driver="REPLACE_DRIVER_KEY" />
+        </DiskModification>
+    </Action>
+
+</config>

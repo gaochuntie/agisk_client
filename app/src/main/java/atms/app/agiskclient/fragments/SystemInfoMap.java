@@ -47,12 +47,14 @@ import com.google.android.material.snackbar.Snackbar;
 import com.kongzue.dialogx.dialogs.FullScreenDialog;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.dialogs.PopMenu;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.kongzue.dialogx.interfaces.BaseDialog;
 import com.kongzue.dialogx.interfaces.OnBindView;
 import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
+import com.kongzue.dialogx.interfaces.OnMenuItemClickListener;
 import com.topjohnwu.superuser.Shell;
 
 import org.angmarch.views.NiceSpinner;
@@ -629,275 +631,275 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         //need DirectFunction
         //check in aide file
         FullScreenDialog.show(new OnBindView<FullScreenDialog>(R.layout.part_new_dialog) {
-            @Override
-            public void onBind(FullScreenDialog dialog, View view) {
-                //View childView = v.findViewById(resId)...
-                TextView rangeStart = view.findViewById(R.id.newDialog_start_tv);
-                TextView driver_tv = view.findViewById(R.id.newDialog_driver_tv);
-                TextView sectorSize_tv = view.findViewById(R.id.newDialog_sector_size_tv);
-                TextView rangeEnd = view.findViewById(R.id.newDialog_end_tv);
-                EditText setStart = view.findViewById(R.id.newDialog_start_et);
-                Button cancel = view.findViewById(R.id.newDialog_cancel_bt);
-                Button confirm = view.findViewById(R.id.newDialog_confirm_bt);
-                EditText setEnd = view.findViewById(R.id.newDialog_end_et);
-                TextView totalTv = view.findViewById(R.id.newDialog_total_tv);
-                EditText name_et = view.findViewById(R.id.newDialog_name_et);
-                TextView percentage_tv = view.findViewById(R.id.newDialog_new_percentage_tv);
-                TextView total_byte_tv = view.findViewById(R.id.newDialog_total_byte_tv);
-                TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
-                TextView available_tv = view.findViewById(R.id.newDialog_available_tv);
-                EditText sizeEt = view.findViewById(R.id.newDialog_size_et);
-                NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
-                NiceSpinner filesystemSp = view.findViewById(R.id.newDialog_filesystem_type_sp);
-                SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
-                DiskUsageView space_usage = view.findViewById(R.id.newDialog_space_usage);
+                                  @Override
+                                  public void onBind(FullScreenDialog dialog, View view) {
+                                      //View childView = v.findViewById(resId)...
+                                      TextView rangeStart = view.findViewById(R.id.newDialog_start_tv);
+                                      TextView driver_tv = view.findViewById(R.id.newDialog_driver_tv);
+                                      TextView sectorSize_tv = view.findViewById(R.id.newDialog_sector_size_tv);
+                                      TextView rangeEnd = view.findViewById(R.id.newDialog_end_tv);
+                                      EditText setStart = view.findViewById(R.id.newDialog_start_et);
+                                      Button cancel = view.findViewById(R.id.newDialog_cancel_bt);
+                                      Button confirm = view.findViewById(R.id.newDialog_confirm_bt);
+                                      EditText setEnd = view.findViewById(R.id.newDialog_end_et);
+                                      TextView totalTv = view.findViewById(R.id.newDialog_total_tv);
+                                      EditText name_et = view.findViewById(R.id.newDialog_name_et);
+                                      TextView percentage_tv = view.findViewById(R.id.newDialog_new_percentage_tv);
+                                      TextView total_byte_tv = view.findViewById(R.id.newDialog_total_byte_tv);
+                                      TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
+                                      TextView available_tv = view.findViewById(R.id.newDialog_available_tv);
+                                      EditText sizeEt = view.findViewById(R.id.newDialog_size_et);
+                                      NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
+                                      NiceSpinner filesystemSp = view.findViewById(R.id.newDialog_filesystem_type_sp);
+                                      SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
+                                      DiskUsageView space_usage = view.findViewById(R.id.newDialog_space_usage);
 
-                List<String> dataset = new LinkedList<>(Arrays.asList("byte", "sector", "kib", "gib"));
-                niceSpinner.attachDataSource(dataset);
-                //set filesystem selector
-                List<String> filesystems = new LinkedList<>();
-                for (PartType partType : PartType.getSupportedPartType()) {
-                    if (partType.getName().contains("Linux")) {
-                        filesystems.add(partType.getName()+
-                                " (0x"+Integer.toHexString(partType.getMbrType()).toUpperCase()
-                        +")");
-                    }
-                }
-                filesystemSp.attachDataSource(filesystems);
+                                      List<String> dataset = new LinkedList<>(Arrays.asList("byte", "sector", "kib", "gib"));
+                                      niceSpinner.attachDataSource(dataset);
+                                      //set filesystem selector
+                                      List<String> filesystems = new LinkedList<>();
+                                      for (PartType partType : PartType.getSupportedPartType()) {
+                                          if (partType.getName().contains("Linux")) {
+                                              filesystems.add(partType.getName() +
+                                                      " (0x" + Integer.toHexString(partType.getMbrType()).toUpperCase()
+                                                      + ")");
+                                          }
+                                      }
+                                      filesystemSp.attachDataSource(filesystems);
 
-                //set data
-                driver_tv.setText(selectedDriver.getPath());
-                sectorSize_tv.setText(String.valueOf(selectedDriver.getBlock_size()));
-                rangeStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
-                rangeEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
-                setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
-                setEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
-                totalTv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
-                total_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
-                new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
-                sizeEt.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
-                available_tv.setText(total_byte_tv.getText());
-
-
-                //
-                seekBar.setMax(100);
-                seekBar.setProgress(100);
-
-                //
-                long minStart = selectedChunk.getStartSector() * selectedDriver.getBlock_size();
-                long maxEnd = ((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1;
-
-                setStart.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-
-                        String s = setStart.getText().toString();
-                        if (s != null && !s.equals("")) {
-                            if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
-                                long a = 0;
-                                try {
-                                    a = Long.parseLong(s.toString());
-                                } catch (NumberFormatException e) {
-                                    a = 0;
-                                }
-                                if (a < minStart) {
-                                    setStart.setText(String.valueOf(minStart));
-                                }
-                                if (a > maxEnd) {
-                                    setStart.setText(String.valueOf(maxEnd));
-                                }
-
-                            }
-                        } else {
-                            setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
-                        }
-                        //update sizeEt
-                        long size_set = Long.parseLong(setEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
-                        long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
-                        sizeEt.setText(String.valueOf(size_set));
-                        //update available
-                        available_tv.setText(String.valueOf(Long.valueOf(rangeEnd.getText().toString())
-                                -
-                                Long.valueOf(setStart.getText().toString()) + 1));
-                        //update seekbar
-                        int seekbar_value = (int) (size_set / available_total) * 100;
-                        seekBar.setProgress(seekbar_value);
-                        //update diskusage
-                        space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
-                        ,Long.valueOf(rangeStart.getText().toString())
-                        ,Long.valueOf(rangeStart.getText().toString())
-                        ,Long.valueOf(setStart.getText().toString())
-                        ,Long.valueOf(setEnd.getText().toString()));
-                        space_usage.invalidate();
-                    }
+                                      //set data
+                                      driver_tv.setText(selectedDriver.getPath());
+                                      sectorSize_tv.setText(String.valueOf(selectedDriver.getBlock_size()));
+                                      rangeStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
+                                      rangeEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
+                                      setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
+                                      setEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
+                                      totalTv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                                      total_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                                      new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                                      sizeEt.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                                      available_tv.setText(total_byte_tv.getText());
 
 
-                });
-                setEnd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        String s = setEnd.getText().toString();
-                        if (s != null && !s.equals("")) {
-                            if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
-                                long a = 0;
-                                try {
-                                    a = Long.parseLong(s.toString());
-                                } catch (NumberFormatException e) {
-                                    a = 0;
-                                }
+                                      //
+                                      seekBar.setMax(100);
+                                      seekBar.setProgress(100);
 
-                                long start = 0;
-                                try {
-                                    start = Long.parseLong(setStart.getText().toString());
-                                } catch (NumberFormatException e) {
-                                    start = maxEnd;
-                                }
-                                if (a < start) {
-                                    setEnd.setText(String.valueOf(start));
-                                }
-                                if (a > maxEnd) {
-                                    setEnd.setText(String.valueOf(maxEnd));
+                                      //
+                                      long minStart = selectedChunk.getStartSector() * selectedDriver.getBlock_size();
+                                      long maxEnd = ((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1;
 
-                                }
+                                      setStart.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                          @Override
+                                          public void onFocusChange(View view, boolean b) {
 
-                            }
-                        } else {
-                            setEnd.setText(rangeEnd.getText());
-                        }
+                                              String s = setStart.getText().toString();
+                                              if (s != null && !s.equals("")) {
+                                                  if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
+                                                      long a = 0;
+                                                      try {
+                                                          a = Long.parseLong(s.toString());
+                                                      } catch (NumberFormatException e) {
+                                                          a = 0;
+                                                      }
+                                                      if (a < minStart) {
+                                                          setStart.setText(String.valueOf(minStart));
+                                                      }
+                                                      if (a > maxEnd) {
+                                                          setStart.setText(String.valueOf(maxEnd));
+                                                      }
 
-                        //update sizeEt
-                        long size_set = Long.parseLong(setEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
-                        long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
-                        sizeEt.setText(String.valueOf(size_set));
-                        //update available
-                        available_tv.setText(String.valueOf(Long.valueOf(rangeEnd.getText().toString())
-                                -
-                                Long.valueOf(setStart.getText().toString()) + 1));
-                        //update seekbar
-                        int seekbar_value = (int) (size_set / available_total) * 100;
-                        seekBar.setProgress(seekbar_value);
-                        //update diskusage
-                        space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
-                                ,Long.valueOf(rangeStart.getText().toString())
-                                ,Long.valueOf(rangeStart.getText().toString())
-                                ,Long.valueOf(setStart.getText().toString())
-                                ,Long.valueOf(setEnd.getText().toString()));
-                        space_usage.invalidate();
-                    }
-                });
-                sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        String s = sizeEt.getText().toString();
-                        long available_total = 0;
-                        try {
-                            available_total = Long.parseLong(rangeEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
-                        } catch (NumberFormatException e) {
-                            available_total = 0;
-                        }
-                        if (s != null && !s.equals("")) {
-                            if (available_total > 0) {
-                                long a = 0;
-                                try {
-                                    a = Long.parseLong(s.toString());
-                                } catch (NumberFormatException e) {
-                                    a = 0;
-                                }
-
-                                if (a > available_total) {
-                                    sizeEt.setText(String.valueOf(available_total));
-                                } else if (a > 0) {
-                                    setEnd.setText(String.valueOf(a + Long.valueOf(setStart.getText().toString()) - 1));
-                                }
-
-                            }
-                        } else {
-                            sizeEt.setText("0");
-                        }
-                    }
-                });
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-                        percentage_tv.setText(String.valueOf(i));
-                        if (fromUser) {
-                            long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
-                            long start = Long.valueOf(setStart.getText().toString());
-                            long size = (available_total * i / 100);
-                            long end = start + size - 1;
-                            if (i == 0) {
-                                end++;
-                            }
-                            setEnd.setText(String.valueOf(end));
-                            sizeEt.setText(String.valueOf(size));
-                            //update diskusage
-                            space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
-                                    ,Long.valueOf(rangeStart.getText().toString())
-                                    ,Long.valueOf(rangeStart.getText().toString())
-                                    ,Long.valueOf(setStart.getText().toString())
-                                    ,Long.valueOf(setEnd.getText().toString()));
-                            space_usage.invalidate();
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                });
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-                confirm.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view_i) {
-                        //async block
-                        dialog.dismiss();
-                        WaitDialog.show("Creating partition on " + selectedDriver.getPath());
-                        disablePartUIs();
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                boolean result=DirectFunctionUtils.Direct3_PART_NEW(getActivity(), selectedDriver.getPath(),
-                                        Long.valueOf(setStart.getText().toString()),
-                                        Long.valueOf(setEnd.getText().toString()),
-                                        (String) filesystemSp.getSelectedItem(),
-                                        name_et.getText().toString());
-                                WaitDialog.dismiss();
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //failed
-                                        if (!result) {
-                                            MessageDialog.show("Create Part", "Failed to create partition on " + selectedDriver.getPath());
-                                            enablePartUIs();
-                                            disableExistedPartActions();
-                                            return;
-                                        }
-                                        TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
-                                        enablePartUIs();
-                                        disableExistedPartActions();
-                                        disableFreeChunkActions();
-                                        setData(selectedDriver.getPath());
-                                    }
-                                });
+                                                  }
+                                              } else {
+                                                  setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
+                                              }
+                                              //update sizeEt
+                                              long size_set = Long.parseLong(setEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
+                                              long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+                                              sizeEt.setText(String.valueOf(size_set));
+                                              //update available
+                                              available_tv.setText(String.valueOf(Long.valueOf(rangeEnd.getText().toString())
+                                                      -
+                                                      Long.valueOf(setStart.getText().toString()) + 1));
+                                              //update seekbar
+                                              int seekbar_value = (int) (size_set / available_total) * 100;
+                                              seekBar.setProgress(seekbar_value);
+                                              //update diskusage
+                                              space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
+                                                      , Long.valueOf(rangeStart.getText().toString())
+                                                      , Long.valueOf(rangeStart.getText().toString())
+                                                      , Long.valueOf(setStart.getText().toString())
+                                                      , Long.valueOf(setEnd.getText().toString()));
+                                              space_usage.invalidate();
+                                          }
 
 
-                            }
-                        }).start();
-                    }
-                });
+                                      });
+                                      setEnd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                          @Override
+                                          public void onFocusChange(View view, boolean b) {
+                                              String s = setEnd.getText().toString();
+                                              if (s != null && !s.equals("")) {
+                                                  if (minStart != -1 && maxEnd != -1) {//最大值和最小值自设
+                                                      long a = 0;
+                                                      try {
+                                                          a = Long.parseLong(s.toString());
+                                                      } catch (NumberFormatException e) {
+                                                          a = 0;
+                                                      }
 
-            }
-        }
+                                                      long start = 0;
+                                                      try {
+                                                          start = Long.parseLong(setStart.getText().toString());
+                                                      } catch (NumberFormatException e) {
+                                                          start = maxEnd;
+                                                      }
+                                                      if (a < start) {
+                                                          setEnd.setText(String.valueOf(start));
+                                                      }
+                                                      if (a > maxEnd) {
+                                                          setEnd.setText(String.valueOf(maxEnd));
+
+                                                      }
+
+                                                  }
+                                              } else {
+                                                  setEnd.setText(rangeEnd.getText());
+                                              }
+
+                                              //update sizeEt
+                                              long size_set = Long.parseLong(setEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
+                                              long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+                                              sizeEt.setText(String.valueOf(size_set));
+                                              //update available
+                                              available_tv.setText(String.valueOf(Long.valueOf(rangeEnd.getText().toString())
+                                                      -
+                                                      Long.valueOf(setStart.getText().toString()) + 1));
+                                              //update seekbar
+                                              int seekbar_value = (int) (size_set / available_total) * 100;
+                                              seekBar.setProgress(seekbar_value);
+                                              //update diskusage
+                                              space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
+                                                      , Long.valueOf(rangeStart.getText().toString())
+                                                      , Long.valueOf(rangeStart.getText().toString())
+                                                      , Long.valueOf(setStart.getText().toString())
+                                                      , Long.valueOf(setEnd.getText().toString()));
+                                              space_usage.invalidate();
+                                          }
+                                      });
+                                      sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                          @Override
+                                          public void onFocusChange(View view, boolean b) {
+                                              String s = sizeEt.getText().toString();
+                                              long available_total = 0;
+                                              try {
+                                                  available_total = Long.parseLong(rangeEnd.getText().toString()) - Long.parseLong(setStart.getText().toString()) + 1;
+                                              } catch (NumberFormatException e) {
+                                                  available_total = 0;
+                                              }
+                                              if (s != null && !s.equals("")) {
+                                                  if (available_total > 0) {
+                                                      long a = 0;
+                                                      try {
+                                                          a = Long.parseLong(s.toString());
+                                                      } catch (NumberFormatException e) {
+                                                          a = 0;
+                                                      }
+
+                                                      if (a > available_total) {
+                                                          sizeEt.setText(String.valueOf(available_total));
+                                                      } else if (a > 0) {
+                                                          setEnd.setText(String.valueOf(a + Long.valueOf(setStart.getText().toString()) - 1));
+                                                      }
+
+                                                  }
+                                              } else {
+                                                  sizeEt.setText("0");
+                                              }
+                                          }
+                                      });
+                                      seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                          @Override
+                                          public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+                                              percentage_tv.setText(String.valueOf(i));
+                                              if (fromUser) {
+                                                  long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+                                                  long start = Long.valueOf(setStart.getText().toString());
+                                                  long size = (available_total * i / 100);
+                                                  long end = start + size - 1;
+                                                  if (i == 0) {
+                                                      end++;
+                                                  }
+                                                  setEnd.setText(String.valueOf(end));
+                                                  sizeEt.setText(String.valueOf(size));
+                                                  //update diskusage
+                                                  space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
+                                                          , Long.valueOf(rangeStart.getText().toString())
+                                                          , Long.valueOf(rangeStart.getText().toString())
+                                                          , Long.valueOf(setStart.getText().toString())
+                                                          , Long.valueOf(setEnd.getText().toString()));
+                                                  space_usage.invalidate();
+                                              }
+                                          }
+
+                                          @Override
+                                          public void onStartTrackingTouch(SeekBar seekBar) {
+
+                                          }
+
+                                          @Override
+                                          public void onStopTrackingTouch(SeekBar seekBar) {
+
+                                          }
+                                      });
+                                      cancel.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view) {
+                                              dialog.dismiss();
+                                          }
+                                      });
+                                      confirm.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view_i) {
+                                              //async block
+                                              dialog.dismiss();
+                                              WaitDialog.show("Creating partition on " + selectedDriver.getPath());
+                                              disablePartUIs();
+                                              new Thread(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      boolean result = DirectFunctionUtils.Direct3_PART_NEW(getActivity(), selectedDriver.getPath(),
+                                                              Long.valueOf(setStart.getText().toString()),
+                                                              Long.valueOf(setEnd.getText().toString()),
+                                                              (String) filesystemSp.getSelectedItem(),
+                                                              name_et.getText().toString());
+                                                      WaitDialog.dismiss();
+                                                      getActivity().runOnUiThread(new Runnable() {
+                                                          @Override
+                                                          public void run() {
+                                                              //failed
+                                                              if (!result) {
+                                                                  MessageDialog.show("Create Part", "Failed to create partition on " + selectedDriver.getPath());
+                                                                  enablePartUIs();
+                                                                  disableExistedPartActions();
+                                                                  return;
+                                                              }
+                                                              TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
+                                                              enablePartUIs();
+                                                              disableExistedPartActions();
+                                                              disableFreeChunkActions();
+                                                              setData(selectedDriver.getPath());
+                                                          }
+                                                      });
+
+
+                                                  }
+                                              }).start();
+                                          }
+                                      });
+
+                                  }
+                              }
         );
         return;
     }
@@ -917,7 +919,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             return;
         }
         MessageDialog.show("Delete Part", "Are you sure to delete part " + part.getName() + ":"
-                + part.getNumber() + " on " + selectedDriver.getPath(),"Delete").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
+                + part.getNumber() + " on " + selectedDriver.getPath(), "Delete").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
             @Override
             public boolean onClick(MessageDialog baseDialog, View v) {
                 //disable all related ui
@@ -954,6 +956,168 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void partSettings(View view) {
         //Give dialog
+        PopMenu.show(new String[]{"Flash", "Backup", "Check", "Fix"})
+                .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
+                    @Override
+                    public boolean onClick(PopMenu dialog, CharSequence text, int index) {
+                        switch (index) {
+                            case 0:
+                                //flash
+                                new InputDialog("Flash", "flash image to " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName(), "Go", "Cancel", "/sdcard/?.img")
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                if (inputStr.length() == 0) {
+                                                    return false;
+                                                }
+                                                StringBuilder sb = new StringBuilder();
+                                                InputStream is = null;
+                                                try {
+                                                    is = getActivity().getAssets().open("innerConfigFile/DiskWriteMod.xml");
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                                                    String str;
+                                                    GPTPart part = (GPTPart) selectedChunk;
+                                                    while ((str = br.readLine()) != null) {
+                                                        if (str.contains(XMLmod.REPLACE_DRIVER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DRIVER_KEY, part.getDriver());
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_START_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_START_KEY, String.valueOf(part.getStartBytes()));
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_LENGTH_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_LENGTH_KEY, String.valueOf(part.getLengthBytes()));
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_RAW_FILE_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_RAW_FILE_KEY, inputStr);
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_OFFSET_RAW_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_OFFSET_RAW_KEY, "0");
+                                                        }
+                                                        sb.append(str);
+                                                    }
+                                                    br.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+
+                                                Log.d("SYSTEM_MAP", sb.toString());
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
+
+                                                client = Worker.putTaskToRootService(origConfig
+                                                        , getActivity());
+
+                                                if (client == null) {
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer(1);
+
+                                                    }
+                                                });
+                                                return false;
+                                            }
+                                        })
+                                        .show();
+                                break;
+                            case 1:
+                                //backup
+                                new InputDialog("Backup", "Backup " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName()+" to ?", "Go", "Cancel", "/sdcard/"+((GPTPart) selectedChunk).getName()+".img")
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                if (inputStr.length() == 0) {
+                                                    return false;
+                                                }
+                                                StringBuilder sb = new StringBuilder();
+                                                InputStream is = null;
+                                                try {
+                                                    is = getActivity().getAssets().open("innerConfigFile/DiskBackupMod.xml");
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                                                    String str;
+                                                    GPTPart part = (GPTPart) selectedChunk;
+                                                    while ((str = br.readLine()) != null) {
+                                                        if (str.contains(XMLmod.REPLACE_DRIVER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DRIVER_KEY, part.getDriver());
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_START_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_START_KEY, String.valueOf(part.getStartBytes()));
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_LENGTH_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_LENGTH_KEY, String.valueOf(part.getLengthBytes()));
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_DESTFILE_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DESTFILE_KEY, inputStr);
+                                                        }
+                                                        sb.append(str);
+                                                    }
+                                                    br.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+
+                                                Log.d("SYSTEM_MAP", sb.toString());
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
+
+                                                client = Worker.putTaskToRootService(origConfig
+                                                        , getActivity());
+
+                                                if (client == null) {
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer(1);
+
+                                                    }
+                                                });
+                                                return false;
+                                            }
+                                        })
+                                        .show();
+                                break;
+                            case 2:
+                                //check
+
+                                break;
+                            case 3:
+                                //fix
+
+                                break;
+                        }
+                        return false;
+                    }
+                });
     }
 
 

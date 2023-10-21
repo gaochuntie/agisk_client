@@ -64,6 +64,12 @@ public class GPTPart extends DiskChunk{
     public long getStartSector() {
         return startSector;
     }
+    public long getStartBytes(){
+        return (getStartSector() * getSize_sector());
+    }
+    public long getEndBytes(){
+        return ((getEndSector()+ 1) * getSize_sector() - 1);
+    }
 
     public void setStartSector(long startSector) {
         super.startSector = startSector;
@@ -84,7 +90,9 @@ public class GPTPart extends DiskChunk{
     public void setSize_sector(long size_sector) {
         super.size_sector = size_sector;
     }
-
+    public long getLengthBytes(){
+        return (getEndBytes() - getStartBytes() + 1);
+    }
     @Nullable
     public PartType getPart_type() {
         return part_type;

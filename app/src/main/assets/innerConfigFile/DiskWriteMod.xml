@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>DiskWriteVdd</name>
+        <id>ntdrbyrd</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>disk write test</description>
+        <uuid>BTDBDTVGRCDRVTDVFDC</uuid>
+        <filter>Test</filter>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <DiskModification>
+            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <write start="REPLACE_START_KEY" length="REPLACE_LENGTH_KEY" raw_file="REPLACE_RAW_FILE_KEY" offset_raw="REPLACE_OFFSET_RAW_KEY" driver="REPLACE_DRIVER_KEY" />
+        </DiskModification>
+    </Action>
+
+</config>
