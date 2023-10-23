@@ -17,9 +17,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -285,7 +287,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
         // Initialize the ListView
         ListView listViewItems = dialogView.findViewById(R.id.listViewItems);
-
+        Switch selectAll = dialogView.findViewById(R.id.fw_dialog_list_items_switch);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_multiple_choice, fileListWithSize);
         listViewItems.setAdapter(adapter);
@@ -305,6 +307,27 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     selectedItems.remove(filename);
                 } else {
                     selectedItems.add(filename);
+                }
+            }
+        });
+        selectAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    selectedItems.clear();
+                    listViewItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    for (int i = 0; i < fileListWithSize.size(); i++) {
+                        String filename = block_dev.keySet().toArray(new String[0])[i];
+                        listViewItems.setItemChecked(i, true);
+                        selectedItems.add(filename);
+                    }
+                }else{
+                    selectedItems.clear();
+                    listViewItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    for (int i = 0; i < fileListWithSize.size(); i++) {
+                        String filename = block_dev.keySet().toArray(new String[0])[i];
+                        listViewItems.setItemChecked(i, false);
+                    }
                 }
             }
         });
@@ -328,7 +351,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 generateFirmwareFlashable(selectedMap);
             }
         });
-
+        //select all
         // Show the dialog
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
