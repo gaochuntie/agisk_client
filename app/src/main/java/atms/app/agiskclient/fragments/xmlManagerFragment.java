@@ -1,10 +1,18 @@
 package atms.app.agiskclient.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +23,10 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -28,6 +39,14 @@ import com.kongzue.dialogx.dialogs.PopMenu;
 import com.kongzue.dialogx.dialogs.PopTip;
 import com.kongzue.dialogx.interfaces.OnIconChangeCallBack;
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener;
+import com.molihuan.pathselector.PathSelector;
+import com.molihuan.pathselector.entity.FileBean;
+import com.molihuan.pathselector.entity.FontBean;
+import com.molihuan.pathselector.fragment.BasePathSelectFragment;
+import com.molihuan.pathselector.listener.CommonItemListener;
+import com.molihuan.pathselector.listener.FileItemListener;
+import com.molihuan.pathselector.utils.MConstants;
+import com.molihuan.pathselector.utils.Mtools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,6 +61,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.adapter.xmlListAdapter;
 import atms.app.agiskclient.databinding.FragmentXmlManagerBinding;
@@ -102,8 +122,7 @@ public class xmlManagerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_xml_manager, container, false);
@@ -126,7 +145,9 @@ public class xmlManagerFragment extends Fragment {
     private EditText enXml_arg;
     private RadioGroup enXml_rg;
     private Button enXml_en;
+    private Button enxml_openfile_bt;
     private TextView enXml_log;
+
     private void initComponents() {
         addnewbt = fragmentInstallBinding.installAddIbt;
         addnewbt.setOnClickListener(new View.OnClickListener() {
@@ -149,19 +170,24 @@ public class xmlManagerFragment extends Fragment {
                 showHelpPopWin();
             }
         });
-        xmlListManage=fragmentInstallBinding.xmlManageList;
+        xmlListManage = fragmentInstallBinding.xmlManageList;
 
-        enXml_en=fragmentInstallBinding.xmlEncryptBtDoencrypt;
-        enXml_arg=fragmentInstallBinding.xmlEncryptEtArgs;
-        enXml_rg=fragmentInstallBinding.xmlEncryptRg;
-        enXml_log=fragmentInstallBinding.xmlEncryptTvLog;
-        enXml_key=fragmentInstallBinding.xmlEncryptEtKey;
-        enXml_path=fragmentInstallBinding.xmlEncryptEtPath;
+        enXml_en = fragmentInstallBinding.xmlEncryptBtDoencrypt;
+        enXml_arg = fragmentInstallBinding.xmlEncryptEtArgs;
+        enXml_rg = fragmentInstallBinding.xmlEncryptRg;
+        enXml_log = fragmentInstallBinding.xmlEncryptTvLog;
+        enXml_key = fragmentInstallBinding.xmlEncryptEtKey;
+        enXml_path = fragmentInstallBinding.xmlEncryptEtPath;
         enXml_arg.setVisibility(View.GONE);
+        enxml_openfile_bt = fragmentInstallBinding.xmlEncryptBtOpenfile;
 
 
     }
-    private void setupXmlEncrypt(){
+
+
+    private static final int PICK_XML_FILE_NEW = 2; // Unique request code
+
+    private void setupXmlEncrypt() {
         enXml_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -181,14 +207,39 @@ public class xmlManagerFragment extends Fragment {
 
             }
         });
+        enxml_openfile_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //如果没有权限会自动申请权限
+                PathSelector.build(getActivity(), MConstants.BUILD_DIALOG)//Dialog构建方式
+                        .setSelectFileTypes("xml")
+                        .setShowFileTypes("xml","enxml")
+                        .setRadio()
+                        .setTitlebarMainTitle(new FontBean("Choose Xml"))
+                        .setAlwaysShowHandleFragment(false)
+                        .setFileItemListener(//设置文件item点击回调(点击是文件才会回调,如果点击是文件夹则不会)
+                                new FileItemListener() {
+                                    @Override
+                                    public boolean onClick(View v, FileBean file, String currentPath, BasePathSelectFragment pathSelectFragment) {
+                                        Mtools.toast(file.getPath());
+                                        enXml_path.setText(file.getPath());
+                                        pathSelectFragment.close();
+                                        return false;
+                                    }
+                                }
+                        )
+                        .show();//开始构建
+            }
+        });
     }
-    private void reloadXmlItem(){
 
-        Context context=this.getContext();
+    private void reloadXmlItem() {
+
+        Context context = this.getContext();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                List<xmlListAdapter.xmlItem> data=getxmllist();
+                List<xmlListAdapter.xmlItem> data = getxmllist();
                 if (data == null) {
                     return;
                 }
@@ -206,41 +257,37 @@ public class xmlManagerFragment extends Fragment {
         }).start();
 
 
-
     }
 
     private void showAddAction() {
-        com.kongzue.dialogx.dialogs.PopMenu.show(new String[]{"Create", "Import"})
-                .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
-                    @Override
-                    public boolean onClick(PopMenu dialog, CharSequence text, int index) {
-                        switch (index) {
-                            case 0:
+        com.kongzue.dialogx.dialogs.PopMenu.show(new String[]{"Create", "Import"}).setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
+            @Override
+            public boolean onClick(PopMenu dialog, CharSequence text, int index) {
+                switch (index) {
+                    case 0:
 
-                                createXml();
-                                break;
-                            case 1:
-                                importXml();
-                                break;
-                            default:
-                                break;
-                        }
-                        return false;
-                    }
-                })
-                .setOnIconChangeCallBack(new OnIconChangeCallBack<PopMenu>() {
-                    @Override
-                    public int getIcon(PopMenu dialog, int index, String menuText) {
-                        switch (index) {
-                            case 0:
-                                return R.mipmap.add;
-                            case 1:
-                                return R.mipmap.download_circled;
-                        }
-                        return 0;
-                    }
-                })
-                .setAlignGravity(Gravity.CENTER);
+                        createXml();
+                        break;
+                    case 1:
+                        importXml();
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        }).setOnIconChangeCallBack(new OnIconChangeCallBack<PopMenu>() {
+            @Override
+            public int getIcon(PopMenu dialog, int index, String menuText) {
+                switch (index) {
+                    case 0:
+                        return R.mipmap.add;
+                    case 1:
+                        return R.mipmap.download_circled;
+                }
+                return 0;
+            }
+        }).setAlignGravity(Gravity.CENTER);
 
     }
 
@@ -257,8 +304,8 @@ public class xmlManagerFragment extends Fragment {
         });
 
         for (int i = 0; i < filelist.length; i++) {
-            xmlListAdapter.xmlItem item=new xmlListAdapter.xmlItem(i,filelist[i]);
-            item.setPath(xmldir+"/"+filelist[i]);
+            xmlListAdapter.xmlItem item = new xmlListAdapter.xmlItem(i, filelist[i]);
+            item.setPath(xmldir + "/" + filelist[i]);
             xmlItemList.add(item);
 
         }
@@ -275,29 +322,27 @@ public class xmlManagerFragment extends Fragment {
     }
 
     private void showHelpPopWin() {
-        BottomMenu.show(new String[]{"Brief", "Home", "Install", "Map", "About"})
-                .setTitle("Help Mannual")
-                .setOnMenuItemClickListener(new OnMenuItemClickListener<BottomMenu>() {
-                    @Override
-                    public boolean onClick(BottomMenu dialog, CharSequence text, int index) {
-                        switch (index) {
-                            case 0:
-                                MessageDialog.show(text.toString(), getContext().getString(R.string.Brief));
-                                break;
-                            case 1:
-                                break;
-                            case 2:
-                                break;
-                            case 3:
-                                break;
-                            case 4:
-                                break;
-                            default:
-                                break;
-                        }
-                        return true;
-                    }
-                });
+        BottomMenu.show(new String[]{"Brief", "Home", "Install", "Map", "About"}).setTitle("Help Mannual").setOnMenuItemClickListener(new OnMenuItemClickListener<BottomMenu>() {
+            @Override
+            public boolean onClick(BottomMenu dialog, CharSequence text, int index) {
+                switch (index) {
+                    case 0:
+                        MessageDialog.show(text.toString(), getContext().getString(R.string.Brief));
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
 
     }
 
@@ -332,8 +377,7 @@ public class xmlManagerFragment extends Fragment {
             //文件中的内容
             String content = result.toString();
 
-            FileOutputStream os = new FileOutputStream(getContext().getExternalFilesDir("home")
-                    .getAbsoluteFile() + "/" + uri.getLastPathSegment());
+            FileOutputStream os = new FileOutputStream(getContext().getExternalFilesDir("home").getAbsoluteFile() + "/" + uri.getLastPathSegment());
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             bw.write(content.toCharArray());
             bw.flush();
@@ -363,9 +407,17 @@ public class xmlManagerFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PICK_XML_FILE:
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     copyXmlTOPrivateStorage(data.getData());
                     reloadXmlItem();
+                }
+                break;
+            case PICK_XML_FILE_NEW:
+                if (resultCode == RESULT_OK) {
+                    Uri selectedFileUri = data.getData();
+                    if (selectedFileUri != null) {
+                        enXml_path.setText(selectedFileUri.getPath());
+                    }
                 }
                 break;
             default:

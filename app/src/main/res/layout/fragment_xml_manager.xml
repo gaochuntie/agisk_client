@@ -72,11 +72,11 @@
                         android:textSize="18dp" />
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:text="Path : "
                             android:gravity="center"/>
@@ -87,10 +87,10 @@
                             android:text=""
                             android:hint="xml to be encrypted"
                             android:textColorHint="@color/gray"
-
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="left"/>
                         <Button
+                            android:id="@+id/xml_encrypt_bt__openfile"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:background="@drawable/ic_file_foreground"/>
@@ -98,11 +98,11 @@
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:text="Key  : "
                             android:gravity="center"/>
@@ -113,7 +113,7 @@
                             android:layout_weight="1"
                             android:hint="key for des encryption"
                             android:textColorHint="@color/gray"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="left"/>
 
                     </LinearLayout>
@@ -141,16 +141,16 @@
                             android:textColor="@color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checked="false"
+                            android:checked="true"
                             android:text="No"/>
                     </RadioGroup>
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:text="Arg  : "
                             android:gravity="center"/>
@@ -161,7 +161,7 @@
                             android:layout_weight="1"
                             android:hint="Serial number for des encryption"
                             android:textColorHint="@color/gray"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="left"/>
                     </LinearLayout>
 

@@ -3,6 +3,8 @@ package atms.app.agiskclient.Tools;
 import android.content.Context;
 import android.util.Log;
 
+import java.time.LocalDate;
+
 import atms.app.agiskclient.aidl.workClient;
 
 public class DirectFunctionUtils {
@@ -24,6 +26,14 @@ public class DirectFunctionUtils {
         Log.d(TAG.DIRECTFUNCTION_TAG, "Direct3: " + driver + " " + start_byte + " " + end_byte + " " + code+" "+name);
         workClient client = new workClient(context, driver);
         client.setDirect3_PART_NEW(start_byte, end_byte, code, name);
+        boolean result = (Boolean) client.submitWork();
+        return result;
+    }
+
+    public static boolean Direct4_FILE_FORCEWRITE(Context context, String content, String dest) {
+        Log.d(TAG.DIRECTFUNCTION_TAG, "Direct4: to "+dest);
+        workClient client = new workClient(context,"");
+        client.setDirect4_FILE_FORCEWRITE(content, dest);
         boolean result = (Boolean) client.submitWork();
         return result;
     }

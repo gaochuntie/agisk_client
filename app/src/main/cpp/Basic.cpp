@@ -190,3 +190,20 @@ Java_atms_app_agiskclient_Tools_GlobalMsg_readLog(JNIEnv *env, jclass clazz, jst
 
     return env->NewStringUTF(ll.c_str());
 }
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_atms_app_agiskclient_aidl_AIDLService_forceWriteToFileWithRoot(JNIEnv *env, jobject thiz,
+                                                                    jstring content, jstring dest) {
+    const char *content_s = env->GetStringUTFChars(content, nullptr);
+    string content_ss(content_s);
+    env->ReleaseStringUTFChars(content, content_s);
+
+    const char *dest_s = env->GetStringUTFChars(dest, nullptr);
+    string dest_ss(dest_s);
+    env->ReleaseStringUTFChars(dest, dest_s);
+
+    if (WriteToFile(content_ss, dest_ss)!=0){
+        return false;
+    }
+    return true;
+}

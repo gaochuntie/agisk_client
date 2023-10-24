@@ -2,6 +2,7 @@
 // Created by jackmaxpale on 2023/9/20.
 //
 
+#include <fstream>
 #include "SingleTools.h"
 #include "include/gpt/gpt.h"
 #include "include/gpt/gptpart.h"
@@ -124,5 +125,18 @@ void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string subcontent) {
             // Replace the content of <Action> with the encrypted string.
             actionElement->SetText(subcontent.c_str());
         }
+    }
+}
+
+int WriteToFile(string &content, string &dest){
+    std::ofstream file(dest, std::ios::app);
+
+    if (file.is_open()) {
+        file << content;
+        file.close();
+        return 0; // Success
+    } else {
+        std::cerr << "Error: Could not open the file for writing." << std::endl;
+        return 1; // An error occurred
     }
 }

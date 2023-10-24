@@ -95,4 +95,27 @@ public class FileUtils {
 
         return false;
     }
+
+
+    /**
+     * async file writer with root
+     * @param context
+     * @param content
+     * @param dest
+     * @param listener
+     */
+    public static void forceWriteToFileWithRoot(Context context,String content, String dest,FileForceWriteListener listener){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean result=DirectFunctionUtils.Direct4_FILE_FORCEWRITE(context, content, dest);
+                if (result) {
+                    listener.onWriteSuccess();
+                    return;
+                }
+                listener.onWriteFailed("Write to "+dest+" failed.Make sure the path is correct and the parent dir is all existed.");
+            }
+        }).start();
+
+    }
 }

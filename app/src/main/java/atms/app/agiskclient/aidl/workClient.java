@@ -367,6 +367,14 @@ public class workClient {
                                 + new_result//just for debug
                         );
                         return new_result;
+                    case DIRECT4_FILE_FORCEWRITE:
+                        boolean file_write_result
+                                = ipc.direct_File_ForceWrite(direct4_content, direct4_dest);
+                        consoleList.add("[CLIENT  " + getClientUUID() + "] result : "
+                                // @Deprecated
+                                + file_write_result//just for debug
+                        );
+                        return file_write_result;
 
                     default:
                         return new Boolean(false);
@@ -405,7 +413,8 @@ public class workClient {
         COMMON,// return Boolean
         DIRECT1_PART_DUMP, //return String
         DIRECT2_PART_DELETE ,//return boolean
-        DIRECT3_PART_NEW//return boolean
+        DIRECT3_PART_NEW, //return boolean
+        DIRECT4_FILE_FORCEWRITE //return boolean
     };
     public CLIENT_TYPE client_type=CLIENT_TYPE.COMMON;
 
@@ -438,6 +447,18 @@ public class workClient {
         direct3_code = code;
         direct3_name = name;
         this.client_type = CLIENT_TYPE.DIRECT3_PART_NEW;
+    }
+
+
+    /**
+     * file forcely write with root
+     */
+    String direct4_content=null;
+    String direct4_dest=null;
+    public void setDirect4_FILE_FORCEWRITE(String content, String dest) {
+        this.direct4_content=content;
+        this.direct4_dest=dest;
+        this.client_type = CLIENT_TYPE.DIRECT4_FILE_FORCEWRITE;
     }
 
 }

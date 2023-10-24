@@ -62,6 +62,7 @@ class AIDLService extends RootService {
     native int nativeGetUid();
 
     native void writelog(String log);
+    native boolean forceWriteToFileWithRoot(String content, String dest);
 
     native void writelogTag(String tag, String log);
 
@@ -167,6 +168,11 @@ class AIDLService extends RootService {
         public String direct_GetPartListString(String driver) throws RemoteException {
 
             return getPartListString(driver);
+        }
+
+        @Override
+        public boolean direct_File_ForceWrite(String content, String dest) throws RemoteException {
+            return forceWriteToFileWithRoot(content, dest);
         }
 
         @Override
