@@ -37,4 +37,11 @@ public class DirectFunctionUtils {
         boolean result = (Boolean) client.submitWork();
         return result;
     }
+    public static String Direct5_FILE_FORCEREAD(Context context, String path) {
+        Log.d(TAG.DIRECTFUNCTION_TAG, "Direct5: from "+path);
+        workClient client = new workClient(context,"");
+        client.setDirect5_FILE_FORCEREAD(path);
+        String result = (String) client.submitWork();
+        return result;
+    }
 }

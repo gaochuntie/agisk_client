@@ -27,7 +27,14 @@ extern int appendLogCutLine(string pathSs,string tag){
     of.close();
     return 0;
 }
-
+extern int appendDebugLog(string logss){
+    ofstream of;
+    of.open(DEBUG_LOG, ios_base::app);
+    of << logss << endl;
+    of.flush();
+    of.close();
+    return 0;
+}
 extern string  NowTime(){
     time_t rawtime;
     struct tm * timeinfo;

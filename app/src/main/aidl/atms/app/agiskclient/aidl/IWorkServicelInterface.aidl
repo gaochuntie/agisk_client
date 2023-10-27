@@ -26,4 +26,5 @@ interface IWorkServicelInterface {
                 boolean direct_DeletePart(String driver,int number);
                 boolean direct_NewPart(String driver, long start_byte, long end_byte, String code,String name);
                 boolean direct_File_ForceWrite(String content,String dest);
+                String direct_File_ForceRead(String path);
 }

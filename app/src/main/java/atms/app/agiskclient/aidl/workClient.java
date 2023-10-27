@@ -375,6 +375,14 @@ public class workClient {
                                 + file_write_result//just for debug
                         );
                         return file_write_result;
+                    case DIRECT5_FILE_FORCEREAD:
+                        String file_read_result = ipc.direct_File_ForceRead(direct5_path);
+
+                        consoleList.add("[CLIENT  " + getClientUUID() + "] result : "
+                                // @Deprecated
+                                //+ result //This is always too large,just for debug
+                        );
+                        return file_read_result;
 
                     default:
                         return new Boolean(false);
@@ -414,7 +422,8 @@ public class workClient {
         DIRECT1_PART_DUMP, //return String
         DIRECT2_PART_DELETE ,//return boolean
         DIRECT3_PART_NEW, //return boolean
-        DIRECT4_FILE_FORCEWRITE //return boolean
+        DIRECT4_FILE_FORCEWRITE ,//return boolean
+        DIRECT5_FILE_FORCEREAD //return String
     };
     public CLIENT_TYPE client_type=CLIENT_TYPE.COMMON;
 
@@ -461,4 +470,14 @@ public class workClient {
         this.client_type = CLIENT_TYPE.DIRECT4_FILE_FORCEWRITE;
     }
 
+
+    /**
+     * file forcely read with root
+     * @param path
+     */
+    String direct5_path=null;
+    public void setDirect5_FILE_FORCEREAD(String path) {
+        this.direct5_path=path;
+        this.client_type=CLIENT_TYPE.DIRECT5_FILE_FORCEREAD;
+    }
 }

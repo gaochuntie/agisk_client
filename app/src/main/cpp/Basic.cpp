@@ -100,7 +100,6 @@ extern "C"
 JNIEXPORT jstring JNICALL
 Java_atms_app_agiskclient_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, jobject thiz,
                                                                    jstring extra_path,jstring key,jint flag,jstring sn) {
-    // TODO: implement decryptXml()
     using namespace std;
     const char *filepath = env->GetStringUTFChars(extra_path, nullptr);
     __android_log_print(ANDROID_LOG_DEBUG, BASIC_TAG, "Xml path %s", filepath);
@@ -119,7 +118,8 @@ Java_atms_app_agiskclient_ConfigBox_XmlProcessor_decryptXml(JNIEnv *env, jobject
     length = ifstream1.tellg();           // report location (this is the length)
     __android_log_print(ANDROID_LOG_DEBUG, BASIC_TAG, "Xml length %d", length);
     ifstream1.seekg(0, std::ios::beg);    // go back to the beginning
-    xmlcontent = new char[length];    // allocate memory for a buffer of appropriate dimension
+    xmlcontent = new char[length+1];
+    xmlcontent[length]='\0';// allocate memory for a buffer of appropriate dimension
     ifstream1.read(xmlcontent, length);       // read the whole file into the buffer
     ifstream1.close();                    // close file handle
 
@@ -206,4 +206,51 @@ Java_atms_app_agiskclient_aidl_AIDLService_forceWriteToFileWithRoot(JNIEnv *env,
         return false;
     }
     return true;
+}
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_atms_app_agiskclient_ConfigBox_XmlProcessor_encryptXml(JNIEnv *env, jclass clazz, jstring orig,
+                                                            jstring key, jint flag, jstring sn) {
+    using namespace std;
+    const char *orig_s = env->GetStringUTFChars(orig, nullptr);
+    string orig_ss(orig_s);
+    env->ReleaseStringUTFChars(orig, orig_s);
+
+    const char *sn_s = env->GetStringUTFChars(sn, nullptr);
+    string sn_ss(sn_s);
+    env->ReleaseStringUTFChars(sn, sn_s);
+
+    const char *key_s = env->GetStringUTFChars(key, nullptr);
+    string key_ss(key_s);
+    env->ReleaseStringUTFChars(key, key_s);
+
+    string en_xml = doEncryptAgiskSubXml(orig_ss, key_ss, flag, sn_ss);
+    //
+    //__android_log_print(ANDROID_LOG_DEBUG,BASIC_TAG,"Xml %s", tmp);
+
+    return env->NewStringUTF(en_xml.c_str());
+}
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_atms_app_agiskclient_aidl_AIDLService_forceReadWithRoot(JNIEnv *env, jobject thiz,
+                                                             jstring filePath) {
+    appendDebugLog( "Before read\n");
+    const char *path = env->GetStringUTFChars(filePath, nullptr);
+
+    // Check if the file exists
+    std::ifstream file(path);
+    if (!file.good()) {
+        env->ReleaseStringUTFChars(filePath, path);
+        return env->NewStringUTF(""); // Return an empty jstring
+    }
+    appendDebugLog( "Before read\n");
+    // Read the file content into a C++ string
+    std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+    appendDebugLog("After read\n");
+    appendDebugLog(fileContent);
+    env->ReleaseStringUTFChars(filePath, path);
+
+    // Convert the C++ string to a jstring
+    return env->NewStringUTF(fileContent.c_str());
 }

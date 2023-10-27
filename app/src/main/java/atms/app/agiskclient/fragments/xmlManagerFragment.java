@@ -61,8 +61,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import atms.app.agiskclient.ConfigBox.XmlProcessor;
 import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
+import atms.app.agiskclient.Tools.FileForceWriteListener;
+import atms.app.agiskclient.Tools.FileUtils;
+import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.adapter.xmlListAdapter;
 import atms.app.agiskclient.databinding.FragmentXmlManagerBinding;
 
@@ -147,6 +151,7 @@ public class xmlManagerFragment extends Fragment {
     private Button enXml_en;
     private Button enxml_openfile_bt;
     private TextView enXml_log;
+    private RadioButton enXml_NeedSn;
 
     private void initComponents() {
         addnewbt = fragmentInstallBinding.installAddIbt;
@@ -180,8 +185,7 @@ public class xmlManagerFragment extends Fragment {
         enXml_path = fragmentInstallBinding.xmlEncryptEtPath;
         enXml_arg.setVisibility(View.GONE);
         enxml_openfile_bt = fragmentInstallBinding.xmlEncryptBtOpenfile;
-
-
+        enXml_NeedSn=fragmentInstallBinding.xmlEncryptRbNeedSn;
     }
 
 
@@ -204,6 +208,80 @@ public class xmlManagerFragment extends Fragment {
         enXml_en.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 16 length key is necessary
+                if (enXml_key.getText().toString().length()<16){
+                    enXml_log.append("Key must length 16 or longer\n");
+                    return;
+                }
+                //do en xml
+                if (enXml_path.getText().toString().isEmpty()) {
+                    enXml_log.append("Path is must\n");
+                    return;
+                }
+                String path=enXml_path.getText().toString();
+                String key = enXml_key.getText().toString();
+
+                Log.d(TAG.XML_MANAGER_TAG, "d1");
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String en_xml="";
+                        String orig_xml=FileUtils.forceReadFileWithRoot(getActivity(),path);
+                        Log.d(TAG.XML_MANAGER_TAG, "d2");
+                        if (orig_xml.isEmpty()) {
+                            enXml_log.append("Error read xml");
+                            return;
+                        }
+                        //no need sn
+                        if (!enXml_NeedSn.isChecked()){
+                            en_xml=XmlProcessor.encryptXml(orig_xml
+                                    ,
+                                    key,
+                                    0,""
+                            );
+                            Log.d(TAG.XML_MANAGER_TAG, "d3");
+                        }else{
+                            String sn=enXml_arg.getText().toString();
+                            if (sn.isEmpty()) {
+                                enXml_log.append("Please enter sn\n");
+                                return;
+                            }
+                            en_xml = XmlProcessor.encryptXml(orig_xml, key, 1, sn);
+                            Log.d(TAG.XML_MANAGER_TAG, "d4");
+                        }
+                        if (en_xml == null || en_xml.isEmpty()) {
+                            enXml_log.append("Error encrypt xml\n");
+                            return;
+                        }
+
+                        String new_path = path.replaceAll(".xml", ".enxml");
+
+                        FileUtils.forceWriteToFileWithRoot(getActivity(), en_xml, new_path, new FileForceWriteListener() {
+                            @Override
+                            public void onWriteFailed(String resaon) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        enXml_en.setEnabled(true);
+                                        enXml_log.append("Failed:"+resaon+"\n");
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onWriteSuccess() {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        enXml_en.setEnabled(true);
+                                        enXml_log.append("Success:"+new_path+"\n");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }).start();
 
             }
         });

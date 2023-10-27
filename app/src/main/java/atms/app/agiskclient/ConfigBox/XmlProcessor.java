@@ -83,7 +83,9 @@ public class XmlProcessor {
         return result;
     }
 
-    private native String decryptXml(String extra_path, String key, int flag,String sn);
+    public static native String decryptXml(String extra_path, String key, int flag,String sn);
+
+    public static native String encryptXml(String orig, String key, int flag, String sn);
 
     /**
      * default constructor

@@ -118,4 +118,11 @@ public class FileUtils {
         }).start();
 
     }
+
+    /**
+     * sync read short data with root
+     */
+    public static String forceReadFileWithRoot(Context context, String path) {
+        return DirectFunctionUtils.Direct5_FILE_FORCEREAD(context, path);
+    }
 }

@@ -129,7 +129,7 @@ void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string subcontent) {
 }
 
 int WriteToFile(string &content, string &dest){
-    std::ofstream file(dest, std::ios::app);
+    std::ofstream file(dest, std::ios::out);
 
     if (file.is_open()) {
         file << content;
