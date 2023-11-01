@@ -115,6 +115,13 @@
                             android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
                             android:gravity="left"/>
+                        <Button
+                            android:id="@+id/xml_encrypt_bt__random_key"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:scaleX="0.6"
+                            android:scaleY="0.6"
+                            android:background="@drawable/dice"/>
 
                     </LinearLayout>
                     <TextView
@@ -175,7 +182,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:text="log here"/>
+                        android:text="log here\n"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
