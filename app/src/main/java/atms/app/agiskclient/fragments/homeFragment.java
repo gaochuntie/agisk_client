@@ -595,16 +595,15 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                     action.setHint("No root");
                     action.setText("NO ROOT");
                     state.setTextColor(Color.RED);
-                    state.setText(state.getText() + "Permission denied.");
+                    state.setText(state.getText() + "+Permission denied.");
                     return;
                 }
                 //check encryption
-                if (rom.getOrigConfig().isEncrypted()) {
-                    if (!rom.getOrigConfig().isDecrypted()) {
+                if (rom.getOrigConfig().isEncrypted() &&!rom.getOrigConfig().isDecrypted()) {
                         //encrypted
                         action.setEnabled(true);
                         state.setTextColor(Color.YELLOW);
-                        state.setText(state.getText() + "ENCRYPTED");
+                        state.setText(state.getText() + "+ENCRYPTED");
                         action.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -631,8 +630,10 @@ public class homeFragment extends Fragment implements View.OnClickListener {
 
                                                 //Do action
                                                 OrigConfig origConfig = rom.getOrigConfig();
+                                                origConfig.setActionList();
                                                 switch (origConfig.doDecrypt(key, flag)) {
                                                     case 0:
+                                                        dialog.dismiss();
                                                         break;
                                                     case 1:
                                                         //parse failed
@@ -647,7 +648,18 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                                                 }
 
                                                 //devrypt success
-                                                dialog.dismiss();
+                                                //check reserved
+                                                if (rom.isReservedProtected()) {
+                                                    action.setEnabled(false);
+                                                    action.setTextColor(Color.BLACK);
+                                                    action.setBackgroundColor(Color.LTGRAY);
+                                                    action.setHint("INVALID");
+                                                    action.setText("INVALID");
+                                                    state.setTextColor(Color.RED);
+                                                    state.setText(state.getText() + "+Broke reserved-area protection , forbidden. ");
+                                                    return false;
+                                                }
+
                                                 client = Worker.putTaskToRootService(origConfig, getActivity());
 
                                                 if (client == null) {
@@ -678,9 +690,7 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                             }
                         });
 
-                        return;
-                    }
-                    //no such situation at here
+
                 } else {
                     //check reserved
                     if (rom.isReservedProtected()) {
@@ -690,13 +700,18 @@ public class homeFragment extends Fragment implements View.OnClickListener {
                         action.setHint("INVALID");
                         action.setText("INVALID");
                         state.setTextColor(Color.RED);
-                        state.setText(state.getText() + "Broke reserved-area protection , forbidden. ");
+                        state.setText(state.getText() + "+Broke reserved-area protection , forbidden. ");
                         return;
                     }
 
                     action.setEnabled(true);
                     state.setTextColor(Color.GREEN);
-                    state.setText(state.getText() + "VALID");
+                    state.setText(state.getText() + "+VALID");
+                    if (rom.getOrigConfig().isEncrypted()) {
+                        //Have decrypted,second call without refresh run into this scope
+                        state.setTextColor(Color.BLUE);
+                        state.setText(state.getText() + "+DECRYPTED");
+                    }
                     action.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

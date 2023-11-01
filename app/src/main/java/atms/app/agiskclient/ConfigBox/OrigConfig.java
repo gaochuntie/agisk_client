@@ -1,12 +1,14 @@
 package atms.app.agiskclient.ConfigBox;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
+import atms.app.agiskclient.Tools.TAG;
 
 public class OrigConfig {
     enum FILE_TYPE {FILE_TYPE_INNER, FILE_TYPE_EXTRA, FILE_TYPE_CONTENT}
@@ -65,6 +67,7 @@ public class OrigConfig {
      */
     public int doDecrypt(String key,int flag){
         if (!isEncrypted) {
+            Log.d(TAG, "Not encrypted");
             return 0;
         }
         XmlProcessor xmlProcessor = new XmlProcessor(m_xmlProcessor.filename, key, flag);

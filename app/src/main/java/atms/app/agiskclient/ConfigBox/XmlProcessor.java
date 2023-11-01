@@ -118,7 +118,9 @@ public class XmlProcessor {
         String xmlStr="";
         try {
              xmlStr= decryptXml(extra_path, key, flag, Settings.getSerial_number());
+            Log.d(TAG, "XML decrypt success");
         } catch (Exception e) {
+            Log.e(TAG, "Decrypt xml failed");
             e.printStackTrace();
             //decrypt failed
             isEncrypted = true;
@@ -128,13 +130,14 @@ public class XmlProcessor {
         }
 
         if (xmlStr.length() == 0) {
+            Log.e(TAG, "Decrypt xml failed");
             //decrypt failed
             isEncrypted = true;
             isDecrypted = false;
             isParseSuccess = false;
             return;
         }
-        //Log.d(TAG, "de xml : " + xmlStr);
+        Log.d(TAG, "de xml : \n" + xmlStr+"\n--------------------------");
         StringReader sr = new StringReader(xmlStr);
         InputSource is = new InputSource(sr);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
