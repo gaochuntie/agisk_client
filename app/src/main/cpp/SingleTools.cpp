@@ -78,7 +78,7 @@ string doEncryptAgiskSubXml(string de_content,string o_key,int flag,string sn){
     appendDebugLog("Encrypted String\n" + en_string + "\n----------");
     string de_string = doDecryptString(en_string, key);
     appendDebugLog("Decrypted String\n" + de_string + "\n---------");
-    ReplaceActionWithString(xmlDoc, en_string);
+    ReplaceActionWithString(xmlDoc, en_string,0);
     tinyxml2::XMLPrinter printer;
     xmlDoc.Print(&printer);
     appendDebugLog("Encrypted Xml\n" + string(printer.CStr()) + "\n-----------");
@@ -104,7 +104,7 @@ string doDecryptAgiskSubXml(string en_content,string o_key,int flag,string sn){
     }
     appendDebugLog("Encrypted String\n" + action_content + "\n----------");
     string de_string = doDecryptString(action_content, key);
-    ReplaceActionWithString(xmlDoc, de_string);
+    ReplaceActionWithString(xmlDoc, de_string,1);
     appendDebugLog("Decrypted String\n" + de_string + "\n----------");
     tinyxml2::XMLPrinter printer;
     xmlDoc.Print(&printer);
@@ -155,7 +155,7 @@ std::string ExtractActionNodeContent(const char* xmlString) {
     // Return an empty string or handle errors as needed.
     return "";
 }
-void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string subcontent) {
+void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string subcontent,int isStringXmlFormat) {
     tinyxml2::XMLDocument newContentDoc;
     newContentDoc.Parse(subcontent.c_str());  // Parse the new content
     tinyxml2::XMLElement* rootElement = xmlDoc.FirstChildElement("config");
@@ -165,6 +165,13 @@ void ReplaceActionWithString(tinyxml2::XMLDocument& xmlDoc,string subcontent) {
             // Replace the content of <Action> with the encrypted string.
             //\actionElement->SetText(subcontent.c_str());
             actionElement->DeleteChildren();
+            if (!isStringXmlFormat) {
+                //encrypted string,not a xml format,using setText
+                // Create a new text node and set its value to the content
+                tinyxml2::XMLText* newText = xmlDoc.NewText(subcontent.c_str());
+                actionElement->InsertEndChild(newText);
+                return;
+            }
             // Copy the content from the new document into the existing document
             tinyxml2::XMLNode* newNode = newContentDoc.FirstChild();
             while (newNode) {

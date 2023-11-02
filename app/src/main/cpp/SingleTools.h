@@ -26,7 +26,7 @@ string doDecryptAgiskSubXml(string en_content, string key, int flag, string sn);
 
 std::string ExtractActionNodeContent(const char *xmlString);
 
-void ReplaceActionWithString(tinyxml2::XMLDocument &xmlDoc, string en_subcontent);
+void ReplaceActionWithString(tinyxml2::XMLDocument &xmlDoc, string en_subcontent,int isStringXmlFormat);
 
 int WriteToFile(string &content, string &dest);
 

@@ -234,7 +234,6 @@ extern "C"
 JNIEXPORT jstring JNICALL
 Java_atms_app_agiskclient_aidl_AIDLService_forceReadWithRoot(JNIEnv *env, jobject thiz,
                                                              jstring filePath) {
-    appendDebugLog( "Before read\n");
     const char *path = env->GetStringUTFChars(filePath, nullptr);
 
     // Check if the file exists
@@ -243,12 +242,9 @@ Java_atms_app_agiskclient_aidl_AIDLService_forceReadWithRoot(JNIEnv *env, jobjec
         env->ReleaseStringUTFChars(filePath, path);
         return env->NewStringUTF(""); // Return an empty jstring
     }
-    appendDebugLog( "Before read\n");
     // Read the file content into a C++ string
     std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
-    appendDebugLog("After read\n");
-    appendDebugLog(fileContent);
     env->ReleaseStringUTFChars(filePath, path);
 
     // Convert the C++ string to a jstring

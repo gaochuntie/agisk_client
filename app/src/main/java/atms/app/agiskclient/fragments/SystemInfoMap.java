@@ -1159,6 +1159,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         TextView partition_layout = view.findViewById(R.id.partition_layout);
         TextView system_location = view.findViewById(R.id.system_location);
         TextView super_location = view.findViewById(R.id.super_location);
+        TextView serial_number = view.findViewById(R.id.serial_number);
 
         //advanced
         TextView virtualsd_location = view.findViewById(R.id.virtual_sd_location);
@@ -1201,6 +1202,17 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         Shell.cmd("ls -l /dev/block/by-name/super").to(result).exec();
         String super_s = result.get(result.size() - 1).substring(result.get(result.size() - 1).lastIndexOf("-> ") + 3);
         super_location.setText(super_s);
+
+        Shell.cmd("cat /sys/devices/soc0/serial_number").to(result).exec();
+        String serial_num_s = result.get(result.size() - 1);
+        serial_number.setText(serial_num_s);
+        serial_number.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardUtil.copyToClipboard(getContext(),serial_num_s);
+                Toast.makeText(getContext(), "Serial Num copied to clipboard", Toast.LENGTH_LONG).show();
+            }
+        });
 
 
         //check virtual sd

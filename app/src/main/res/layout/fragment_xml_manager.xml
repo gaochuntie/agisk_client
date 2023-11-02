@@ -70,6 +70,11 @@
                         android:text="Encrypt a xml"
                         android:textColor="@color/black"
                         android:textSize="18dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="This function need root at this stage\nIn order to skip Android file permission issue"
+                        android:textColor="#FFC107"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -159,14 +164,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
-                            android:text="Arg  : "
+                            android:text="Serial Num (hex) : "
                             android:gravity="center"/>
                         <EditText
                             android:text=""
                             android:id="@+id/xml_encrypt_et_args"
                             android:layout_width="match_parent"
                             android:layout_weight="1"
-                            android:hint="Serial number for des encryption"
+                            android:hint="Go to Map section to see"
                             android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
                             android:gravity="left"/>
