@@ -199,8 +199,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         " because they have nothing to do with IMEI. Last Big Big Thanks to GJZS's script and my ATMS project(ported from here) ", "Learned").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
                     @Override
                     public boolean onClick(MessageDialog baseDialog, View v) {
-                        WaitDialog.show("Loading Block Device");
-                        showFirmwareList(view);
+                        showFirmwareList();
                         return false;
                     }
                 });
@@ -214,11 +213,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      */
     Map<String, Long> block_dev = new HashMap<>();
 
-    private void showFirmwareList(View view) {
+    private void showFirmwareList() {
+        WaitDialog.show("Loading Block Device");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                InputStream block_dev_stream = FileUtils.getAssetsInputStream(view.getContext(), "Han.GJZS/Block_Device_Name.sh");
+                InputStream block_dev_stream = FileUtils.getAssetsInputStream(getContext(), "Han.GJZS/Block_Device_Name.sh");
                 if (block_dev_stream == null) {
                     TipDialog.show("Unable to load firmware list", -1);
                     return;
@@ -237,6 +237,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 boolean ok = result.isSuccess();     // return code == 0?
                 block_dev.clear();
                 for (String item : out) {
+                    if (!showMapperDevice && item.contains("/mapper/")){
+                        continue;
+                    }
                     Log.d(TAG.SystemInforMap_TAG, "Block Dev : " + item);
                     String[] parts = item.split("=");
                     if (parts.length == 2) {
@@ -267,8 +270,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     //Firmware
     private List<String> selectedItems = new ArrayList<>();
-
+    private boolean showMapperDevice=false;
+    AlertDialog alertDialog=null;
     private void showFirmwareFlashableGenDialog() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Select Items");
 
@@ -288,15 +293,26 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         // Initialize the ListView
         ListView listViewItems = dialogView.findViewById(R.id.listViewItems);
         Switch selectAll = dialogView.findViewById(R.id.fw_dialog_list_items_switch);
+        Switch showMapper = dialogView.findViewById(R.id.fw_dialog_list_items_mapper_switch);
+        showMapper.setChecked(showMapperDevice);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_multiple_choice, fileListWithSize);
         listViewItems.setAdapter(adapter);
 
         // Set the default checked items to false (unselected)
         listViewItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        for (int i = 0; i < fileListWithSize.size(); i++) {
+        int i=0;
+        int j=0;
+        for (; i < fileListWithSize.size(); i++) {
             String filename = block_dev.keySet().toArray(new String[0])[i];
-            listViewItems.setItemChecked(i, selectedItems.contains(filename));
+            boolean b = selectedItems.contains(filename);
+            listViewItems.setItemChecked(i, b);
+            if (b) {
+                j++;
+            }
+        }
+        if (i == j) {
+            selectAll.setChecked(true);
         }
         // Handle item selection in the ListView
         listViewItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -331,12 +347,23 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 }
             }
         });
+        showMapper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                selectedItems.clear();
+                showMapperDevice = b;
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                    showFirmwareList();
+                }
+            }
+        });
 
         // Handle the Load button click
-        builder.setPositiveButton("Load", null);
+        builder.setNegativeButton("Load", null);
 
         // Create the custom "Action" button
-        builder.setNegativeButton("Action", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Action", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Create a new map for selected items in the same format (filename -> size)
@@ -353,12 +380,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         });
         //select all
         // Show the dialog
-        AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         readFilenamesFromFile();
@@ -470,8 +497,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     //Log.d(log,"checked partitions 51315 : "+checkpartitions[0]);
                     bufferedWriter = new BufferedWriter(new FileWriter(file));
                     bufferedWriter1 = new BufferedWriter(new FileWriter(restore));
+                    int total=fw_list.keySet().size();
+                    int current=0;
                     for (String dev_path : fw_list.keySet()) {
-
+                        current++;
                         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         Log.d(TAG.SystemInforMap_TAG, "writer 5585: " + dev_path);
                         bufferedWriter1.write(dev_path + "\n");
@@ -484,12 +513,18 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         Log.d(TAG.SystemInforMap_TAG, filedir_zip);
 
                         //TODO : No free space to unzip imgs in /
-                        scriptwriter.write("unzip $3 " + filename_zip + " -d /agisk_tmp" + "\n");
+                        //old function
+                        /*scriptwriter.write("unzip $3 " + filename_zip + " -d /agisk_tmp" + "\n");
                         scriptwriter.write("dd if=/agisk_tmp/" + filename_zip + " of=" + dev_path + "\n");
                         scriptwriter.write("rm -rf /agisk_tmp/" + filename_zip + "\n");
+                        scriptwriter.flush();*/
+
+                        //new function
+                        scriptwriter.write("unzip $3 " + filename_zip + " -p | cat >" +dev_path+ "\n");
+                        scriptwriter.write("ui_print \"Processing "+current+"/"+total+" "+dev_path+"\"\n");
                         scriptwriter.flush();
 
-
+                        //backup process
                         /**
                          * add cmd
                          */
@@ -519,7 +554,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 try {
                     CompressUtils.compressWithoutBaseDir(fw_root, root_dir + "/firmware_flashable_" + date + ".zip");
 
-                    //clean
+                    //clean up
                     Shell.cmd("rm -rf " + fw_root).exec();
                     success = true;
                 } catch (IOException e) {
