@@ -10,6 +10,11 @@
 #include "des/encrypt.h"
 #include "tinyxml2/tinyxml2.h"
 #include "MyLog.h"
+#include <iostream>
+#include <string>
+#include "include/zip/zip.h"
+#include <sys/stat.h>
+#include <dirent.h>
 /**
  *
  * @param driver
@@ -194,4 +199,67 @@ int WriteToFile(string &content, string &dest){
         std::cerr << "Error: Could not open the file for writing." << std::endl;
         return 1; // An error occurred
     }
+}
+
+
+int addDirToZip(zip_t *archive, const std::string &dirPath, const std::string &baseDir) {
+    struct dirent *entry;
+    struct stat st;
+    char path[PATH_MAX];
+
+    DIR *dir = opendir(dirPath.c_str());
+    if (!dir) {
+        perror("Error opening directory");
+        return -1;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_name[0] == '.')
+            continue; // Skip hidden files/directories
+
+        snprintf(path, sizeof(path), "%s/%s", dirPath.c_str(), entry->d_name);
+
+        if (lstat(path, &st) == -1) {
+            perror("Error getting file information");
+            closedir(dir);
+            return -1;
+        }
+
+        if (S_ISDIR(st.st_mode)) {
+            if (addDirToZip(archive, path, baseDir) != 0) {
+                closedir(dir);
+                return -1;
+            }
+        } else if (S_ISREG(st.st_mode)) {
+            char zipPath[PATH_MAX];
+            snprintf(zipPath, sizeof(zipPath), "%s/%s", baseDir.c_str(), path + baseDir.length() + 1);
+            zip_source_t *src = zip_source_file(archive, path, 0, 0);
+            if (src) {
+                zip_file_add(archive, zipPath, src, ZIP_FL_OVERWRITE);
+            }
+        }
+    }
+
+    closedir(dir);
+    return 0;
+}
+
+int compressDir( std::string &sourceDir,  std::string &destFile) {
+    zip_t *archive = zip_open(destFile.c_str(), ZIP_CREATE | ZIP_TRUNCATE, NULL);
+    if (!archive) {
+        std::cerr << "Error creating the archive" << std::endl;
+        return -1;
+    }
+
+    if (addDirToZip(archive, sourceDir, sourceDir) != 0) {
+        zip_close(archive);
+        return -1;
+    }
+
+    if (zip_close(archive) == -1) {
+        std::cerr << "Error closing the archive" << std::endl;
+        return -1;
+    }
+
+    return 0;
 }

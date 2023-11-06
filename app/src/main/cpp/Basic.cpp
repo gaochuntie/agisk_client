@@ -250,3 +250,17 @@ Java_atms_app_agiskclient_aidl_AIDLService_forceReadWithRoot(JNIEnv *env, jobjec
     // Convert the C++ string to a jstring
     return env->NewStringUTF(fileContent.c_str());
 }
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_atms_app_agiskclient_Tools_CompressUtils_compressDirLibzip(JNIEnv *env, jclass clazz,
+                                                                jstring source_dir, jstring dest) {
+    const char *source_dir_s = env->GetStringUTFChars(source_dir, nullptr);
+    string source_dir_ss(source_dir_s);
+    env->ReleaseStringUTFChars(source_dir, source_dir_s);
+
+    const char *dest_s = env->GetStringUTFChars(dest, nullptr);
+    string dest_ss(dest_s);
+    env->ReleaseStringUTFChars(dest,dest_s);
+
+    return compressDir(source_dir_ss, dest_ss);
+}

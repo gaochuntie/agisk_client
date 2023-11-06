@@ -9,7 +9,7 @@ import java.util.Locale;
 public class DateUtils {
     public static String getDateString(String inputDate) {
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
-        SimpleDateFormat outputFormat = new SimpleDateFormat("ddMMyyHHmm", Locale.US);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyMMddHHmm", Locale.US);
 
         try {
             Date date = inputFormat.parse(inputDate);
@@ -22,7 +22,7 @@ public class DateUtils {
     }
     public static String getCurrentDateTimeString() {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat outputFormat = new SimpleDateFormat("ddMMyyHHmm", Locale.US);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyyMMdd_HH_mm", Locale.US);
         return outputFormat.format(calendar.getTime());
     }
 }

@@ -30,5 +30,7 @@ void ReplaceActionWithString(tinyxml2::XMLDocument &xmlDoc, string en_subcontent
 
 int WriteToFile(string &content, string &dest);
 
+int compressDir(string &source_dir, string &dest_file);
+
 #endif //MY_APPLICATION_C_SINGLETOOLS_H
 

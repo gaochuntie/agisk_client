@@ -53,6 +53,7 @@ import com.kongzue.dialogx.dialogs.PopMenu;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.kongzue.dialogx.interfaces.BaseDialog;
+import com.kongzue.dialogx.interfaces.DialogLifecycleCallback;
 import com.kongzue.dialogx.interfaces.OnBindView;
 import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
@@ -94,6 +95,7 @@ import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.CompressUtils;
 import atms.app.agiskclient.Tools.DateUtils;
 import atms.app.agiskclient.Tools.DirectFunctionUtils;
+import atms.app.agiskclient.Tools.FileForceWriteListener;
 import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
@@ -214,7 +216,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     Map<String, Long> block_dev = new HashMap<>();
 
     private void showFirmwareList() {
+        WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
         WaitDialog.show("Loading Block Device");
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -294,6 +298,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         ListView listViewItems = dialogView.findViewById(R.id.listViewItems);
         Switch selectAll = dialogView.findViewById(R.id.fw_dialog_list_items_switch);
         Switch showMapper = dialogView.findViewById(R.id.fw_dialog_list_items_mapper_switch);
+        Button export_bt = dialogView.findViewById(R.id.fw_dialog_list_items_export);
+
+        
         showMapper.setChecked(showMapperDevice);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_multiple_choice, fileListWithSize);
@@ -345,6 +352,66 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         listViewItems.setItemChecked(i, false);
                     }
                 }
+            }
+        });
+        export_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                StringBuilder builder1 = new StringBuilder();
+                for (String item : selectedItems) {
+                    builder1.append(item);
+                }
+                if (builder1.toString().isEmpty()) {
+                    //empty
+                    return;
+                }
+                alertDialog.dismiss();
+                builder1.append("\n");
+                String filename = "/sdcard/agisk_fw_list_" + DateUtils.getCurrentDateTimeString() + ".txt";
+                WaitDialog.show("Exporting");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        FileUtils.forceWriteToFileWithRoot(getContext(), builder1.toString(), filename, new FileForceWriteListener() {
+                            @Override
+                            public void onWriteFailed(String reson) {
+                                WaitDialog.dismiss();
+                                MessageDialog.show("Failed", "Unable to export list,this action need root at present");
+
+                            }
+
+                            @Override
+                            public void onWriteSuccess() {
+                                WaitDialog.dismiss();
+                                MessageDialog.show("Export",
+                                        "See "  + filename,
+                                        "Copy Path").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
+                                    @Override
+                                    public boolean onClick(MessageDialog baseDialog, View v) {
+                                        ClipboardUtil.copyToClipboard(getContext(), filename);
+
+                                        return false;
+                                    }
+                                }).setDialogLifecycleCallback(new DialogLifecycleCallback<MessageDialog>() {
+                                    @Override
+                                    public void onDismiss(MessageDialog dialog) {
+                                        super.onDismiss(dialog);
+                                        alertDialog.show();
+                                    }
+                                })
+
+                                ;
+                            }
+                        });
+                    }
+                }).start();
+                return;
             }
         });
         showMapper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -557,7 +624,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     //clean up
                     Shell.cmd("rm -rf " + fw_root).exec();
                     success = true;
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     Log.d(TAG.SystemInforMap_TAG, "Unable to compress file");
 

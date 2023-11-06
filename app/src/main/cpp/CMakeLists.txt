@@ -116,6 +116,21 @@ add_library(
         IMPORTED
 )
 
+add_library(
+        #指定目标导入库.
+        zip
+        #设置导入库的类型（静态或动态） 为 shared library.
+        STATIC
+        #告知 CMake imported-lib 是导入的库
+        IMPORTED
+)
+set_target_properties(
+        # 指定目标导入库
+        zip
+        # 指定属性（本地导入的已有库）
+        PROPERTIES IMPORTED_LOCATION
+        # 指定你要导入库的路径.
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libzip.a)
 set_target_properties(
         # 指定目标导入库
         uuid
@@ -134,12 +149,14 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
-
 target_link_libraries( # Specifies the target library.
         agisk-cli
         gpt
         uuid
+        z
+        zip
         c++_shared
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})
+

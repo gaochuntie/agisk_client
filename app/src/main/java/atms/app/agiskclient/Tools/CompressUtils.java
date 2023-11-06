@@ -1,5 +1,7 @@
 package atms.app.agiskclient.Tools;
 
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CompressUtils {
+    public static native boolean compressDirLibzip(String source_dir, String dest);
     static final int BUFFER = 8192;
 
     public static void compress(String srcPath , String dstPath) throws IOException {
@@ -43,7 +46,17 @@ public class CompressUtils {
         }
     }
 
-    public static void compressWithoutBaseDir(String srcPath , String dstPath) throws IOException {
+    public static boolean useLibzip = true;
+    public static void compressWithoutBaseDir(String srcPath , String dstPath) throws Exception {
+        if (useLibzip) {
+            Log.d("CompressUtils", "Using libzip");
+            if (compressDirLibzip(srcPath, dstPath)) {
+                //failed
+                throw new Exception("Unable to compress using libzip");
+            }
+            return;
+        }
+
         File srcFile = new File(srcPath);
         File dstFile = new File(dstPath);
         if (!srcFile.exists()) {
