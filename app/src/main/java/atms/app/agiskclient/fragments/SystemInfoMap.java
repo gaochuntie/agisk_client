@@ -176,6 +176,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         setupPieChart(view);
         setupPartActionButtons(view);
         TipDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
+        if (!selectedDisk.isEmpty()) {
+            setData(selectedDisk);
+        }
+
         return view;
     }
 
@@ -1916,7 +1920,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                             + ", Other entry  ");
             disableExistedPartActions();
             disableFreeChunkActions();
+            partListTableView.getSelectionHandler().clearSelection();
         } else {
+            selectedChunk = chunk;
+            if (selectedChunk == null) {
+                Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 3");
+            }
             Log.i("VAL SELECTED",
                     "Value: " + e.getY() + ", xIndex: " + e.getX()
                             + ", |  " + chunk.getPart_type().getPartType().toString());
@@ -1940,16 +1949,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             //
 
             if (chunk.getPart_type().getPartType() == PartType.PartEnum.TYPE_FREESPACE) {
+                Log.d(TAG.SystemInforMap_TAG, "FREESPACE SELECTED");
                 disableExistedPartActions();
                 enableFreeChunkActions();
             } else {
+                Log.d(TAG.SystemInforMap_TAG, "PART SELECTED");
                 disableFreeChunkActions();
                 enableExistedPartActions();
             }
-        }
-        selectedChunk = chunk;
-        if (selectedChunk == null) {
-            Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 3");
         }
 
     }
@@ -1969,6 +1976,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * setup disk driver spinner
      */
     private NiceSpinner diskSpinner;
+    private String selectedDisk = "";
 
     private void setupDiskSpinner(final View view) {
         diskSpinner = (NiceSpinner) view.findViewById(R.id.disk_driver_spinner);
@@ -1992,10 +2000,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             @Override
             public void onItemSelected(NiceSpinner parent, View view, int position, long id) {
                 //set list
+                selectedDisk = dlist.get(position);
                 setData(dlist.get(position));
+
             }
         });
-
+        selectedDisk = dlist.get(0);
     }
 
 
