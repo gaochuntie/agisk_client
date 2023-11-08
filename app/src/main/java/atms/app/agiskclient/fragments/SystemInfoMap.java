@@ -1653,6 +1653,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         chart.setEnabled(true);
                         chartNoticer.setVisibility(View.INVISIBLE);
 
+
                     }
                 });
             }

@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Preheat the main root shell in the splash screen
         // so the app can use it afterwards without interrupting
         // application flow (e.g. root permission prompt)
-
-        initSettings();
         initUI();
         Shell.getShell(new Shell.GetShellCallback() {
             @Override
@@ -97,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Toast.makeText(this, "Root access", Toast.LENGTH_SHORT).show();
                 if (shell.isRoot()) {
                     Settings.setRootAccess(true);
+                    initSettings();
                 }
-
                 checkRootAccess(shell.isRoot());
             }
         });

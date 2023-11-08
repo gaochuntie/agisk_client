@@ -76,7 +76,11 @@ string doEncryptAgiskSubXml(string de_content,string o_key,int flag,string sn){
         case 0:
             break;
         case 1:
+            appendDebugLog("To Encrypte key\n");
+            appendDebugLog("orig key "+key + "\n");
+            appendDebugLog("sn " + sn + "\n");
             key = doEncryptString(o_key, sn);
+            appendDebugLog("Enkey " + key + "\n");
             break;
     }
     string en_string=doEncryptString(action_content, key);
@@ -104,7 +108,11 @@ string doDecryptAgiskSubXml(string en_content,string o_key,int flag,string sn){
         case 0:
             break;
         case 1:
-            key = doDecryptString(o_key, sn);
+            appendDebugLog("To Encrypte key\n");
+            appendDebugLog("orig key "+key + "\n");
+            appendDebugLog("sn " + sn + "\n");
+            key = doEncryptString(o_key, sn);
+            appendDebugLog("Enkey " + key + "\n");
             break;
     }
     appendDebugLog("Encrypted String\n" + action_content + "\n----------");

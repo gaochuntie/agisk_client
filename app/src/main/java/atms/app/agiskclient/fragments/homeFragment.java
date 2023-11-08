@@ -38,6 +38,13 @@ import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener;
 import com.kongzue.dialogx.util.TextInfo;
+import com.molihuan.pathselector.PathSelector;
+import com.molihuan.pathselector.entity.FileBean;
+import com.molihuan.pathselector.entity.FontBean;
+import com.molihuan.pathselector.fragment.BasePathSelectFragment;
+import com.molihuan.pathselector.listener.FileItemListener;
+import com.molihuan.pathselector.utils.MConstants;
+import com.molihuan.pathselector.utils.Mtools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -478,6 +485,29 @@ public class homeFragment extends Fragment implements View.OnClickListener {
     private static final int PICK_ENXML_FILE = 3;
 
     private void openFile(String filter) {
+        if (Settings.openFileUsingThirdPartyLib) {
+            //use third party function to add xml
+            //如果没有权限会自动申请权限
+            PathSelector.build(getActivity(), MConstants.BUILD_DIALOG)//Dialog构建方式
+                    .setSelectFileTypes("xml","enxml")
+                    .setShowFileTypes("xml","enxml")
+                    .setRadio()
+                    .setTitlebarMainTitle(new FontBean("Add Xml"))
+                    .setAlwaysShowHandleFragment(false)
+                    .setFileItemListener(//设置文件item点击回调(点击是文件才会回调,如果点击是文件夹则不会)
+                            new FileItemListener() {
+                                @Override
+                                public boolean onClick(View v, FileBean file, String currentPath, BasePathSelectFragment pathSelectFragment) {
+                                    Mtools.toast(file.getPath());
+                                    copyXmlTOPrivateStorage(Uri.fromFile(new File(file.getPath())));
+                                    pathSelectFragment.close();
+                                    return false;
+                                }
+                            }
+                    )
+                    .show();//开始构建
+            return;
+        }
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("text/xml");//筛选器

@@ -117,6 +117,7 @@ public class XmlProcessor {
         this.filename = extra_path;
         String xmlStr="";
         try {
+            Log.d(TAG, "Serial num : " + Settings.getSerial_number());
              xmlStr= decryptXml(extra_path, key, flag, Settings.getSerial_number());
             Log.d(TAG, "XML decrypt success");
         } catch (Exception e) {

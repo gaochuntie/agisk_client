@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import atms.app.agiskclient.R;
+import atms.app.agiskclient.Tools.ClipboardUtil;
 
 public class noticeListAdapter extends RecyclerView.Adapter{
     List<NoticeItem> notice_list;
@@ -49,6 +51,13 @@ public class noticeListAdapter extends RecyclerView.Adapter{
             title = itemView.findViewById(R.id.notice_title);
             content = itemView.findViewById(R.id.notice_content);
             extra_container = itemView.findViewById(R.id.notice_extra_container);
+            content.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ClipboardUtil.copyToClipboard(content.getContext(), content.getText().toString());
+                    Toast.makeText(content.getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         public FrameLayout getExtra_container() {

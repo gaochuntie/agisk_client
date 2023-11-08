@@ -37,4 +37,9 @@ public class Settings {
         return rootAccess.get();
 
     }
+
+    /**
+     * homwFragment settings
+     */
+    public static boolean openFileUsingThirdPartyLib = true;
 }
