@@ -45,7 +45,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.android.material.snackbar.Snackbar;
 import com.kongzue.dialogx.dialogs.FullScreenDialog;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
@@ -177,7 +176,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         setupPartActionButtons(view);
         TipDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
         if (!selectedDisk.isEmpty()) {
-            setData(selectedDisk);
+            //setData(selectedDisk);
         }
 
         return view;
@@ -205,7 +204,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         " because they have nothing to do with IMEI. Last Big Big Thanks to GJZS's script and my ATMS project(ported from here) ", "Learned").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
                     @Override
                     public boolean onClick(MessageDialog baseDialog, View v) {
-                        showFirmwareList();
+                        loadFirmwareList();
                         return false;
                     }
                 });
@@ -219,7 +218,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      */
     Map<String, Long> block_dev = new HashMap<>();
 
-    private void showFirmwareList() {
+    private void loadFirmwareList() {
         WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
         WaitDialog.show("Loading Block Device");
 
@@ -280,6 +279,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     private List<String> selectedItems = new ArrayList<>();
     private boolean showMapperDevice=false;
     AlertDialog alertDialog=null;
+    boolean isBackupGptTable = false;
     private void showFirmwareFlashableGenDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -295,13 +295,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
         // Inflate the custom layout for the dialog
         LayoutInflater inflater = LayoutInflater.from(requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_list_items, null);
+        View dialogView = inflater.inflate(R.layout.firmware_list_dialog, null);
         builder.setView(dialogView);
 
         // Initialize the ListView
         ListView listViewItems = dialogView.findViewById(R.id.listViewItems);
         Switch selectAll = dialogView.findViewById(R.id.fw_dialog_list_items_switch);
         Switch showMapper = dialogView.findViewById(R.id.fw_dialog_list_items_mapper_switch);
+        Switch partition_table = dialogView.findViewById(R.id.fw_dialog_list_items_partition_table_switch);
         Button export_bt = dialogView.findViewById(R.id.fw_dialog_list_items_export);
 
         
@@ -373,6 +374,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 alertDialog.dismiss();
                 builder1.append("\n");
                 String filename = "/sdcard/agisk_fw_list_" + DateUtils.getCurrentDateTimeString() + ".txt";
+                WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
                 WaitDialog.show("Exporting");
                 new Thread(new Runnable() {
                     @Override
@@ -418,6 +420,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 return;
             }
         });
+
+
         showMapper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -425,8 +429,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 showMapperDevice = b;
                 if (alertDialog != null) {
                     alertDialog.dismiss();
-                    showFirmwareList();
+                    loadFirmwareList();
                 }
+            }
+        });
+        partition_table.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                isBackupGptTable = isChecked;
             }
         });
 
@@ -446,7 +456,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 }
 
                 // Call the function with the selected items map
-                generateFirmwareFlashable(selectedMap);
+                generateFirmwareFlashable(selectedMap,partition_table.isChecked());
             }
         });
         //select all
@@ -518,7 +528,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      *
      * @param fw_list
      */
-    private void generateFirmwareFlashable(Map<String, Long> fw_list) {
+    private void generateFirmwareFlashable(Map<String, Long> fw_list,boolean isBackupPt) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -526,11 +536,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 for (String item : fw_list.keySet()) {
                     Log.d(TAG.SystemInforMap_TAG, item);
                 }
+                WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
                 WaitDialog.show("Backuping");
                 String root_dir = getContext().getExternalFilesDir("firmware").getAbsolutePath();
                 String fw_root = getContext().getExternalFilesDir("firmware/fw").getAbsolutePath();
                 String script_dir = fw_root + "/META-INF/com/google/android/";
 
+                //update-binary
                 if (!FileUtils.copyAssetFileToStorage(getContext(), "Firmware/update-binary"
                         , script_dir + "/update-binary")
                         && FileUtils.copyAssetFileToStorage(getContext(), "Firmware/update-script"
@@ -540,19 +552,27 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     TipDialog.show("Unable to copy files", -1);
                     return;
                 }
+                //partition table
+                if (isBackupPt) {
+                    Log.d(TAG.SystemInforMap_TAG, "GPT BACKUP ENABLED");
+                    if (!FileUtils.copyAssetFileToStorage(getContext(), "StaticBinary/sgdisk"
+                            , fw_root + "/sgdisk")) {
+                        TipDialog.show("Unable to copy sgdisk", WaitDialog.TYPE.ERROR, -1);
+                        return;
+                    }
+                }
                 //write script
-
-                File file = new File(fw_root + "/backupList.list");
-                File restore = new File(fw_root + "restoreList.list");
-                File meta = new File(fw_root + "/META-INF");
+                File backup = new File(fw_root + "/backupList.list");
+                File restore = new File(fw_root + "/restoreList.list");
+                //File meta = new File(fw_root + "/META-INF");
                 File script = new File(script_dir + "/update-binary");
-                BufferedWriter bufferedWriter = null;
-                BufferedWriter bufferedWriter1 = null;
+                BufferedWriter backup_writer = null;
+                BufferedWriter restore_writer = null;
                 BufferedWriter scriptwriter = null;
                 List<String> cmd = new ArrayList<String>();
                 try {
-                    if (!file.exists()) {
-                        file.createNewFile();
+                    if (!backup.exists()) {
+                        backup.createNewFile();
                     }
                     if (!restore.exists()) {
                         restore.createNewFile();
@@ -566,33 +586,24 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
 
                     //Log.d(log,"checked partitions 51315 : "+checkpartitions[0]);
-                    bufferedWriter = new BufferedWriter(new FileWriter(file));
-                    bufferedWriter1 = new BufferedWriter(new FileWriter(restore));
+                    backup_writer = new BufferedWriter(new FileWriter(backup,false));
+                    restore_writer = new BufferedWriter(new FileWriter(restore,false));
                     int total=fw_list.keySet().size();
                     int current=0;
                     for (String dev_path : fw_list.keySet()) {
                         current++;
                         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        Log.d(TAG.SystemInforMap_TAG, "writer 5585: " + dev_path);
-                        bufferedWriter1.write(dev_path + "\n");
-                        bufferedWriter1.flush();
-
+                        //Log.d(TAG.SystemInforMap_TAG, "writer 5585: " + dev_path);
 
                         String filename_zip = dev_path.substring(dev_path.indexOf("/") + 1);
                         Log.d(TAG.SystemInforMap_TAG, filename_zip);
                         String filedir_zip = filename_zip.substring(0, filename_zip.lastIndexOf("/") + 1);
                         Log.d(TAG.SystemInforMap_TAG, filedir_zip);
 
-                        //TODO : No free space to unzip imgs in /
-                        //old function
-                        /*scriptwriter.write("unzip $3 " + filename_zip + " -d /agisk_tmp" + "\n");
-                        scriptwriter.write("dd if=/agisk_tmp/" + filename_zip + " of=" + dev_path + "\n");
-                        scriptwriter.write("rm -rf /agisk_tmp/" + filename_zip + "\n");
-                        scriptwriter.flush();*/
-
                         //new function
-                        scriptwriter.write("unzip $3 " + filename_zip + " -p | cat >" +dev_path+ "\n");
                         scriptwriter.write("ui_print \"Processing "+current+"/"+total+" "+dev_path+"\"\n");
+                        scriptwriter.write("unzip $3 " + filename_zip + " -p | cat >" +dev_path+ "\n");
+
                         scriptwriter.flush();
 
                         //backup process
@@ -601,23 +612,70 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                          */
                         cmd.add("mkdir -p " + fw_root + "/" + filedir_zip);
                         cmd.add("dd if=" + dev_path + " of=" + fw_root + "/" + filename_zip);
+                        backup_writer.write(dev_path + "\n");
+                        backup_writer.flush();
+                        restore_writer.write(dev_path + "\n");
+                        restore_writer.flush();
+                    }
+                    if (isBackupPt) {
+                        //add partition table backup
+                        cmd.add("mkdir -p " + fw_root + "/GPT_BACKUP");
+                        cmd.add("chmod 777 " + fw_root + "/sgdisk");
+
+                        scriptwriter.write("ui_print \"Restoring GPT Table ... "+"\"\n");
+                        scriptwriter.write("unzip $3 sgdisk -d /agisk_tmp/"+"\n");
+                        scriptwriter.write("chmod 777 /agisk_tmp/sgdisk"+"\n");
+                        scriptwriter.write("unzip $3 GPT_BACKUP -d /agisk_tmp/" + "\n");
+                        List<String> result = new ArrayList<>();
+
+                        if (Settings.isUFS()) {
+                            //ufs
+                            for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
+                                Shell.cmd("[ -e /dev/block/sd"+alphabet+" ] && echo Y || echo N").to(result).exec();
+                                String result_s = result.get(result.size() - 1);
+                                if (result_s.equals("Y")) {
+                                    cmd.add( fw_root + "/sgdisk /dev/block/sd" + alphabet + " --backup=" + fw_root + "/GPT_BACKUP/sd" + alphabet + ".bin");
+                                    scriptwriter.write("ui_print \"Processing sd"+alphabet+" "+"\"\n");
+                                    scriptwriter.write("/agisk_tmp/sgdisk /dev/block/sd" + alphabet + " --load-backup=/agisk_tmp/GPT_BACKUP/sd"+alphabet+".bin\n");
+                                }
+                            }
+                        }else{
+                            //emmc
+                            cmd.add(fw_root + "/sgdisk /dev/block/mmcblk0 --backup=" + fw_root + "/GPT_BACKUP/mmcblk0.bin");
+                            scriptwriter.write("/agisk_tmp/sgdisk /dev/block/mmcblk0 --load-backup=/agisk_tmp/GPT_BACKUP/mmcblk0.bin\n");
+                        }
+                        scriptwriter.write("ui_print \"GPT Restore finished\"\n");
+                        scriptwriter.flush();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    if (bufferedWriter != null) {
+                    if (backup_writer != null) {
                         try {
-                            bufferedWriter.close();
+                            backup_writer.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
+                    if (scriptwriter != null) {
+                        try {
+                            scriptwriter.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    if (restore_writer != null) {
+                        try {
+                            restore_writer.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
-
 
                 //run cmd
                 for (String execmd : cmd) {
-                    Log.d(TAG.SystemInforMap_TAG, execmd);
+                    //Log.d(TAG.SystemInforMap_TAG, execmd);
                     Shell.cmd(execmd).exec();
                 }
                 //compress
@@ -631,21 +689,37 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.d(TAG.SystemInforMap_TAG, "Unable to compress file");
-
+                    success = false;
                 }
                 if (success) {
+                    //mv to /sdcard
+                    String output_file = root_dir + "/firmware_flashable_" + date + ".zip";
+                    String final_file = output_file;
+
+                    if (Settings.needMvToSdcard) {
+                        String move_to="/sdcard/firmware_flashable_" + date + ".zip";
+                        final_file = move_to;
+                        Shell.cmd("mv " + output_file +" "+ move_to).exec();
+                    }
                     WaitDialog.dismiss();
+                    MessageDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
                     MessageDialog.show("Success",
-                            "See " + root_dir + "/firmware_flashable_" + date + ".zip",
+                            "See " + final_file,
                             "Copy Path").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
                         @Override
                         public boolean onClick(MessageDialog baseDialog, View v) {
-                            ClipboardUtil.copyToClipboard(getContext(), root_dir + "/firmware_flashable_" + date + ".zip");
+                            if (Settings.needMvToSdcard) {
+                                //move to sdcard
+                                ClipboardUtil.copyToClipboard(getContext(), "/sdcard/firmware_flashable_" + date + ".zip");
+                                return false;
+                            }
+                            ClipboardUtil.copyToClipboard(getContext(), output_file);
                             return false;
                         }
                     });
                     return;
                 }
+                WaitDialog.dismiss();
                 TipDialog.show("Generate Failed", WaitDialog.TYPE.ERROR, -1);
 
             }
@@ -1040,6 +1114,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     private void partDelete() {
 
         //Need DirectFunction
+        WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
         WaitDialog.show("Deleting");
         GPTPart part = (GPTPart) selectedChunk;
         part.checIsMountedInner();
@@ -1061,6 +1136,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                TipDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
+                                WaitDialog.dismiss();
                                 if (result) {
                                     TipDialog.show("Success", WaitDialog.TYPE.SUCCESS, -1);
                                     //reload partition table
@@ -2001,6 +2078,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             @Override
             public void onItemSelected(NiceSpinner parent, View view, int position, long id) {
                 //set list
+                if (position == 0) {
+                    chart.clear();
+                    partListTableView.setVisibility(View.GONE);
+                    //hint
+                    return;
+                }
+                partListTableView.setVisibility(View.VISIBLE);
                 selectedDisk = dlist.get(position);
                 setData(dlist.get(position));
 
@@ -2030,6 +2114,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             return dlist;
         } else {
             List<String> results = new LinkedList<>();
+            results.add("Please choose a block device");
             Shell.cmd("ls /dev/block/sd?").to(results).exec();
             return results;
         }

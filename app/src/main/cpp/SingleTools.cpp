@@ -15,6 +15,8 @@
 #include "include/zip/zip.h"
 #include <sys/stat.h>
 #include <dirent.h>
+#include <android/log.h>
+
 /**
  *
  * @param driver
@@ -209,7 +211,6 @@ int WriteToFile(string &content, string &dest){
     }
 }
 
-
 int addDirToZip(zip_t *archive, const std::string &dirPath, const std::string &baseDir) {
     struct dirent *entry;
     struct stat st;
@@ -240,7 +241,10 @@ int addDirToZip(zip_t *archive, const std::string &dirPath, const std::string &b
             }
         } else if (S_ISREG(st.st_mode)) {
             char zipPath[PATH_MAX];
-            snprintf(zipPath, sizeof(zipPath), "%s/%s", baseDir.c_str(), path + baseDir.length() + 1);
+            snprintf(zipPath, sizeof(zipPath), "%s",  path + baseDir.length() + 1);
+
+            __android_log_print(ANDROID_LOG_DEBUG, "Zip", "path : %s", path);
+            __android_log_print(ANDROID_LOG_DEBUG, "Zip", "Adding file: %s", zipPath);
             zip_source_t *src = zip_source_file(archive, path, 0, 0);
             if (src) {
                 zip_file_add(archive, zipPath, src, ZIP_FL_OVERWRITE);
@@ -259,7 +263,7 @@ int compressDir( std::string &sourceDir,  std::string &destFile) {
         return -1;
     }
 
-    if (addDirToZip(archive, sourceDir, sourceDir) != 0) {
+    if (addDirToZip(archive, sourceDir,sourceDir) != 0) {
         zip_close(archive);
         return -1;
     }

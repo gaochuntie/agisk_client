@@ -42,4 +42,14 @@ public class Settings {
      * homwFragment settings
      */
     public static boolean openFileUsingThirdPartyLib = true;
+
+    /**
+     * CompressUtils
+     */
+    public static boolean useLibzip = true;
+
+    /**
+     * SysteminfoMap
+     */
+    public static boolean needMvToSdcard = false;
 }

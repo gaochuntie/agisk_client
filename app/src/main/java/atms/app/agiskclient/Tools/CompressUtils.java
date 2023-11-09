@@ -13,8 +13,10 @@ import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import atms.app.agiskclient.Settings;
+
 public class CompressUtils {
-    public static native boolean compressDirLibzip(String source_dir, String dest);
+    public static native int compressDirLibzip(String source_dir, String dest);
     static final int BUFFER = 8192;
 
     public static void compress(String srcPath , String dstPath) throws IOException {
@@ -46,11 +48,11 @@ public class CompressUtils {
         }
     }
 
-    public static boolean useLibzip = true;
+
     public static void compressWithoutBaseDir(String srcPath , String dstPath) throws Exception {
-        if (useLibzip) {
+        if (Settings.useLibzip) {
             Log.d("CompressUtils", "Using libzip");
-            if (compressDirLibzip(srcPath, dstPath)) {
+            if (compressDirLibzip(srcPath, dstPath)!=0) {
                 //failed
                 throw new Exception("Unable to compress using libzip");
             }

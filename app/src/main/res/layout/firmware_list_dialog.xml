@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!-- firmware_list_dialog.xml -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Switch
+        android:id="@+id/fw_dialog_list_items_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="5dp"
+        android:checked="false"
+        android:text="Select All  " />
+
+
+
+    <Switch
+        android:id="@+id/fw_dialog_list_items_mapper_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginBottom="5dp"
+        android:checked="false"
+        android:text="Show devices under mapper" />
+    <Switch
+        android:id="@+id/fw_dialog_list_items_partition_table_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginBottom="5dp"
+        android:checked="false"
+        android:text="Backup partition table" />
+
+    <Button
+        android:id="@+id/fw_dialog_list_items_export"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginBottom="5dp"
+        android:text="Export list" />
+
+    <ListView
+        android:id="@+id/listViewItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp" />
+
+</LinearLayout>
