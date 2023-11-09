@@ -51,5 +51,5 @@ public class Settings {
     /**
      * SysteminfoMap
      */
-    public static boolean needMvToSdcard = false;
+    public static boolean needMvToSdcard = true;
 }
