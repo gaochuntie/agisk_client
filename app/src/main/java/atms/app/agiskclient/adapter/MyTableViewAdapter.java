@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import atms.app.agiskclient.R;
 import atms.app.agiskclient.TableViewUI.DataModels.Cell;
 import atms.app.agiskclient.TableViewUI.DataModels.ColumnHeader;
 import atms.app.agiskclient.TableViewUI.DataModels.RowHeader;
+import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.TAG;
 
 public class MyTableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHeader, Cell> {
@@ -41,6 +43,13 @@ public class MyTableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHe
             super(itemView);
             cell_container = itemView.findViewById(R.id.cell_container);
             cell_textview = itemView.findViewById(R.id.cell_data);
+            cell_textview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ClipboardUtil.copyToClipboard(cell_textview.getContext(), cell_textview.getText().toString());
+                    Toast.makeText(cell_textview.getContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
     }

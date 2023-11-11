@@ -1162,14 +1162,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void partSettings(View view) {
         //Give dialog
-        PopMenu.show(new String[]{"Flash", "Backup", "Check", "Fix"})
+        PopMenu.show(new String[]{"Flash (No need to reboot)", "Backup (No need to reboot)", "Check (Unsupported)", "Fix (Unsupported)"})
                 .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
                     @Override
                     public boolean onClick(PopMenu dialog, CharSequence text, int index) {
                         switch (index) {
                             case 0:
                                 //flash
-                                new InputDialog("Flash", "flash image to " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName(), "Go", "Cancel", "/sdcard/?.img")
+                                new InputDialog("Flash (No need to reboot)", "flash image to " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName(), "Go", "Cancel", "/sdcard/?.img")
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                                             @Override
@@ -1243,7 +1243,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 break;
                             case 1:
                                 //backup
-                                new InputDialog("Backup", "Backup " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName()+" to ?", "Go", "Cancel", "/sdcard/"+((GPTPart) selectedChunk).getName()+".img")
+                                new InputDialog("Backup (No need to reboot)", "Backup " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName()+" to ?", "Go", "Cancel", "/sdcard/"+((GPTPart) selectedChunk).getName()+".img")
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                                             @Override
