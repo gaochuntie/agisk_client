@@ -32,7 +32,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import atms.app.agiskclient.ReservedAreaKits.ReservedAreaRepository;
 import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.Tools.GlobalMsg;
 
@@ -366,8 +365,25 @@ public class XmlProcessor {
                                                         , element3.getAttribute("driver"))
 
                                                 );
+                                            case "rename":
+                                                actions.add(new PartitionAction(4
+                                                        , new String[]{element3.getAttribute("pt_number")
+                                                        , element3.getAttribute("old_name")
+                                                        , element3.getAttribute("new_name")}
+                                                        , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_RENAME
+                                                        , element3.getAttribute("driver")));
                                                 break;
-
+                                            case "resize_table":
+                                                actions.add(new PartitionAction(2
+                                                        , new String[]{element3.getAttribute("new_size")}
+                                                        , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_RESIZE_TABLE
+                                                        , element3.getAttribute("driver")));
+                                            case "umount":
+                                                actions.add(new PartitionAction(3
+                                                        ,new String[]{element3.getAttribute("pt_number")
+                                                        , element3.getAttribute("name")}
+                                                        , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_UMOUNT
+                                                        , element3.getAttribute("driver")));
                                             /**
                                              * clone to current device
                                              */

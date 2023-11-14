@@ -18,6 +18,9 @@ public class PartitionAction extends ActionBase {
         , PARTITION_ACTION_TYPE_HIDE_MOVE
         , PARTITION_ACTION_TYPE_RESIZE
         , PARTITION_ACTION_TYPE_MOUNT
+        , PARTITION_ACTION_TYPE_RENAME
+        , PARTITION_ACTION_TYPE_RESIZE_TABLE
+        , PARTITION_ACTION_TYPE_UMOUNT
         , PARTITION_ACTION_TYPE_READ
     }
 
@@ -90,6 +93,40 @@ public class PartitionAction extends ActionBase {
                     break;
                 case PARTITION_ACTION_TYPE_READ:
                     readInfo(driver);
+                    break;
+                case PARTITION_ACTION_TYPE_RENAME:
+                    if (!argv[0].isEmpty()) {
+                        if (Integer.valueOf(argv[0]) < 0) {
+                            return false;
+                        }
+                        //use pt_number priority
+                        rename(driver, Integer.valueOf(argv[0]), argv[2]);
+                        break;
+                    }
+                    if (!argv[1].isEmpty()) {
+                        rename(driver, argv[1], argv[2]);
+                        break;
+                    }
+                    break;
+                case PARTITION_ACTION_TYPE_RESIZE_TABLE:
+                    if (!argv[0].isEmpty()) {
+                        resize_table(driver, Integer.valueOf(argv[0]));
+                        break;
+                    }
+                    break;
+                case PARTITION_ACTION_TYPE_UMOUNT:
+                    if (!argv[0].isEmpty()) {
+                        if (Integer.valueOf(argv[0]) < 0) {
+                            return false;
+                        }
+                        //use pt_number priority
+                        umount(driver, Integer.valueOf(argv[0]));
+                        break;
+                    }
+                    if (!argv[1].isEmpty()) {
+                        umount(driver, argv[1]);
+                        break;
+                    }
                     break;
 
             }
@@ -195,4 +232,30 @@ public class PartitionAction extends ActionBase {
     private native int readInfo(String driver);
 
 
+    /**
+     * rename a partition by number (1)
+     * @param driver
+     * @param partition_num
+     * @param new_name
+     * @return
+     */
+    private native int rename(String driver, int partition_num, String new_name);
+
+    /**
+     * rename a partition by name(2)
+     * @param driver
+     * @param old_name
+     * @param new_name
+     * @return
+     */
+    private native int rename(String driver, String old_name, String new_name);
+    private static int umount(String driver, int number){
+        //TODO
+        return 1;
+    }
+    private  static int umount(String driver, String name){
+        //TODO
+        return 1;
+    }
+    private native int resize_table(String driver, int new_size);
 }

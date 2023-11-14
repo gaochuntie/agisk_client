@@ -754,3 +754,111 @@ Java_atms_app_agiskclient_aidl_AIDLService_newPart(JNIEnv *env, jobject thiz, js
     appendBaseLog(PARTITION_LOG, "Create partition failed.");
     return 1;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_rename__Ljava_lang_String_2ILjava_lang_String_2(
+        JNIEnv *env, jobject thiz, jstring driver, jint partition_num, jstring new_name) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION RENAME1");
+    const char *driver_s = env->GetStringUTFChars(driver, nullptr);
+    const char *new_name_s = env->GetStringUTFChars(new_name, nullptr);
+    string driver_ss(driver_s);
+    string new_name_ss(new_name_s);
+    env->ReleaseStringUTFChars(driver, driver_s);
+    env->ReleaseStringUTFChars(new_name, new_name_s);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_ss);
+        return 1;
+    }
+    if(!gptData.SetName(partition_num, new_name_ss)){
+        appendBaseLog(PARTITION_LOG, "Failed to change name : " + partition_num);
+        return 1;
+    }
+    gptData.JustLooking(0);
+    if (!gptData.SaveGPTData(1)) {
+        appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+        return 1;
+    }
+    return 0;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_rename__Ljava_lang_String_2Ljava_lang_String_2Ljava_lang_String_2(
+        JNIEnv *env, jobject thiz, jstring driver, jstring old_name, jstring new_name) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION RENAME2");
+    const char *driver_s = env->GetStringUTFChars(driver, nullptr);
+    const char *new_name_s = env->GetStringUTFChars(new_name, nullptr);
+    const char *old_name_s = env->GetStringUTFChars(old_name, nullptr);
+
+    string old_name_ss(old_name_s);
+    string driver_ss(driver_s);
+    string new_name_ss(new_name_s);
+    env->ReleaseStringUTFChars(driver, driver_s);
+    env->ReleaseStringUTFChars(new_name, new_name_s);
+    env->ReleaseStringUTFChars(old_name, old_name_s);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_ss);
+        return 1;
+    }
+    uint32_t part_num=0;
+    uint32_t last_part=0;
+    gptData.GetPartRange(&part_num, &last_part);
+    for (; part_num <= last_part; part_num++) {
+        if (gptData.IsUsedPartNum(part_num)) {
+            GPTPart part = gptData.operator[](part_num);
+            if (strcmp(part.GetDescription().c_str(), old_name_ss.c_str())) {
+                if(!gptData.SetName(part_num, new_name_ss)){
+                    appendBaseLog(PARTITION_LOG, "Failed to change name : " + part_num);
+                    return 1;
+                }
+                gptData.JustLooking(0);
+                if (!gptData.SaveGPTData(1)) {
+                    appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+                    return 1;
+                }
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_resize_1table(JNIEnv *env, jobject thiz,
+                                                                  jstring driver, jint new_size) {
+    appendLogCutLine(PARTITION_LOG, "PARTITION RESIZE_TABLE");
+    const char *driver_s = env->GetStringUTFChars(driver, nullptr);
+    string driver_ss(driver_s);
+    env->ReleaseStringUTFChars(driver, driver_s);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_s)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_ss);
+        return 1;
+    }
+
+    uint32_t part_num=0;
+    uint32_t last_part=0;
+    gptData.GetPartRange(&part_num, &last_part);
+    if (new_size <= last_part) {
+        appendBaseLog(PARTITION_LOG, "Refused to resize table to such size : too small");
+        return 1;
+    }
+    if (!gptData.SetGPTSize(new_size, 1)) {
+        appendBaseLog(PARTITION_LOG, "Failed to resize table");
+        return 1;
+    }
+    gptData.JustLooking(0);
+    if (!gptData.SaveGPTData(1)) {
+        appendBaseLog(PARTITION_LOG, "Unable to save gpt table");
+        return 1;
+    }
+    return 0;
+
+}
