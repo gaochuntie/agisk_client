@@ -103,6 +103,15 @@ Java_atms_app_agiskclient_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
     char zero[512];
     memset(zero, 0, sizeof(zero));
     long left=length;
+
+    /**
+     * !!!!!!!!!!!!!!!!!!
+     * warning ! warning ! warning !
+     * this is a very dangerous operation
+     * This code now has confusion
+     * !!!!!!!!!!!!!!!!!!
+     */
+     //TODO
     for (;  left%512 >0 ; left-=512) {
         of.write(zero, 512);
     }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>RenamePart2</name>
+        <id>00000</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>rename part with old name</description>
+        <uuid>5426a6dc-eb07-4a92-b9eb-7216d0c17d92</uuid>
+        <filter>Test</filter>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <!--rename 2-->
+            <rename driver="/dev/block/sda" old_name="old_part" new_name="part_new" pt_number="" />
+        </PartitionModification>
+    </Action>
+
+</config>

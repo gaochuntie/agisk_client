@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>ResizeTable</name>
+        <id>000000</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>resize partition table to 128</description>
+        <uuid>0a2f08d0-cbf1-4029-be64-7cc92af19287</uuid>
+        <filter>Test</filter>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <!--driver for driver-->
+            <!--new_size for new size,note: this must be larger than the original one-->
+            <resize_table driver="/dev/block/sda" new_size="128" />
+        </PartitionModification>
+    </Action>
+
+</config>

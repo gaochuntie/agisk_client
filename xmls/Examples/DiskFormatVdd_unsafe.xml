@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
     <attribute>
-        <name>DiskFormatVdd</name>
+        <name>DiskFormatVdd_Unsafe</name>
         <id>fadcrvsc</id>
         <author>asm1409</author>
         <mark>test</mark>
-        <description>disk format test</description>
+        <description>! disk format test(unsafe) !</description>
         <uuid>FKTJCIMRJVERJF</uuid>
         <filter>Test</filter>
         <android_version>android12</android_version>
@@ -13,7 +13,8 @@
 
     <Action>
         <DiskModification>
-            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <!--Wipe an area of disk with 0, auto alignment -->
+            <!--Warning length must be Multiples of 512-->
             <format start="512" length="512" driver="/dev/block/loop32" />
         </DiskModification>
     </Action>

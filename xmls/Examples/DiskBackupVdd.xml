@@ -13,7 +13,7 @@
 
     <Action>
         <DiskModification>
-            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <!--accurate length-->
             <backup length="16384" start="512" destfile="/sdcard/agisk/backup.img"
                 driver="/dev/block/loop31" />
         </DiskModification>

@@ -13,7 +13,8 @@
 
     <Action>
         <DiskModification>
-            <!-- <clone s_driver="" s_start="" s_length="" t_driver="" t_start=""/> -->
+            <!--find if there is a free chunk with the size of &length bytes (auto alignment)-->
+            <!--smaller than 512 will be resized to 512,positive resize !-->
             <spare length="10" 
                 driver="/dev/block/loop31" />
         </DiskModification>
