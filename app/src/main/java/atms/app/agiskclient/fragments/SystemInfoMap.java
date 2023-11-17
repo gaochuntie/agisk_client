@@ -166,6 +166,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         View view = inflater.inflate(R.layout.fragment_system_info_map, container, false);
         if (Settings.getRootAccess() == false) {
             Toast.makeText(view.getContext(), "Root Required", Toast.LENGTH_LONG).show();
+            view.findViewById(R.id.disk_driver_spinner).setEnabled(false);
             return view;
         }
         setupBasicUi(view);

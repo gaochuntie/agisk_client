@@ -64,6 +64,7 @@ import java.util.List;
 import atms.app.agiskclient.ConfigBox.XmlProcessor;
 import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
+import atms.app.agiskclient.Settings;
 import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.FileForceWriteListener;
 import atms.app.agiskclient.Tools.FileUtils;
@@ -196,6 +197,9 @@ public class xmlManagerFragment extends Fragment {
     private static final int PICK_XML_FILE_NEW = 2; // Unique request code
 
     private void setupXmlEncrypt() {
+        if (!Settings.getRootAccess()) {
+            enXml_en.setEnabled(false);
+        }
         enXml_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
