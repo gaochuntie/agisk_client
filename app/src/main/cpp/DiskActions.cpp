@@ -51,17 +51,24 @@ Java_atms_app_agiskclient_ConfigBox_DiskAction_write(JNIEnv *env, jobject thiz,
     }
     raw_fi.seekg(offset_raw, std::__ndk1::ios_base::beg);
     driver_of.seekp(start, std::__ndk1::ios_base::beg);
-    char buff[512];
 
     long leftNum=length;
+    long block_size=512;
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (gptData.LoadPartitions(driver_c)) {
+        block_size=gptData.GetBlockSize();
+    }//else failed to open gpt table,default block size 512
 
-    for (; leftNum % 512 >0; leftNum -= 512) {
-        raw_fi.read(buff, 512);
+    char *buff = new char[block_size + 1];
+    memset(buff, 0, sizeof(buff));
+    for (; (long)(leftNum/block_size) >0; leftNum -= block_size) {
+        raw_fi.read(buff, block_size);
         driver_of.write(buff, raw_fi.gcount());
     }
     raw_fi.read(buff, leftNum);
     driver_of.write(buff, raw_fi.gcount());
-
+    delete[] buff;
     if (!driver_of.tellp() == start + length) {
         appendBaseLog(DISKACTION_LOG, "Write finished but with error!!! :" + string(driver_c));
 
@@ -100,9 +107,9 @@ Java_atms_app_agiskclient_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
         appendBaseLog(DISKACTION_LOG, "Device seek fault. : " + driver_s);
         return 1;
     }
-    char zero[512];
+/*    char zero[512];
     memset(zero, 0, sizeof(zero));
-    long left=length;
+    long left=length;*/
 
     /**
      * !!!!!!!!!!!!!!!!!!
@@ -112,10 +119,26 @@ Java_atms_app_agiskclient_ConfigBox_DiskAction_format(JNIEnv *env, jobject thiz,
      * !!!!!!!!!!!!!!!!!!
      */
      //TODO
-    for (;  left%512 >0 ; left-=512) {
+/*    for (;  left%512 >0 ; left-=512) {
         of.write(zero, 512);
+    }*/
+/**
+ * updated write function
+ */
+    of.write(nullptr, length);
+    if (of.fail()) {
+        appendBaseLog(DISKACTION_LOG, "Write failed. : " + driver_s);
+        of.flush();
+        of.close();
+        return 1;
     }
-    of.write(zero, left);
+    //failed
+    if (of.tellp() != start + length) {
+        appendBaseLog(DISKACTION_LOG, "Write finished but with error length!!! :" + driver_s);
+        of.flush();
+        of.close();
+        return 1;
+    }
     of.flush();
     of.close();
     appendBaseLog(DISKACTION_LOG, driver_s);
@@ -162,17 +185,23 @@ Java_atms_app_agiskclient_ConfigBox_DiskAction_clone(JNIEnv *env, jobject thiz,
     }
     fi.seekg(s_start, std::__ndk1::ios_base::beg);
     driver_of.seekp(t_start, std::__ndk1::ios_base::beg);
-    char buff[512];
-
     long leftNum=length;
+    long block_size=512;
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (gptData.LoadPartitions(driver_c)) {
+        block_size=gptData.GetBlockSize();
+    }//else failed to open gpt table,default block size 512
 
-    for (; leftNum % 512 >0; leftNum -= 512) {
-        fi.read(buff, 512);
+    char *buff = new char[block_size + 1];
+    memset(buff, 0, sizeof(buff));
+    for (; (long)(leftNum/block_size) >0; leftNum -= block_size) {
+        fi.read(buff, block_size);
         driver_of.write(buff, fi.gcount());
     }
     fi.read(buff, leftNum);
     driver_of.write(buff, fi.gcount());
-
+    delete[] buff;
     if (!driver_of.tellp() == t_start + length) {
         appendBaseLog(DISKACTION_LOG, "Write finished but with error!!! :" + string(driver_c));
 
