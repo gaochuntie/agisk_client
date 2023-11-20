@@ -11,11 +11,12 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
 
-        <Button
+        <LinearLayout
+            android:id="@+id/about_page_container"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Settings"
-            android:id="@+id/setting_button" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
     </LinearLayout>
 
 </FrameLayout>

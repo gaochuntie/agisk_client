@@ -193,6 +193,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void setupFirmwareBackupBt(View view) {
         fwFlashable_gen_bt = (Button) view.findViewById(R.id.generate_firmware_updater_zip);
+        if (Settings.getRootAccess()) {
+            fwFlashable_gen_bt.setEnabled(false);
+        }
         fwFlashable_gen_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1488,6 +1491,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         .show();
             }
         });
+        if (!Settings.getRootAccess()){
+            read_partition_table.setEnabled(false);
+        }
 
     }
 

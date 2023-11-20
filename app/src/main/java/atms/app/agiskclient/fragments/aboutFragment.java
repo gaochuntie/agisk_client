@@ -1,16 +1,25 @@
 package atms.app.agiskclient.fragments;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import java.util.Calendar;
+
+import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.SettingsActivity;
+import mehdi.sakout.aboutpage.AboutPage;
+import mehdi.sakout.aboutpage.Element;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,18 +75,98 @@ public class aboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
-        setting = view.findViewById(R.id.setting_button);
-        initView();
+        initView(view);
+        initAboutPage(view);
         return view;
     }
 
-    private void initView() {
-        setting.setOnClickListener(new View.OnClickListener() {
+    private void initAboutPage(View view) {
+        View aboutPage = new AboutPage(getContext(),false)
+                .isRTL(false)
+                .setImage(R.drawable.icons_android_studio_144)
+                .setDescription("Agisk Client is a free open source project that " +
+                        "aims to provide a simple and easy " +
+                        "to use interface for Agisk.Before using any function," +
+                        "please make sure you have backuped your data " +
+                        "and keep them in a safe place (Go to Map->GENERATE FIRMWARE FLASHABLE to backup " +
+                        "firmware,system and GPT Table). \nNote : If you point at me for you broken device," +
+                        "I will only laugh loudly at you.")
+                 // or Typeface
+                .addGroup("Contruct with us")
+                .addEmail("2041469901@qq.com")
+                .addGitHub("gaochuntie")
+                .addItem(getTelegramElement())
+                .addItem(getSettingsElement())
+                .addItem(getCopyRightsElement())
+                .create();
+        about_page_container.addView(aboutPage);
+    }
+
+    Element getCopyRightsElement() {
+        Element copyRightsElement = new Element();
+        final String copyrights = String.format("Copy Rights", Calendar.getInstance().get(Calendar.YEAR));
+        copyRightsElement.setTitle(copyrights);
+        copyRightsElement.setIconDrawable(R.drawable.copyrights_ic_foreground);
+        copyRightsElement.setAutoApplyIconTint(true);
+        copyRightsElement.setIconTint(mehdi.sakout.aboutpage.R.color.about_item_icon_color);
+        copyRightsElement.setIconNightTint(android.R.color.white);
+        copyRightsElement.setGravity(Gravity.CENTER);
+        copyRightsElement.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(intent);
+            public void onClick(View v) {
+                Toast.makeText(getContext(), copyrights, Toast.LENGTH_SHORT).show();
             }
         });
+        return copyRightsElement;
+    }
+
+    Element getSettingsElement() {
+        Element settingsElement = new Element();
+        settingsElement.setTitle("Settings");
+        settingsElement.setIconDrawable(R.drawable.settings_ic_foreground);
+        settingsElement.setAutoApplyIconTint(true);
+        settingsElement.setIconTint(mehdi.sakout.aboutpage.R.color.about_item_icon_color);
+        settingsElement.setIconNightTint(android.R.color.white);
+        settingsElement.setGravity(Gravity.LEFT);
+        settingsElement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+
+            }
+        });
+        return settingsElement;
+    }
+    Element getTelegramElement() {
+        Element settingsElement = new Element();
+        settingsElement.setTitle("Telegram");
+        settingsElement.setIconDrawable(R.drawable.icons_telegram_50);
+        settingsElement.setAutoApplyIconTint(true);
+        settingsElement.setIconTint(mehdi.sakout.aboutpage.R.color.about_item_icon_color);
+        settingsElement.setIconNightTint(android.R.color.white);
+        settingsElement.setGravity(Gravity.LEFT);
+        settingsElement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String groupId = "0Ouds6DUyhgwMDk1"; // Replace with your actual group ID
+
+                try {
+                    // Use the Telegram deep link to open the group
+                    Uri uri = Uri.parse("https://t.me/+" + groupId);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // Handle exceptions, e.g., if Telegram is not installed
+                    // You can show a message to the user to install Telegram
+                }
+
+            }
+        });
+        return settingsElement;
+    }
+    LinearLayout about_page_container;
+    private void initView(View view) {
+        about_page_container=view.findViewById(R.id.about_page_container);
     }
 }
