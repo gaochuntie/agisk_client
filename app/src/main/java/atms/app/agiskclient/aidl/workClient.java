@@ -220,6 +220,12 @@ public class workClient {
         };
         //stub end
     }
+    public workClient(Context context, String xml_content,IWorkListener _iWorkListener) {
+        this.context = context;
+        this.xmlcontent = xml_content;
+        iWorkListener = _iWorkListener;
+        //stub end
+    }
 
     public int getTaskNum() {
         if (ipc == null) {

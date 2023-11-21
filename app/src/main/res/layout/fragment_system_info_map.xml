@@ -416,12 +416,27 @@
                         android:text="Please select a driver"
                         android:textColor="@color/black" />
 
-                    <org.angmarch.views.NiceSpinner
-                        android:id="@+id/disk_driver_spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                    <RelativeLayout
                         android:layout_marginVertical="16dp"
-                        app:textTint="@color/black" />
+                        android:id="@+id/disk_selecter_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <org.angmarch.views.NiceSpinner
+                            android:id="@+id/disk_driver_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/disk_setting"
+                            app:textTint="@color/black" />
+                        <Button
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:id="@+id/disk_setting"
+                            android:background="@drawable/settings_ic_foreground"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"/>
+                    </RelativeLayout>
+
+
 
 
 

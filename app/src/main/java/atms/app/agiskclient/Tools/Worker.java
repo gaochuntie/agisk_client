@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.MyApplication;
 import atms.app.agiskclient.Settings;
+import atms.app.agiskclient.aidl.IWorkListener;
 import atms.app.agiskclient.aidl.workClient;
 
 /**
@@ -267,6 +268,40 @@ public class Worker {
             return null;
         }
         workClient client = new workClient(context, origConfig.getXmlString());
+        client.setTotal(origConfig.getActionNum());
+        boolean result = addWorkClient(client);
+        if (result) {
+            //I guess you may do this, I'm also
+            //But I have try it,it's too silly.......
+            //just put a client
+            //don't care when it gets submited
+            //the submit work was thrown to client scheduler
+            //This makes it easy to manage clients
+            //also friendly to homeFragment and me
+
+            //client.submitWork(origConfig.getXmlString());
+
+
+            Log.d(TAG.WorkerTAG, "Submit " + origConfig.getAttributions().get("id") + " successfully");
+            return client;
+        }
+
+        Log.d(TAG.WorkerTAG, "Submit " + origConfig.getAttributions().get("id") + " failed.");
+
+        return null;
+    }
+    @Nullable
+    public static workClient putTaskToRootService(OrigConfig origConfig
+            , Context context, IWorkListener iWorkListener) {
+        Log.d(TAG.WorkerTAG, " Try submit a client " + origConfig.getAttributions().get("id"));
+
+        /**
+         * Check root permission
+         */
+        if (!Settings.getRootAccess()) {
+            return null;
+        }
+        workClient client = new workClient(context, origConfig.getXmlString(),iWorkListener);
         client.setTotal(origConfig.getActionNum());
         boolean result = addWorkClient(client);
         if (result) {

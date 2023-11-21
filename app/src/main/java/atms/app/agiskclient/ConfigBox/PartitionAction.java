@@ -50,90 +50,86 @@ public class PartitionAction extends ActionBase {
     public boolean doAction() {
         //TODO doAction
         Log.d(TAG.Partition_TAG, "PartitionAction called.");
-        try {
 
-            switch (pt_type) {
-                case PARTITION_ACTION_TYPE_NEW:
-                    /**
-                     * "name"
-                     * "start"
-                     * "size"
-                     * "number"
-                     */
-                    if (argv[1].isEmpty() && argv[3].isEmpty()) {
-                        newPart(driver, argv[0], Long.valueOf(argv[2]));
-                        break;
-                    }
-                    if (argv[3].isEmpty()) {
-                        newPart(driver, argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
-                        break;
-                    }
-                    newPart(driver, Integer.valueOf(argv[3]), argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
+        switch (pt_type) {
+            case PARTITION_ACTION_TYPE_NEW:
+                /**
+                 * "name"
+                 * "start"
+                 * "size"
+                 * "number"
+                 */
+                if (argv[1].isEmpty() && argv[3].isEmpty()) {
+                    newPart(driver, argv[0], Long.valueOf(argv[2]));
+                    break;
+                }
+                if (argv[3].isEmpty()) {
+                    newPart(driver, argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
+                    break;
+                }
+                newPart(driver, Integer.valueOf(argv[3]), argv[0], Long.valueOf(argv[1]), Long.valueOf(argv[2]));
 
+                break;
+            case PARTITION_ACTION_TYPE_DELETE:
+                if (!argv[0].isEmpty()) {
+                    delete(driver, argv[0]);
                     break;
-                case PARTITION_ACTION_TYPE_DELETE:
-                    if (!argv[0].isEmpty()) {
-                        delete(driver, argv[0]);
-                        break;
+                }
+                if (Integer.valueOf(argv[1]) >= 0) {
+                    delete(driver, Integer.valueOf(argv[1]));
+                    break;
+                }
+                GlobalMsg.addMsg("Task[" + taskID + "] delete error ");
+                break;
+            case PARTITION_ACTION_TYPE_CLONE:
+                clone(driver, argv[0], Integer.valueOf(argv[1]), Long.valueOf(argv[2]));
+                break;
+            case PARTITION_ACTION_TYPE_FORMAT:
+                format(driver, Integer.valueOf(argv[0]), argv[1]);
+                break;
+            case PARTITION_ACTION_TYPE_MOUNT:
+                mount(driver, Integer.valueOf(argv[0]), argv[1], argv[2]);
+                break;
+            case PARTITION_ACTION_TYPE_READ:
+                readInfo(driver);
+                break;
+            case PARTITION_ACTION_TYPE_RENAME:
+                if (!argv[0].isEmpty()) {
+                    if (Integer.valueOf(argv[0]) < 0) {
+                        return false;
                     }
-                    if (Integer.valueOf(argv[1]) >= 0) {
-                        delete(driver, Integer.valueOf(argv[1]));
-                        break;
+                    //use pt_number priority
+                    rename(driver, Integer.valueOf(argv[0]), argv[2]);
+                    break;
+                }
+                if (!argv[1].isEmpty()) {
+                    rename(driver, argv[1], argv[2]);
+                    break;
+                }
+                break;
+            case PARTITION_ACTION_TYPE_RESIZE_TABLE:
+                if (!argv[0].isEmpty()) {
+                    resize_table(driver, Integer.valueOf(argv[0]));
+                    break;
+                }
+                break;
+            case PARTITION_ACTION_TYPE_UMOUNT:
+                if (!argv[0].isEmpty()) {
+                    if (Integer.valueOf(argv[0]) < 0) {
+                        return false;
                     }
-                    GlobalMsg.addMsg("Task[" + taskID + "] delete error ");
+                    //use pt_number priority
+                    umount(driver, Integer.valueOf(argv[0]));
                     break;
-                case PARTITION_ACTION_TYPE_CLONE:
-                    clone(driver, argv[0], Integer.valueOf(argv[1]), Long.valueOf(argv[2]));
+                }
+                if (!argv[1].isEmpty()) {
+                    umount(driver, argv[1]);
                     break;
-                case PARTITION_ACTION_TYPE_FORMAT:
-                    format(driver, Integer.valueOf(argv[0]), argv[1]);
-                    break;
-                case PARTITION_ACTION_TYPE_MOUNT:
-                    mount(driver, Integer.valueOf(argv[0]), argv[1], argv[2]);
-                    break;
-                case PARTITION_ACTION_TYPE_READ:
-                    readInfo(driver);
-                    break;
-                case PARTITION_ACTION_TYPE_RENAME:
-                    if (!argv[0].isEmpty()) {
-                        if (Integer.valueOf(argv[0]) < 0) {
-                            return false;
-                        }
-                        //use pt_number priority
-                        rename(driver, Integer.valueOf(argv[0]), argv[2]);
-                        break;
-                    }
-                    if (!argv[1].isEmpty()) {
-                        rename(driver, argv[1], argv[2]);
-                        break;
-                    }
-                    break;
-                case PARTITION_ACTION_TYPE_RESIZE_TABLE:
-                    if (!argv[0].isEmpty()) {
-                        resize_table(driver, Integer.valueOf(argv[0]));
-                        break;
-                    }
-                    break;
-                case PARTITION_ACTION_TYPE_UMOUNT:
-                    if (!argv[0].isEmpty()) {
-                        if (Integer.valueOf(argv[0]) < 0) {
-                            return false;
-                        }
-                        //use pt_number priority
-                        umount(driver, Integer.valueOf(argv[0]));
-                        break;
-                    }
-                    if (!argv[1].isEmpty()) {
-                        umount(driver, argv[1]);
-                        break;
-                    }
-                    break;
+                }
+                break;
 
-            }
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+        //Thread.sleep(2000);
         return false;
     }
 //

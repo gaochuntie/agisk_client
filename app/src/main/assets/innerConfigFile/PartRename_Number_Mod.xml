@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <attribute>
+        <name>RenamePart1</name>
+        <id>00000</id>
+        <author>asm1409</author>
+        <mark>test</mark>
+        <description>rename part with number(start from 0)</description>
+        <uuid>da524a9c-c05e-4189-9d68-f2fe10086287</uuid>
+        <filter>Test</filter>
+        <android_version>android12</android_version>
+    </attribute>
+
+    <Action>
+        <PartitionModification>
+            <!--rename 1-->
+            <rename driver="REPLACE_DRIVER_KEY" old_name="" new_name="REPLACE_PT_NEW_NAME" pt_number="REPLACE_PT_NUMBER_KEY" />
+        </PartitionModification>
+    </Action>
+
+</config>

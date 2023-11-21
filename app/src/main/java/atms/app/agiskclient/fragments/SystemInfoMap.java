@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -99,6 +100,7 @@ import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
 import atms.app.agiskclient.adapter.MyTableViewAdapter;
+import atms.app.agiskclient.aidl.IWorkListener;
 import atms.app.agiskclient.aidl.workClient;
 
 /**
@@ -167,6 +169,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         if (Settings.getRootAccess() == false) {
             Toast.makeText(view.getContext(), "Root Required", Toast.LENGTH_LONG).show();
             view.findViewById(R.id.disk_driver_spinner).setEnabled(false);
+            view.findViewById(R.id.disk_selecter_container).setEnabled(false);
             return view;
         }
         setupBasicUi(view);
@@ -1166,7 +1169,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void partSettings(View view) {
         //Give dialog
-        PopMenu.show(new String[]{"Flash (No need to reboot)", "Backup (No need to reboot)", "Check (Unsupported)", "Fix (Unsupported)"})
+        PopMenu.show(new String[]{"Flash (No need to reboot)", "Backup (No need to reboot)", "Check (Unsupported)", "Fix (Unsupported)","Change Name"})
                 .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
                     @Override
                     public boolean onClick(PopMenu dialog, CharSequence text, int index) {
@@ -1323,6 +1326,117 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                             case 3:
                                 //fix
 
+                                break;
+                            case 4:
+                                //change name
+                                new InputDialog("Change Name", "Change Name :  " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName()+" to ? \nAllow blank", "Go", "Cancel", ((GPTPart) selectedChunk).getName())
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                WaitDialog.show("Changing name");
+                                                Log.d(TAG.SystemInforMap_TAG,"Rename "+selectedDriver.getPath()+":"+((GPTPart) selectedChunk).getNumber()+" to "+inputStr);
+                                                WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
+
+                                                //allow blank
+                                                StringBuilder sb = new StringBuilder();
+                                                InputStream is = null;
+                                                try {
+                                                    is = getActivity().getAssets().open("innerConfigFile/PartRename_Number_Mod.xml");
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                                                    String str;
+                                                    GPTPart part = (GPTPart) selectedChunk;
+                                                    while ((str = br.readLine()) != null) {
+                                                        if (str.contains(XMLmod.REPLACE_DRIVER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DRIVER_KEY, part.getDriver());
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_PT_NUMBER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_PT_NUMBER_KEY, String.valueOf(part.getNumber()));
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_PT_NEW_NAME)) {
+                                                            str = str.replace(XMLmod.REPLACE_PT_NEW_NAME, inputStr.trim());
+                                                        }
+                                                        sb.append(str);
+                                                    }
+                                                    br.close();
+                                                } catch (IOException e) {
+                                                    WaitDialog.dismiss();
+                                                    e.printStackTrace();
+                                                    Log.d(TAG.SystemInforMap_TAG, e.getMessage());
+                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+
+                                                Log.d("SYSTEM_MAP", sb.toString());
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
+                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+
+                                                client = Worker.putTaskToRootService(origConfig
+                                                        , getActivity(), new IWorkListener.Stub() {
+                                                            @Override
+                                                            public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onProgress(int finished, int total) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCompleted(boolean success) throws RemoteException {
+                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                WaitDialog.dismiss();
+                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        setData(selectedDriver.getPath());
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowInfo(String info) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowWarning(String warn) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void OnThrowError(String error) throws RemoteException {
+
+                                                            }
+                                                        });
+
+                                                if (client == null) {
+                                                    Log.d(TAG.SystemInforMap_TAG, "Null Client");
+                                                    WaitDialog.dismiss();
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+                                                //setData(selectedDriver.getPath());
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer(2);
+                                                    }
+                                                });
+                                                return false;
+                                            }
+                                        })
+                                        .show();
                                 break;
                         }
                         return false;
@@ -2062,9 +2176,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      */
     private NiceSpinner diskSpinner;
     private String selectedDisk = "";
+    private Button diskSettings_bt;
 
     private void setupDiskSpinner(final View view) {
         diskSpinner = (NiceSpinner) view.findViewById(R.id.disk_driver_spinner);
+        diskSettings_bt=(Button)view.findViewById(R.id.disk_setting);
         List<String> dlist = getBlockDriverList();
 
         /**
@@ -2098,6 +2214,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             }
         });
         selectedDisk = dlist.get(0);
+        diskSettings_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
 
