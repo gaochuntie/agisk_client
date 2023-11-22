@@ -850,7 +850,7 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_resize_1table(JNIEnv *env, j
         appendBaseLog(PARTITION_LOG, "Refused to resize table to such size : too small");
         return 1;
     }
-    if (!gptData.SetGPTSize(new_size, 1)) {
+    if (!gptData.SetGPTSize(new_size)) {
         appendBaseLog(PARTITION_LOG, "Failed to resize table");
         return 1;
     }
