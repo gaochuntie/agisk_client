@@ -1166,6 +1166,350 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             }
         });
     }
+    private void diskSettings(View view) {
+        //Give dialog
+        PopMenu.show(new String[]{"Restore (No need to reboot)", "Backup (No need to reboot)", "Resize Table (No need to reboot)"})
+                .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
+                    @Override
+                    public boolean onClick(PopMenu dialog, CharSequence text, int index) {
+                        switch (index) {
+                            case 0:
+                                //restore
+                                new InputDialog("Restore (No need to reboot)", "Restore table to " + selectedDriver.getPath()
+                                        , "Go", "Cancel", "/sdcard/"+selectedDriver.getPath().substring(selectedDriver.getPath().lastIndexOf('/')+1)+".bin")
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                WaitDialog.show("Restoring Table");
+                                                WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
+
+                                                //allow blank
+                                                StringBuilder sb = new StringBuilder();
+                                                InputStream is = null;
+                                                try {
+                                                    is = getActivity().getAssets().open("innerConfigFile/TableRestoreMod.xml");
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                                                    String str;
+                                                    while ((str = br.readLine()) != null) {
+                                                        if (str.contains(XMLmod.REPLACE_DRIVER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DRIVER_KEY, selectedDriver.getPath());
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_TABLE_FILE_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_TABLE_FILE_KEY, inputStr.trim());
+                                                        }
+                                                        sb.append(str);
+                                                    }
+                                                    br.close();
+                                                } catch (IOException e) {
+                                                    WaitDialog.dismiss();
+                                                    e.printStackTrace();
+                                                    Log.d(TAG.SystemInforMap_TAG, e.getMessage());
+                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+
+                                                Log.d("SYSTEM_MAP", sb.toString());
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
+                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+
+                                                client = Worker.putTaskToRootService(origConfig
+                                                        , getActivity(), new IWorkListener.Stub() {
+                                                            @Override
+                                                            public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onProgress(int finished, int total) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCompleted(boolean success) throws RemoteException {
+                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                WaitDialog.dismiss();
+                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        setData(selectedDriver.getPath());
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowInfo(String info) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowWarning(String warn) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void OnThrowError(String error) throws RemoteException {
+
+                                                            }
+                                                        });
+
+                                                if (client == null) {
+                                                    Log.d(TAG.SystemInforMap_TAG, "Null Client");
+                                                    WaitDialog.dismiss();
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+                                                //setData(selectedDriver.getPath());
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer(2);
+                                                    }
+                                                });
+                                                return false;
+                                            }
+                                        })
+                                        .show();
+                                break;
+                            case 1:
+                                //backup
+                                new InputDialog("Backup (No need to reboot)", "Backup table of " + selectedDriver.getPath()+" to ?"
+                                        , "Go", "Cancel", "/sdcard/"+selectedDriver.getPath().substring(selectedDriver.getPath().lastIndexOf('/')+1)+".bin")
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                WaitDialog.show("Backuping Table");
+                                                WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
+
+                                                //allow blank
+                                                StringBuilder sb = new StringBuilder();
+                                                InputStream is = null;
+                                                try {
+                                                    is = getActivity().getAssets().open("innerConfigFile/TableBackupMod.xml");
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                                                    String str;
+                                                    while ((str = br.readLine()) != null) {
+                                                        if (str.contains(XMLmod.REPLACE_DRIVER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DRIVER_KEY, selectedDriver.getPath());
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_TABLE_FILE_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_TABLE_FILE_KEY, inputStr.trim());
+                                                        }
+                                                        sb.append(str);
+                                                    }
+                                                    br.close();
+                                                } catch (IOException e) {
+                                                    WaitDialog.dismiss();
+                                                    e.printStackTrace();
+                                                    Log.d(TAG.SystemInforMap_TAG, e.getMessage());
+                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+
+                                                Log.d("SYSTEM_MAP", sb.toString());
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
+                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+
+                                                client = Worker.putTaskToRootService(origConfig
+                                                        , getActivity(), new IWorkListener.Stub() {
+                                                            @Override
+                                                            public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onProgress(int finished, int total) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCompleted(boolean success) throws RemoteException {
+                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                WaitDialog.dismiss();
+                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        setData(selectedDriver.getPath());
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowInfo(String info) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowWarning(String warn) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void OnThrowError(String error) throws RemoteException {
+
+                                                            }
+                                                        });
+
+                                                if (client == null) {
+                                                    Log.d(TAG.SystemInforMap_TAG, "Null Client");
+                                                    WaitDialog.dismiss();
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+                                                //setData(selectedDriver.getPath());
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer(2);
+                                                    }
+                                                });
+                                                return false;
+                                            }
+                                        })
+                                        .show();
+                                break;
+                            case 2:
+                                //resize table
+                                new InputDialog("Resize Table (No need to reboot)", "Resize table of " + selectedDriver.getPath()+" to ?"
+                                        , "Go", "Cancel", String.valueOf(selectedDriver.getPartLimit()))
+                                        .setCancelable(false)
+                                        .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
+                                            @Override
+                                            public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
+                                                try {
+                                                    if (Integer.valueOf(inputStr) <= selectedDriver.getPartLimit()) {
+                                                        MessageDialog.show("Error", "Input value must be larger than " + selectedDriver.getPartLimit());
+                                                        return false;
+                                                    }
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    MessageDialog.show("Error", "Input value must be number ");
+                                                }
+
+                                                WaitDialog.show("Resizing Table");
+                                                WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
+
+                                                //allow blank
+                                                StringBuilder sb = new StringBuilder();
+                                                InputStream is = null;
+                                                try {
+                                                    is = getActivity().getAssets().open("innerConfigFile/ResizeTableMod.xml");
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                                                    String str;
+                                                    while ((str = br.readLine()) != null) {
+                                                        if (str.contains(XMLmod.REPLACE_DRIVER_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_DRIVER_KEY, selectedDriver.getPath());
+                                                        }
+                                                        if (str.contains(XMLmod.REPLACE_TABLE_SIZE_KEY)) {
+                                                            str = str.replace(XMLmod.REPLACE_TABLE_SIZE_KEY, inputStr.trim());
+                                                        }
+                                                        sb.append(str);
+                                                    }
+                                                    br.close();
+                                                } catch (IOException e) {
+                                                    WaitDialog.dismiss();
+                                                    e.printStackTrace();
+                                                    Log.d(TAG.SystemInforMap_TAG, e.getMessage());
+                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+
+                                                Log.d("SYSTEM_MAP", sb.toString());
+                                                workClient client = null;
+
+                                                //Do action
+                                                OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
+                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+
+                                                client = Worker.putTaskToRootService(origConfig
+                                                        , getActivity(), new IWorkListener.Stub() {
+                                                            @Override
+                                                            public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onProgress(int finished, int total) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCompleted(boolean success) throws RemoteException {
+                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                WaitDialog.dismiss();
+                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        setData(selectedDriver.getPath());
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowInfo(String info) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void onThrowWarning(String warn) throws RemoteException {
+
+                                                            }
+
+                                                            @Override
+                                                            public void OnThrowError(String error) throws RemoteException {
+
+                                                            }
+                                                        });
+
+                                                if (client == null) {
+                                                    Log.d(TAG.SystemInforMap_TAG, "Null Client");
+                                                    WaitDialog.dismiss();
+                                                    MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
+                                                    return false;
+                                                }
+                                                ((MainActivity) getActivity()).getWorning_box().setBackgroundColor(Color.RED);
+                                                ((MainActivity) getActivity()).showWorningMsg("Processing in background.Touch to see.");
+                                                if (client == null) {
+                                                    Toast.makeText(getContext(), "Offer client failed.Up to max.", Toast.LENGTH_LONG).show();
+                                                }
+
+                                                //Mainly, worningbox listener only open the log viewer windows
+                                                //setData(selectedDriver.getPath());
+                                                ((MainActivity) getActivity()).getWorning_box().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        ((MainActivity) getActivity()).showLogViewer(2);
+                                                    }
+                                                });
+                                                return false;
+                                            }
+                                        })
+                                        .show();
+
+                                break;
+                        }
+                        return false;
+                    }
+                });
+    }
 
     private void partSettings(View view) {
         //Give dialog
@@ -2217,7 +2561,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         diskSettings_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                diskSettings(v);
             }
         });
     }

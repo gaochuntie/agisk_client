@@ -862,3 +862,60 @@ Java_atms_app_agiskclient_ConfigBox_PartitionAction_resize_1table(JNIEnv *env, j
     return 0;
 
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_backup_1table(JNIEnv *env, jobject thiz,
+                                                                  jstring driver, jstring path) {
+
+    appendLogCutLine(PARTITION_LOG, "PARTITION BACKUP_TABLE");
+    const char* driver_s = env->GetStringUTFChars(driver, nullptr);
+    const char* path_s = env->GetStringUTFChars(path, nullptr);
+    string driver_ss(driver_s);
+    string path_ss(path_s);
+    env->ReleaseStringUTFChars(driver, driver_s);
+    env->ReleaseStringUTFChars(path, path_s);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_ss)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_ss);
+        return 1;
+    }
+
+    if (!gptData.SaveGPTBackup(path_ss)) {
+        appendBaseLog(PARTITION_LOG, "Backup table successfully");
+        return 0;
+    }
+    appendBaseLog(PARTITION_LOG, "Unable to backup table");
+    return 1;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_atms_app_agiskclient_ConfigBox_PartitionAction_restore_1table(JNIEnv *env, jobject thiz,
+                                                                   jstring driver, jstring path) {
+
+    appendLogCutLine(PARTITION_LOG, "PARTITION RESTORE_TABLE");
+    const char* driver_s = env->GetStringUTFChars(driver, nullptr);
+    const char* path_s = env->GetStringUTFChars(path, nullptr);
+    string driver_ss(driver_s);
+    string path_ss(path_s);
+    env->ReleaseStringUTFChars(driver, driver_s);
+    env->ReleaseStringUTFChars(path, path_s);
+
+    GPTData gptData;
+    gptData.JustLooking(1);
+    if (!gptData.LoadPartitions(driver_ss)) {
+        appendBaseLog(PARTITION_LOG, "Failed to load partition table : " + driver_ss);
+        return 1;
+    }
+
+    gptData.JustLooking(0);
+    if (gptData.LoadGPTBackup(path_ss)) {
+        if (gptData.SaveGPTData(1)) {
+            appendBaseLog(PARTITION_LOG, "Restore table successfully");
+            return 0;
+        }
+    }
+    appendBaseLog(PARTITION_LOG, "Unable to restore table");
+    return 1;
+}

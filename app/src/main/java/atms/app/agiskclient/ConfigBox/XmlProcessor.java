@@ -82,7 +82,7 @@ public class XmlProcessor {
         return result;
     }
 
-    public static native String decryptXml(String extra_path, String key, int flag,String sn);
+    public static native String decryptXml(String extra_path, String key, int flag, String sn);
 
     public static native String encryptXml(String orig, String key, int flag, String sn);
 
@@ -114,10 +114,10 @@ public class XmlProcessor {
 
     public XmlProcessor(String extra_path, String key, int flag) {
         this.filename = extra_path;
-        String xmlStr="";
+        String xmlStr = "";
         try {
             Log.d(TAG, "Serial num : " + Settings.getSerial_number());
-             xmlStr= decryptXml(extra_path, key, flag, Settings.getSerial_number());
+            xmlStr = decryptXml(extra_path, key, flag, Settings.getSerial_number());
             Log.d(TAG, "XML decrypt success");
         } catch (Exception e) {
             Log.e(TAG, "Decrypt xml failed");
@@ -137,7 +137,7 @@ public class XmlProcessor {
             isParseSuccess = false;
             return;
         }
-        Log.d(TAG, "de xml : \n" + xmlStr+"\n--------------------------");
+        Log.d(TAG, "de xml : \n" + xmlStr + "\n--------------------------");
         StringReader sr = new StringReader(xmlStr);
         InputSource is = new InputSource(sr);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -380,13 +380,13 @@ public class XmlProcessor {
                                                         , element3.getAttribute("driver")));
                                             case "umount":
                                                 actions.add(new PartitionAction(3
-                                                        ,new String[]{element3.getAttribute("pt_number")
+                                                        , new String[]{element3.getAttribute("pt_number")
                                                         , element3.getAttribute("name")}
                                                         , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_UMOUNT
                                                         , element3.getAttribute("driver")));
-                                            /**
-                                             * clone to current device
-                                             */
+                                                /**
+                                                 * clone to current device
+                                                 */
                                             case "clone":
                                                 actions.add(new PartitionAction(4
                                                         , new String[]{
@@ -435,6 +435,17 @@ public class XmlProcessor {
                                                         , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_READ
                                                         , element3.getAttribute("driver")));
                                                 break;
+                                            case "restore_table":
+                                                actions.add(new PartitionAction(2
+                                                        , new String[]{element3.getAttribute("table_file")}
+                                                        , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_RESTORE_TABLE
+                                                        , element3.getAttribute("driver")));
+                                                break;
+                                                case "backup_table":
+                                                actions.add(new PartitionAction(2
+                                                        , new String[]{element3.getAttribute("table_file")}
+                                                        , PartitionAction.PARTITION_ACTION_TYPE.PARTITION_ACTION_TYPE_BACKUP_TABLE
+                                                        , element3.getAttribute("driver")));
                                         }
 
                                         break;

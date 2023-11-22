@@ -22,6 +22,8 @@ public class PartitionAction extends ActionBase {
         , PARTITION_ACTION_TYPE_RESIZE_TABLE
         , PARTITION_ACTION_TYPE_UMOUNT
         , PARTITION_ACTION_TYPE_READ
+        , PARTITION_ACTION_TYPE_BACKUP_TABLE
+        , PARTITION_ACTION_TYPE_RESTORE_TABLE
     }
 
 
@@ -124,6 +126,18 @@ public class PartitionAction extends ActionBase {
                 }
                 if (!argv[1].isEmpty()) {
                     umount(driver, argv[1]);
+                    break;
+                }
+                break;
+            case PARTITION_ACTION_TYPE_BACKUP_TABLE:
+                if (!argv[0].isEmpty()) {
+                    backup_table(driver, argv[0]);
+                    break;
+                }
+                break;
+            case PARTITION_ACTION_TYPE_RESTORE_TABLE:
+                if (!argv[0].isEmpty()) {
+                    restore_table(driver, argv[0]);
                     break;
                 }
                 break;
@@ -254,4 +268,6 @@ public class PartitionAction extends ActionBase {
         return 1;
     }
     private native int resize_table(String driver, int new_size);
+    private native int backup_table(String driver, String path);
+    private native int restore_table(String driver, String path);
 }

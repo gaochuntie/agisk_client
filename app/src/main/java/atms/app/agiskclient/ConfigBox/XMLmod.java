@@ -10,5 +10,7 @@ public class XMLmod {
     public static String REPLACE_DESTFILE_KEY = "REPLACE_DESTFILE_KEY";
     public static String REPLACE_PT_NEW_NAME = "REPLACE_PT_NEW_NAME";
     public static String REPLACE_PT_NUMBER_KEY = "REPLACE_PT_NUMBER_KEY";
+    public static String REPLACE_TABLE_FILE_KEY = "REPLACE_TABLE_FILE_KEY";
+    public static String REPLACE_TABLE_SIZE_KEY = "REPLACE_TABLE_SIZE_KEY";
 
 }
