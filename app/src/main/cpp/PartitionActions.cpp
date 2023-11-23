@@ -561,15 +561,16 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
 
     /**
    * return format
-   * {block_size:sector_size:GUID:partLimit:total:free}{number:name:start:end:code:typeGUID}
+   * {phy_sector:logic_sector:GUID:partLimit:total:free:part_align}{number:name:start:end:code:typeGUID}
    */
     stringstream rts;
-    rts << "{" << gptdata.GetBlockSize();
+    rts << "{" << gptdata.GetDisk()->GetPhysBlockSize();
     rts << ":" << gptdata.GetBlockSize();
     rts << ":" << gptdata.GetDiskGUID().AsString();
     rts << ":" << gptdata.GetNumParts();
     rts << ":" << gptdata.GetLastUsableLBA() + 1;
     rts << ":" << totalFound;
+    rts << ":" << gptdata.GetAlignment();
     rts << "}";
 
 

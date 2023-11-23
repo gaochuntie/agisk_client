@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -178,12 +179,71 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         setupDiskSpinner(view);
         setupPieChart(view);
         setupPartActionButtons(view);
+        setupDiskInfoView(view);
         TipDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
         if (!selectedDisk.isEmpty()) {
             //setData(selectedDisk);
         }
 
         return view;
+    }
+
+
+    TextView disk_total_sector;
+    TextView disk_total_size;
+    TextView disk_free_sector;
+    TextView disk_free_size;
+    TableRow disk_show_free_area;
+    TextView disk_entry_limit;
+    TextView disk_physical_sector;
+    TextView disk_logical_sector;
+    TextView disk_guid;
+    TextView disk_part_align_sectorl;
+    private void setupDiskInfoView(View view) {
+        disk_total_sector = view.findViewById(R.id.total_sector_tv);
+        disk_total_size = view.findViewById(R.id.total_size_tv);
+        disk_free_sector = view.findViewById(R.id.free_sector_tv);
+        disk_free_size = view.findViewById(R.id.free_size_tv);
+        disk_show_free_area = view.findViewById(R.id.show_free_areas_tr);
+        disk_entry_limit = view.findViewById(R.id.entry_limit_tv);
+        disk_physical_sector = view.findViewById(R.id.physical_sector_tv);
+        disk_logical_sector = view.findViewById(R.id.logical_sector_tv);
+        disk_guid = view.findViewById(R.id.guid_tv);
+        disk_part_align_sectorl = view.findViewById(R.id.part_align_sector_tv);
+    }
+
+    /**
+     *
+     * @param total_sector
+     * @param total_size
+     * @param free_sector
+     * @param free_size
+     * @param entry_limit
+     * @param physical_sector
+     * @param logical_sector
+     * @param guid
+     * @param part_align_sector
+     */
+    private void updateDiskInfo(
+            long total_sector,
+            long total_size,
+            long free_sector,
+            long free_size,
+            int entry_limit,
+            long physical_sector,
+            long logical_sector,
+            String guid,
+            long part_align_sector
+            ) {
+        disk_total_sector.setText(String.valueOf(total_sector));
+        disk_total_size.setText(String.valueOf(total_size));
+        disk_free_sector.setText(String.valueOf(free_sector));
+        disk_free_size.setText(String.valueOf(free_size));
+        disk_entry_limit.setText(String.valueOf(entry_limit));
+        disk_physical_sector.setText(String.valueOf(physical_sector));
+        disk_logical_sector.setText(String.valueOf(logical_sector));
+        disk_guid.setText(guid);
+        disk_part_align_sectorl.setText(String.valueOf(part_align_sector));
     }
 
 
@@ -1167,6 +1227,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         });
     }
     private void diskSettings(View view) {
+        if (diskSpinner.getSelectedIndex() == 0) {
+            Toast.makeText(getContext(),"Please select a disk",Toast.LENGTH_SHORT).show();
+            return;
+        }
         //Give dialog
         PopMenu.show(new String[]{"Restore (No need to reboot)", "Backup (No need to reboot)", "Resize Table (No need to reboot)"})
                 .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
@@ -2074,7 +2138,29 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     @Override
                     public void run() {
 
-
+                        /**
+                         *
+                         * @param total_sector
+                         * @param total_size
+                         * @param free_sector
+                         * @param free_size
+                         * @param entry_limit
+                         * @param physical_sector
+                         * @param logical_sector
+                         * @param guid
+                         * @param part_align_sector
+                         */
+                        updateDiskInfo(
+                                selectedDriver.getTotal_size_sector(),
+                                selectedDriver.getTotal_size_sector()*selectedDriver.getSector_size(),
+                                selectedDriver.getFree_size_sector(),
+                                selectedDriver.getFree_size_sector()*selectedDriver.getSector_size(),
+                                selectedDriver.getPartLimit(),
+                                selectedDriver.getBlock_size(),
+                                selectedDriver.getSector_size(),
+                                selectedDriver.getGUID(),
+                                selectedDriver.getPart_align_sector()
+                                );
                         //set chart
                         ////////////////////////////////////////////////////////////
                         ArrayList<PieEntry> entries = new ArrayList<>();
@@ -2356,7 +2442,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
          *     private PartType part_type;
          *     private String driver;
          *
-         * {block_size:sector_size:GUID:partLimit:total:free}
+         * {pyh_sector:logic_sector:GUID:partLimit:total:free:part_align_sector}
          * {number:name:start:end:code:typeGUID}{number:name:start:end:code:typeGUID}
          *
          * {0:ALIGN_TO_128K_1:6:31:65535:Unknown}
@@ -2375,6 +2461,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
         m_driver.setFree_size_sector(Long.parseLong(driver_r1[5]));
         m_driver.setTotal_size_sector(Long.valueOf(driver_r1[4]));
+        m_driver.setPart_align_sector(Long.valueOf(driver_r1[6]));
 
 
         for (int i = 1; i < r1.length; i++) {

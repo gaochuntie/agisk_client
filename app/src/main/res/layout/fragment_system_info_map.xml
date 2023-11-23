@@ -435,10 +435,228 @@
                             android:layout_width="35dp"
                             android:layout_height="35dp"/>
                     </RelativeLayout>
+                    
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TableLayout
+                            android:id="@+id/partition_info_table"
+                            android:layout_width="match_parent"
+                            android:stretchColumns="2"
+                            android:layout_height="wrap_content">
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Total Sector"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/total_sector_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Total Size"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/total_size_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Free Sector"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/free_sector_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Free Size"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/free_size_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:id="@+id/show_free_areas_tr"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Show Free Areas"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Click to View All Free Areas"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Entry Limit"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/entry_limit_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Physical Sector"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/physical_sector_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Logical Sector"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/logical_sector_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="GUID"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <atms.app.agiskclient.UIcomponents.CopiableTextView
+                                    android:id="@+id/guid_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Align Sector"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" : "
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:id="@+id/part_align_sector_tv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="unknown"
+                                    android:textColor="@color/black"/>
+                            </TableRow>
 
-
-
-
+                        </TableLayout>
+                    </HorizontalScrollView>
 
 
                     <com.github.mikephil.charting.charts.PieChart

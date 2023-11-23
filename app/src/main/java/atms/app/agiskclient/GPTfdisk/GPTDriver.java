@@ -15,6 +15,10 @@ public class GPTDriver {
     private long total_size_sector=0;
     private long free_size_sector=0;
 
+    private long part_align_sector=0;
+
+
+
     public GPTDriver(String path, long sector_size, long block_size, int partLimit, String GUID) {
         this.path=path;
         this.sector_size=sector_size;
@@ -91,5 +95,13 @@ public class GPTDriver {
             return false;
         }
         return partList.remove(part);
+    }
+
+    public long getPart_align_sector() {
+        return part_align_sector;
+    }
+
+    public void setPart_align_sector(long align_sector) {
+        this.part_align_sector = align_sector;
     }
 }
