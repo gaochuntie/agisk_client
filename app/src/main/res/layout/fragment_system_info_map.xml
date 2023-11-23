@@ -20,18 +20,18 @@
             android:background="#00FFFFFF"
             android:backgroundTint="@color/white"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:background="#00FFFFFF"
-                android:text="Generous Information"
+            <com.alespero.expandablecardview.ExpandableCardView
+                android:background="@color/white"
                 android:textColor="#000F61"
                 android:textSize="20dp"
-                android:textStyle="bold" />
-
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:title="Generous Information"
+                app:inner_view="@layout/sys_info_generous_layout"
+                app:expandOnClick="true"
+                app:animationDuration="300"
+                app:startExpanded="false"/>
 
             <View
                 android:id="@+id/view"
@@ -39,350 +39,44 @@
                 android:layout_height="1dp"
                 android:background="#8A8A8A" />
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#0000"
-                android:backgroundTint="@color/white">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:background="#00FFFFFF"
-                    android:divider="@drawable/linearlayout_divider"
-                    android:orientation="vertical"
-                    android:showDividers="end">
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Storage Chip:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/storage_chip"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="UFS"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Userdata Size:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/data_size"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_row="1"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="128gb"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Userdata Location:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/data_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="sda87"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Partition Layout:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/partition_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="DSU"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="System Location:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:textIsSelectable="true"
-                        android:id="@+id/system_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:breakStrategy="high_quality"
-                        android:gravity="left"
-                        android:text="unknown"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-
-                    <TextView
-                        android:textIsSelectable="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Super Location:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/super_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:breakStrategy="high_quality"
-                        android:gravity="left"
-                        android:text="unknown"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Serial Number (Touch to copy) :"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/serial_number"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:breakStrategy="high_quality"
-                        android:gravity="left"
-                        android:text="unknown"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-
-            <TextView
-                android:layout_width="match_parent"
+            <com.alespero.expandablecardview.ExpandableCardView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                app:title="Advanced Information"
                 android:background="#00FFFFFF"
-                android:text="Advanced Information"
                 android:textColor="#000F61"
                 android:textSize="20dp"
-                android:textStyle="bold" />
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#8A8A8A" />
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#0000"
-                android:backgroundTint="@color/white">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:background="#00FFFFFF"
-                    android:divider="@drawable/linearlayout_divider"
-                    android:orientation="vertical"
-                    android:showDividers="end">
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="VirtualSdcard Size:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:textIsSelectable="true"
-                        android:id="@+id/virtual_sd_size"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="unknown"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Virtual Sdcard Location:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:textIsSelectable="true"
-                        android:id="@+id/virtual_sd_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_row="1"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="0"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Agisk Metadata Location:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:textIsSelectable="true"
-                        android:id="@+id/metadata_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="unknown"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginRight="10dp"
-                        android:gravity="right"
-                        android:text="Agisk Metadata Area:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:textIsSelectable="true"
-                        android:id="@+id/metadata_area"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="left"
-                        android:text="0-0"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#8A8A8A" />
-
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <Button
-                android:id="@+id/read_partition_table"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="Read Partition Table"
-                android:textColor="#000000"
-                android:textSize="15dp"
-                android:textStyle="bold" />
-            <Button
-                android:id="@+id/generate_firmware_updater_zip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="Generate Firmware Flashable"
-                android:textColor="#000000"
-                android:textSize="15dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:inner_view="@layout/sys_info_advanced_layout"
+                app:expandOnClick="true"
+                app:animationDuration="300"
+                app:startExpanded="false"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#8A8A8A" />
 
+
+            <com.alespero.expandablecardview.ExpandableCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:title="Toolbox"
+                android:background="#00FFFFFF"
+                android:textColor="#000F61"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:inner_view="@layout/sys_info_toolbox_layout"
+                app:expandOnClick="true"
+                app:animationDuration="300"
+                app:startExpanded="false"/>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#8A8A8A" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -441,7 +135,7 @@
                             android:layout_width="35dp"
                             android:layout_height="35dp"/>
                     </RelativeLayout>
-                    
+
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">

@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0000"
+        android:backgroundTint="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:background="#00FFFFFF"
+            android:divider="@drawable/linearlayout_divider"
+            android:orientation="vertical"
+            android:showDividers="end">
+
+            <TextView
+                android:id="@+id/chartNotiverTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Please select a driver"
+                android:textColor="@color/black" />
+
+            <RelativeLayout
+                android:layout_marginVertical="16dp"
+                android:id="@+id/disk_selecter_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <org.angmarch.views.NiceSpinner
+                    android:id="@+id/disk_driver_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/disk_setting"
+                    app:textTint="@color/black" />
+                <Button
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/disk_setting"
+                    android:background="@drawable/settings_ic_foreground"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"/>
+            </RelativeLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TableLayout
+                    android:id="@+id/partition_info_table"
+                    android:layout_width="match_parent"
+                    android:stretchColumns="2"
+                    android:layout_height="wrap_content">
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Sector"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/total_sector_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Size"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/total_size_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Free Sector"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/free_sector_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Free Size"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/free_size_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:id="@+id/show_free_areas_tr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Show Free Areas"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Click to View All Free Areas"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Entry Limit"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/entry_limit_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Physical Sector"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/physical_sector_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Logical Sector"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/logical_sector_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="GUID"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/guid_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Align Sector"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" : "
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:textIsSelectable="true"
+                            android:id="@+id/part_align_sector_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="unknown"
+                            android:textColor="@color/black"/>
+                    </TableRow>
+
+                </TableLayout>
+            </HorizontalScrollView>
+
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chart1"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_gravity="top|center" />
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/part_mount_bt"
+                        android:enabled="false"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/part_mount_bt_background"/>
+                    <Button
+                        android:id="@+id/part_umount_bt"
+                        android:enabled="false"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/part_umount_bt_background"/>
+                    <Button
+                        android:id="@+id/part_delete_bt"
+                        android:enabled="false"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/part_delete_bt_background"/>
+                    <Button
+                        android:id="@+id/part_new_bt"
+                        android:enabled="false"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/part_add_bt_background"/>
+                    <Button
+                        android:id="@+id/part_settings_bt"
+                        android:enabled="false"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/part_settings_bt_background"/>
+                </LinearLayout>
+
+            </HorizontalScrollView>>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:layout_height="300dp" >
+
+                <com.evrencoskun.tableview.TableView
+                    android:textAlignment="center"
+                    android:id="@+id/part_list_tableview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:stretchColumns="*"
+                    android:shrinkColumns="*"
+                    app:allow_click_inside_cell="true"
+                    app:allow_click_inside_row_header="true"
+                    app:allow_click_inside_column_header="true"
+                    app:column_header_height="@dimen/default_column_header_height"
+                    app:row_header_width="@dimen/default_row_header_width"
+                    app:selected_color="@color/table_view_default_selected_background_color"
+                    app:shadow_color="@color/table_view_default_shadow_background_color"
+                    app:unselected_color="@color/table_view_default_unselected_background_color"
+                    />
+            </androidx.core.widget.NestedScrollView>
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
