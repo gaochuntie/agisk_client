@@ -45,6 +45,7 @@
         android:text="Export list" />
 
     <ListView
+        android:textIsSelectable="true"
         android:id="@+id/listViewItems"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

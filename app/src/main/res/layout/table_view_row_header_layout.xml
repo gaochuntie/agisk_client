@@ -14,6 +14,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:textIsSelectable="true"
             android:id="@+id/row_header_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

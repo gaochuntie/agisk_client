@@ -79,6 +79,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp" />
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_author"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -93,6 +94,7 @@
                         android:layout_height="2dp" />
 
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_id"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -107,6 +109,7 @@
                         android:layout_height="2dp" />
 
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_uuid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -120,6 +123,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp" />
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_mark"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -135,6 +139,7 @@
                         android:layout_height="2dp" />
 
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -149,6 +154,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp" />
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_xml_location"
                         android:breakStrategy="high_quality"
                         android:layout_width="match_parent"
@@ -164,6 +170,7 @@
                         android:layout_height="2dp" />
 
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/rom_detail_state"
                         android:breakStrategy="high_quality"
                         android:layout_width="match_parent"

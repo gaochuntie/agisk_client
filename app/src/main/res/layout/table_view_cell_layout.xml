@@ -9,6 +9,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:textIsSelectable="true"
         android:id="@+id/cell_data"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

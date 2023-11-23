@@ -15,6 +15,7 @@
         android:layout_height="match_parent"
         android:text="0"/>
     <TextView
+        android:textIsSelectable="true"
         android:id="@+id/xml_item_name"
         android:gravity="center|left"
         app:layout_constraintLeft_toRightOf="@id/xml_item_index"

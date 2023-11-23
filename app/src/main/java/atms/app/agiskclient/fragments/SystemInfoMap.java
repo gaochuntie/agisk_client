@@ -199,6 +199,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     TextView disk_logical_sector;
     TextView disk_guid;
     TextView disk_part_align_sectorl;
+
     private void setupDiskInfoView(View view) {
         disk_total_sector = view.findViewById(R.id.total_sector_tv);
         disk_total_size = view.findViewById(R.id.total_size_tv);
@@ -213,7 +214,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
     /**
-     *
      * @param total_sector
      * @param total_size
      * @param free_sector
@@ -234,7 +234,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             long logical_sector,
             String guid,
             long part_align_sector
-            ) {
+    ) {
         disk_total_sector.setText(String.valueOf(total_sector));
         disk_total_size.setText(String.valueOf(total_size));
         disk_free_sector.setText(String.valueOf(free_sector));
@@ -286,7 +286,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     Map<String, Long> block_dev = new HashMap<>();
 
     private void loadFirmwareList() {
-        WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
+        WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
         WaitDialog.show("Loading Block Device");
 
         new Thread(new Runnable() {
@@ -311,7 +311,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 boolean ok = result.isSuccess();     // return code == 0?
                 block_dev.clear();
                 for (String item : out) {
-                    if (!showMapperDevice && item.contains("/mapper/")){
+                    if (!showMapperDevice && item.contains("/mapper/")) {
                         continue;
                     }
                     Log.d(TAG.SystemInforMap_TAG, "Block Dev : " + item);
@@ -344,9 +344,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     //Firmware
     private List<String> selectedItems = new ArrayList<>();
-    private boolean showMapperDevice=false;
-    AlertDialog alertDialog=null;
+    private boolean showMapperDevice = false;
+    AlertDialog alertDialog = null;
     boolean isBackupGptTable = false;
+
     private void showFirmwareFlashableGenDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -372,7 +373,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         Switch partition_table = dialogView.findViewById(R.id.fw_dialog_list_items_partition_table_switch);
         Button export_bt = dialogView.findViewById(R.id.fw_dialog_list_items_export);
 
-        
+
         showMapper.setChecked(showMapperDevice);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_multiple_choice, fileListWithSize);
@@ -380,8 +381,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
         // Set the default checked items to false (unselected)
         listViewItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        int i=0;
-        int j=0;
+        int i = 0;
+        int j = 0;
         for (; i < fileListWithSize.size(); i++) {
             String filename = block_dev.keySet().toArray(new String[0])[i];
             boolean b = selectedItems.contains(filename);
@@ -416,7 +417,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         listViewItems.setItemChecked(i, true);
                         selectedItems.add(filename);
                     }
-                }else{
+                } else {
                     selectedItems.clear();
                     listViewItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     for (int i = 0; i < fileListWithSize.size(); i++) {
@@ -441,7 +442,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 alertDialog.dismiss();
                 builder1.append("\n");
                 String filename = "/sdcard/agisk_fw_list_" + DateUtils.getCurrentDateTimeString() + ".txt";
-                WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
+                WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
                 WaitDialog.show("Exporting");
                 new Thread(new Runnable() {
                     @Override
@@ -463,7 +464,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                             public void onWriteSuccess() {
                                 WaitDialog.dismiss();
                                 MessageDialog.show("Export",
-                                        "See "  + filename,
+                                        "See " + filename,
                                         "Copy Path").setOkButton(new OnDialogButtonClickListener<MessageDialog>() {
                                     @Override
                                     public boolean onClick(MessageDialog baseDialog, View v) {
@@ -523,7 +524,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 }
 
                 // Call the function with the selected items map
-                generateFirmwareFlashable(selectedMap,partition_table.isChecked());
+                generateFirmwareFlashable(selectedMap, partition_table.isChecked());
             }
         });
         //select all
@@ -595,7 +596,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      *
      * @param fw_list
      */
-    private void generateFirmwareFlashable(Map<String, Long> fw_list,boolean isBackupPt) {
+    private void generateFirmwareFlashable(Map<String, Long> fw_list, boolean isBackupPt) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -603,7 +604,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 for (String item : fw_list.keySet()) {
                     Log.d(TAG.SystemInforMap_TAG, item);
                 }
-                WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
+                WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
                 WaitDialog.show("Backuping");
                 String root_dir = getContext().getExternalFilesDir("firmware").getAbsolutePath();
                 String fw_root = getContext().getExternalFilesDir("firmware/fw").getAbsolutePath();
@@ -653,10 +654,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
 
                     //Log.d(log,"checked partitions 51315 : "+checkpartitions[0]);
-                    backup_writer = new BufferedWriter(new FileWriter(backup,false));
-                    restore_writer = new BufferedWriter(new FileWriter(restore,false));
-                    int total=fw_list.keySet().size();
-                    int current=0;
+                    backup_writer = new BufferedWriter(new FileWriter(backup, false));
+                    restore_writer = new BufferedWriter(new FileWriter(restore, false));
+                    int total = fw_list.keySet().size();
+                    int current = 0;
                     for (String dev_path : fw_list.keySet()) {
                         current++;
                         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -668,8 +669,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         Log.d(TAG.SystemInforMap_TAG, filedir_zip);
 
                         //new function
-                        scriptwriter.write("ui_print \"Processing "+current+"/"+total+" "+dev_path+"\"\n");
-                        scriptwriter.write("unzip $3 " + filename_zip + " -p | cat >" +dev_path+ "\n");
+                        scriptwriter.write("ui_print \"Processing " + current + "/" + total + " " + dev_path + "\"\n");
+                        scriptwriter.write("unzip $3 " + filename_zip + " -p | cat >" + dev_path + "\n");
 
                         scriptwriter.flush();
 
@@ -689,24 +690,24 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         cmd.add("mkdir -p " + fw_root + "/GPT_BACKUP");
                         cmd.add("chmod 777 " + fw_root + "/sgdisk");
 
-                        scriptwriter.write("ui_print \"Restoring GPT Table ... "+"\"\n");
-                        scriptwriter.write("unzip $3 sgdisk -d /agisk_tmp/"+"\n");
-                        scriptwriter.write("chmod 777 /agisk_tmp/sgdisk"+"\n");
+                        scriptwriter.write("ui_print \"Restoring GPT Table ... " + "\"\n");
+                        scriptwriter.write("unzip $3 sgdisk -d /agisk_tmp/" + "\n");
+                        scriptwriter.write("chmod 777 /agisk_tmp/sgdisk" + "\n");
                         scriptwriter.write("unzip $3 GPT_BACKUP -d /agisk_tmp/" + "\n");
                         List<String> result = new ArrayList<>();
 
                         if (Settings.isUFS()) {
                             //ufs
                             for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
-                                Shell.cmd("[ -e /dev/block/sd"+alphabet+" ] && echo Y || echo N").to(result).exec();
+                                Shell.cmd("[ -e /dev/block/sd" + alphabet + " ] && echo Y || echo N").to(result).exec();
                                 String result_s = result.get(result.size() - 1);
                                 if (result_s.equals("Y")) {
-                                    cmd.add( fw_root + "/sgdisk /dev/block/sd" + alphabet + " --backup=" + fw_root + "/GPT_BACKUP/sd" + alphabet + ".bin");
-                                    scriptwriter.write("ui_print \"Processing sd"+alphabet+" "+"\"\n");
-                                    scriptwriter.write("/agisk_tmp/sgdisk /dev/block/sd" + alphabet + " --load-backup=/agisk_tmp/GPT_BACKUP/sd"+alphabet+".bin\n");
+                                    cmd.add(fw_root + "/sgdisk /dev/block/sd" + alphabet + " --backup=" + fw_root + "/GPT_BACKUP/sd" + alphabet + ".bin");
+                                    scriptwriter.write("ui_print \"Processing sd" + alphabet + " " + "\"\n");
+                                    scriptwriter.write("/agisk_tmp/sgdisk /dev/block/sd" + alphabet + " --load-backup=/agisk_tmp/GPT_BACKUP/sd" + alphabet + ".bin\n");
                                 }
                             }
-                        }else{
+                        } else {
                             //emmc
                             cmd.add(fw_root + "/sgdisk /dev/block/mmcblk0 --backup=" + fw_root + "/GPT_BACKUP/mmcblk0.bin");
                             scriptwriter.write("/agisk_tmp/sgdisk /dev/block/mmcblk0 --load-backup=/agisk_tmp/GPT_BACKUP/mmcblk0.bin\n");
@@ -764,9 +765,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     String final_file = output_file;
 
                     if (Settings.needMvToSdcard) {
-                        String move_to="/sdcard/firmware_flashable_" + date + ".zip";
+                        String move_to = "/sdcard/firmware_flashable_" + date + ".zip";
                         final_file = move_to;
-                        Shell.cmd("mv " + output_file +" "+ move_to).exec();
+                        Shell.cmd("mv " + output_file + " " + move_to).exec();
                     }
                     WaitDialog.dismiss();
                     MessageDialog.overrideCancelable = BaseDialog.BOOLEAN.TRUE;
@@ -1181,7 +1182,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     private void partDelete() {
 
         //Need DirectFunction
-        WaitDialog.overrideCancelable= BaseDialog.BOOLEAN.FALSE;
+        WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
         WaitDialog.show("Deleting");
         GPTPart part = (GPTPart) selectedChunk;
         part.checIsMountedInner();
@@ -1226,9 +1227,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             }
         });
     }
+
     private void diskSettings(View view) {
         if (diskSpinner.getSelectedIndex() == 0) {
-            Toast.makeText(getContext(),"Please select a disk",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please select a disk", Toast.LENGTH_SHORT).show();
             return;
         }
         //Give dialog
@@ -1240,7 +1242,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                             case 0:
                                 //restore
                                 new InputDialog("Restore (No need to reboot)", "Restore table to " + selectedDriver.getPath()
-                                        , "Go", "Cancel", "/sdcard/"+selectedDriver.getPath().substring(selectedDriver.getPath().lastIndexOf('/')+1)+".bin")
+                                        , "Go", "Cancel", "/sdcard/" + selectedDriver.getPath().substring(selectedDriver.getPath().lastIndexOf('/') + 1) + ".bin")
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                                             @Override
@@ -1295,7 +1297,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                             public void onCompleted(boolean success) throws RemoteException {
                                                                 Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
-                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
                                                                     public void run() {
                                                                         setData(selectedDriver.getPath());
@@ -1346,8 +1348,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 break;
                             case 1:
                                 //backup
-                                new InputDialog("Backup (No need to reboot)", "Backup table of " + selectedDriver.getPath()+" to ?"
-                                        , "Go", "Cancel", "/sdcard/"+selectedDriver.getPath().substring(selectedDriver.getPath().lastIndexOf('/')+1)+".bin")
+                                new InputDialog("Backup (No need to reboot)", "Backup table of " + selectedDriver.getPath() + " to ?"
+                                        , "Go", "Cancel", "/sdcard/" + selectedDriver.getPath().substring(selectedDriver.getPath().lastIndexOf('/') + 1) + ".bin")
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                                             @Override
@@ -1402,7 +1404,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                             public void onCompleted(boolean success) throws RemoteException {
                                                                 Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
-                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
                                                                     public void run() {
                                                                         setData(selectedDriver.getPath());
@@ -1453,7 +1455,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 break;
                             case 2:
                                 //resize table
-                                new InputDialog("Resize Table (No need to reboot)", "Resize table of " + selectedDriver.getPath()+" to ?"
+                                new InputDialog("Resize Table (No need to reboot)", "Resize table of " + selectedDriver.getPath() + " to ?"
                                         , "Go", "Cancel", String.valueOf(selectedDriver.getPartLimit()))
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
@@ -1519,7 +1521,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                             public void onCompleted(boolean success) throws RemoteException {
                                                                 Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
-                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
                                                                     public void run() {
                                                                         setData(selectedDriver.getPath());
@@ -1577,7 +1579,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void partSettings(View view) {
         //Give dialog
-        PopMenu.show(new String[]{"Flash (No need to reboot)", "Backup (No need to reboot)", "Check (Unsupported)", "Fix (Unsupported)","Change Name"})
+        PopMenu.show(new String[]{"Flash (No need to reboot)", "Backup (No need to reboot)", "Check (Unsupported)", "Fix (Unsupported)", "Change Name"})
                 .setOnMenuItemClickListener(new OnMenuItemClickListener<PopMenu>() {
                     @Override
                     public boolean onClick(PopMenu dialog, CharSequence text, int index) {
@@ -1658,7 +1660,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 break;
                             case 1:
                                 //backup
-                                new InputDialog("Backup (No need to reboot)", "Backup " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName()+" to ?", "Go", "Cancel", "/sdcard/"+((GPTPart) selectedChunk).getName()+".img")
+                                new InputDialog("Backup (No need to reboot)", "Backup " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName() + " to ?", "Go", "Cancel", "/sdcard/" + ((GPTPart) selectedChunk).getName() + ".img")
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                                             @Override
@@ -1737,13 +1739,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 break;
                             case 4:
                                 //change name
-                                new InputDialog("Change Name", "Change Name :  " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName()+" to ? \nAllow blank", "Go", "Cancel", ((GPTPart) selectedChunk).getName())
+                                new InputDialog("Change Name", "Change Name :  " + ((GPTPart) selectedChunk).getDriver() + ":" + ((GPTPart) selectedChunk).getName() + " to ? \nAllow blank", "Go", "Cancel", ((GPTPart) selectedChunk).getName())
                                         .setCancelable(false)
                                         .setOkButton(new OnInputDialogButtonClickListener<InputDialog>() {
                                             @Override
                                             public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
                                                 WaitDialog.show("Changing name");
-                                                Log.d(TAG.SystemInforMap_TAG,"Rename "+selectedDriver.getPath()+":"+((GPTPart) selectedChunk).getNumber()+" to "+inputStr);
+                                                Log.d(TAG.SystemInforMap_TAG, "Rename " + selectedDriver.getPath() + ":" + ((GPTPart) selectedChunk).getNumber() + " to " + inputStr);
                                                 WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
 
                                                 //allow blank
@@ -1797,7 +1799,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                             public void onCompleted(boolean success) throws RemoteException {
                                                                 Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
-                                                                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                                                                ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
                                                                     public void run() {
                                                                         setData(selectedDriver.getPath());
@@ -1918,7 +1920,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         serial_number.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClipboardUtil.copyToClipboard(getContext(),serial_num_s);
+                ClipboardUtil.copyToClipboard(getContext(), serial_num_s);
                 Toast.makeText(getContext(), "Serial Num copied to clipboard", Toast.LENGTH_LONG).show();
             }
         });
@@ -2013,7 +2015,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         .show();
             }
         });
-        if (!Settings.getRootAccess()){
+        if (!Settings.getRootAccess()) {
             read_partition_table.setEnabled(false);
         }
 
@@ -2152,15 +2154,15 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                          */
                         updateDiskInfo(
                                 selectedDriver.getTotal_size_sector(),
-                                selectedDriver.getTotal_size_sector()*selectedDriver.getSector_size(),
+                                selectedDriver.getTotal_size_sector() * selectedDriver.getSector_size(),
                                 selectedDriver.getFree_size_sector(),
-                                selectedDriver.getFree_size_sector()*selectedDriver.getSector_size(),
+                                selectedDriver.getFree_size_sector() * selectedDriver.getSector_size(),
                                 selectedDriver.getPartLimit(),
                                 selectedDriver.getBlock_size(),
                                 selectedDriver.getSector_size(),
                                 selectedDriver.getGUID(),
                                 selectedDriver.getPart_align_sector()
-                                );
+                        );
                         //set chart
                         ////////////////////////////////////////////////////////////
                         ArrayList<PieEntry> entries = new ArrayList<>();
@@ -2593,10 +2595,15 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     @Override
     public void onNothingSelected() {
+        if (diskSpinner.getSelectedIndex() == 0) {
+            return;
+        }
         Log.i("PieChart", "nothing selected");
         Log.d(TAG.SystemInforMap_TAG, "NothingSelected set selectedChunk null");
         selectedChunk = null;
         partListTableView.getSelectionHandler().clearSelection();
+
+
         disableExistedPartActions();
         disableFreeChunkActions();
     }
@@ -2611,7 +2618,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void setupDiskSpinner(final View view) {
         diskSpinner = (NiceSpinner) view.findViewById(R.id.disk_driver_spinner);
-        diskSettings_bt=(Button)view.findViewById(R.id.disk_setting);
+        diskSettings_bt = (Button) view.findViewById(R.id.disk_setting);
         List<String> dlist = getBlockDriverList();
 
         /**

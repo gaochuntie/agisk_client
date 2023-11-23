@@ -40,6 +40,8 @@ add_library( # Sets the name of the library.
         des/vigenere.h
         tinyxml2/tinyxml2.cpp
         tinyxml2/tinyxml2.h
+        support/support.cc
+        support/support.h
         )
 
 #add_library(gpt STATIC IMPORTED)

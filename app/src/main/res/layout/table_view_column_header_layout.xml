@@ -22,6 +22,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textIsSelectable="true"
                 android:id="@+id/column_header_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

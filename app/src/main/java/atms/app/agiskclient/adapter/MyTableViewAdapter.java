@@ -43,13 +43,13 @@ public class MyTableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHe
             super(itemView);
             cell_container = itemView.findViewById(R.id.cell_container);
             cell_textview = itemView.findViewById(R.id.cell_data);
-            cell_textview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ClipboardUtil.copyToClipboard(cell_textview.getContext(), cell_textview.getText().toString());
-                    Toast.makeText(cell_textview.getContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
-                }
-            });
+//            cell_textview.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    ClipboardUtil.copyToClipboard(cell_textview.getContext(), cell_textview.getText().toString());
+//                    Toast.makeText(cell_textview.getContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
+//                }
+//            });
 
         }
     }

@@ -558,6 +558,8 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
     uint64_t lastBlock = 0; // last block in a segment
     uint64_t segmentSize = 0; // size of segment in blocks
     uint32_t num = 0;
+    uint64_t largest_free=UINT64_C(0);
+    uint64_t total_free = gptdata.FindFreeBlocks(&num, &largest_free);
 
     /**
    * return format
@@ -569,7 +571,7 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
     rts << ":" << gptdata.GetDiskGUID().AsString();
     rts << ":" << gptdata.GetNumParts();
     rts << ":" << gptdata.GetLastUsableLBA() + 1;
-    rts << ":" << totalFound;
+    rts << ":" << total_free;
     rts << ":" << gptdata.GetAlignment();
     rts << "}";
 
@@ -607,6 +609,9 @@ Java_atms_app_agiskclient_aidl_AIDLService_getPartListString(JNIEnv *env, jobjec
             start = lastBlock + 1;
         } // if
     } while (firstBlock != 0);
+
+
+
     /**
      * add part
      */

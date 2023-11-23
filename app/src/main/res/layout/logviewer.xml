@@ -81,6 +81,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textIsSelectable="true"
                         android:id="@+id/log_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
