@@ -98,6 +98,7 @@ import atms.app.agiskclient.Tools.DateUtils;
 import atms.app.agiskclient.Tools.DirectFunctionUtils;
 import atms.app.agiskclient.Tools.FileForceWriteListener;
 import atms.app.agiskclient.Tools.FileUtils;
+import atms.app.agiskclient.Tools.Support;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
 import atms.app.agiskclient.adapter.MyTableViewAdapter;
@@ -236,9 +237,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             long part_align_sector
     ) {
         disk_total_sector.setText(String.valueOf(total_sector));
-        disk_total_size.setText(String.valueOf(total_size));
+        disk_total_size.setText(String.valueOf(total_size)+" = "+ Support.BytesToIeee(total_sector,logical_sector));
         disk_free_sector.setText(String.valueOf(free_sector));
-        disk_free_size.setText(String.valueOf(free_size));
+        disk_free_size.setText(String.valueOf(free_size)+" = "+ Support.BytesToIeee(free_sector,logical_sector));
         disk_entry_limit.setText(String.valueOf(entry_limit));
         disk_physical_sector.setText(String.valueOf(physical_sector));
         disk_logical_sector.setText(String.valueOf(logical_sector));
@@ -2327,6 +2328,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         mColumnHeaderList.add(new ColumnHeader("Name"));
         mColumnHeaderList.add(new ColumnHeader("StartLBA"));
         mColumnHeaderList.add(new ColumnHeader("EndLBA"));
+        mColumnHeaderList.add(new ColumnHeader("Size"));
+        mColumnHeaderList.add(new ColumnHeader("Hsize"));
         mColumnHeaderList.add(new ColumnHeader("CODE"));
         mColumnHeaderList.add(new ColumnHeader("Filesystem"));
 
@@ -2341,6 +2344,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     subcell_list.add(new Cell("*Unused"));
                     subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
+                    subcell_list.add(new Cell(String.valueOf(chunk.getSize_sector() * selectedDriver.getSector_size())));
+                    subcell_list.add(new Cell(Support.BytesToIeee(chunk.getSize_sector(),selectedDriver.getSector_size())));
                     subcell_list.add(new Cell(""));
                     subcell_list.add(new Cell(""));
                     break;
@@ -2352,6 +2357,8 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     subcell_list.add(new Cell(part.getName()));
                     subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
+                    subcell_list.add(new Cell(String.valueOf(chunk.getSize_sector() * selectedDriver.getSector_size())));
+                    subcell_list.add(new Cell(Support.BytesToIeee(chunk.getSize_sector(),selectedDriver.getSector_size())));
                     String code = "0x" + Integer.toHexString(Integer.parseInt(part.getCode())).toUpperCase();
                     subcell_list.add(new Cell(code));
                     subcell_list.add(new Cell(part.getPart_type().getName()));

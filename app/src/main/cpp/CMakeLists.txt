@@ -42,6 +42,8 @@ add_library( # Sets the name of the library.
         tinyxml2/tinyxml2.h
         support/support.cc
         support/support.h
+        Support.cpp
+        Support.h
         )
 
 #add_library(gpt STATIC IMPORTED)
