@@ -215,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+        viewpage2.setUserInputEnabled(false);
 
     }
 
