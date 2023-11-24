@@ -82,7 +82,6 @@ import java.util.Map;
 import atms.app.agiskclient.ConfigBox.OrigConfig;
 import atms.app.agiskclient.ConfigBox.XMLmod;
 import atms.app.agiskclient.GPTfdisk.DiskChunk;
-import atms.app.agiskclient.GPTfdisk.DiskUsageView;
 import atms.app.agiskclient.GPTfdisk.GPTDriver;
 import atms.app.agiskclient.GPTfdisk.GPTPart;
 import atms.app.agiskclient.GPTfdisk.PartType;
@@ -257,9 +256,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     private void setupFirmwareBackupBt(View view) {
         fwFlashable_gen_bt = (Button) view.findViewById(R.id.generate_firmware_updater_zip);
-        if (Settings.getRootAccess()) {
+        if (!Settings.getRootAccess()) {
             fwFlashable_gen_bt.setEnabled(false);
         }
+
         fwFlashable_gen_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -924,7 +924,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                       NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
                                       NiceSpinner filesystemSp = view.findViewById(R.id.newDialog_filesystem_type_sp);
                                       SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
-                                      DiskUsageView space_usage = view.findViewById(R.id.newDialog_space_usage);
 
                                       List<String> dataset = new LinkedList<>(Arrays.asList("byte", "sector", "kib", "gib"));
                                       niceSpinner.attachDataSource(dataset);
@@ -997,12 +996,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                               int seekbar_value = (int) (size_set / available_total) * 100;
                                               seekBar.setProgress(seekbar_value);
                                               //update diskusage
-                                              space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
-                                                      , Long.valueOf(rangeStart.getText().toString())
-                                                      , Long.valueOf(rangeStart.getText().toString())
-                                                      , Long.valueOf(setStart.getText().toString())
-                                                      , Long.valueOf(setEnd.getText().toString()));
-                                              space_usage.invalidate();
                                           }
 
 
@@ -1051,12 +1044,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                               int seekbar_value = (int) (size_set / available_total) * 100;
                                               seekBar.setProgress(seekbar_value);
                                               //update diskusage
-                                              space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
-                                                      , Long.valueOf(rangeStart.getText().toString())
-                                                      , Long.valueOf(rangeStart.getText().toString())
-                                                      , Long.valueOf(setStart.getText().toString())
-                                                      , Long.valueOf(setEnd.getText().toString()));
-                                              space_usage.invalidate();
+
                                           }
                                       });
                                       sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1105,12 +1093,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                   setEnd.setText(String.valueOf(end));
                                                   sizeEt.setText(String.valueOf(size));
                                                   //update diskusage
-                                                  space_usage.setData(Long.valueOf(total_byte_tv.getText().toString())
-                                                          , Long.valueOf(rangeStart.getText().toString())
-                                                          , Long.valueOf(rangeStart.getText().toString())
-                                                          , Long.valueOf(setStart.getText().toString())
-                                                          , Long.valueOf(setEnd.getText().toString()));
-                                                  space_usage.invalidate();
+
                                               }
                                           }
 

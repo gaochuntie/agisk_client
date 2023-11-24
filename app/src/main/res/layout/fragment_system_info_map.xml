@@ -236,22 +236,7 @@
                                 android:id="@+id/show_free_areas_tr"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Show Free Areas"
-                                    android:textColor="@color/black"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=" : "
-                                    android:textColor="@color/black"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Click to View All Free Areas"
-                                    android:textColor="@color/black"/>
+
                             </TableRow>
                             <TableRow
                                 android:layout_width="match_parent"
@@ -364,10 +349,8 @@
                                     android:text="unknown"
                                     android:textColor="@color/black"/>
                             </TableRow>
-
                         </TableLayout>
                     </HorizontalScrollView>
-
 
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/chart1"

@@ -345,11 +345,6 @@
             </LinearLayout>
 
 
-            <atms.app.agiskclient.GPTfdisk.DiskUsageView
-                android:id="@+id/newDialog_space_usage"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"/>
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
