@@ -434,7 +434,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                 StringBuilder builder1 = new StringBuilder();
                 for (String item : selectedItems) {
-                    builder1.append(item);
+                    builder1.append(item+"\n");
                 }
                 if (builder1.toString().isEmpty()) {
                     //empty
