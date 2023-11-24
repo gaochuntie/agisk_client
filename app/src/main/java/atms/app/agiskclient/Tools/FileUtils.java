@@ -125,4 +125,24 @@ public class FileUtils {
     public static String forceReadFileWithRoot(Context context, String path) {
         return DirectFunctionUtils.Direct5_FILE_FORCEREAD(context, path);
     }
+
+    private static void closeStream(InputStream stream) {
+        try {
+            if (stream != null) {
+                stream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void closeStream(OutputStream stream) {
+        try {
+            if (stream != null) {
+                stream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

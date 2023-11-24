@@ -236,9 +236,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             long part_align_sector
     ) {
         disk_total_sector.setText(String.valueOf(total_sector));
-        disk_total_size.setText(String.valueOf(total_size)+" = "+ Support.BytesToIeee(total_sector,logical_sector));
+        disk_total_size.setText(String.valueOf(total_size) + " = " + Support.BytesToIeee(total_sector, logical_sector));
         disk_free_sector.setText(String.valueOf(free_sector));
-        disk_free_size.setText(String.valueOf(free_size)+" = "+ Support.BytesToIeee(free_sector,logical_sector));
+        disk_free_size.setText(String.valueOf(free_size) + " = " + Support.BytesToIeee(free_sector, logical_sector));
         disk_entry_limit.setText(String.valueOf(entry_limit));
         disk_physical_sector.setText(String.valueOf(physical_sector));
         disk_logical_sector.setText(String.valueOf(logical_sector));
@@ -610,6 +610,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 String root_dir = getContext().getExternalFilesDir("firmware").getAbsolutePath();
                 String fw_root = getContext().getExternalFilesDir("firmware/fw").getAbsolutePath();
                 String script_dir = fw_root + "/META-INF/com/google/android/";
+                String exe_dir = getContext().getFilesDir().getAbsolutePath() + "/bin";
 
                 //update-binary
                 if (!FileUtils.copyAssetFileToStorage(getContext(), "Firmware/update-binary"
@@ -624,6 +625,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 //partition table
                 if (isBackupPt) {
                     Log.d(TAG.SystemInforMap_TAG, "GPT BACKUP ENABLED");
+                    //this sgdisk if for packing up
                     if (!FileUtils.copyAssetFileToStorage(getContext(), "StaticBinary/sgdisk"
                             , fw_root + "/sgdisk")) {
                         TipDialog.show("Unable to copy sgdisk", WaitDialog.TYPE.ERROR, -1);
@@ -687,14 +689,21 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         restore_writer.flush();
                     }
                     if (isBackupPt) {
+                        //unzip sgdisk executable
+                        if (!FileUtils.copyAssetFileToStorage(getContext(), "StaticBinary/sgdisk"
+                                , exe_dir + "/sgdisk")) {
+                            TipDialog.show("Unable to copy sgdisk exectuable", WaitDialog.TYPE.ERROR, -1);
+                            return;
+                        }
                         //add partition table backup
                         cmd.add("mkdir -p " + fw_root + "/GPT_BACKUP");
-                        cmd.add("chmod 777 " + fw_root + "/sgdisk");
+                        cmd.add("chmod 777 " + exe_dir + "/sgdisk");
+
 
                         scriptwriter.write("ui_print \"Restoring GPT Table ... " + "\"\n");
                         scriptwriter.write("unzip $3 sgdisk -d /agisk_tmp/" + "\n");
                         scriptwriter.write("chmod 777 /agisk_tmp/sgdisk" + "\n");
-                        scriptwriter.write("unzip $3 GPT_BACKUP -d /agisk_tmp/" + "\n");
+                        scriptwriter.write("unzip $3 GPT_BACKUP/* -d /agisk_tmp/" + "\n");
                         List<String> result = new ArrayList<>();
 
                         if (Settings.isUFS()) {
@@ -703,14 +712,14 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 Shell.cmd("[ -e /dev/block/sd" + alphabet + " ] && echo Y || echo N").to(result).exec();
                                 String result_s = result.get(result.size() - 1);
                                 if (result_s.equals("Y")) {
-                                    cmd.add(fw_root + "/sgdisk /dev/block/sd" + alphabet + " --backup=" + fw_root + "/GPT_BACKUP/sd" + alphabet + ".bin");
+                                    cmd.add(exe_dir + "/sgdisk /dev/block/sd" + alphabet + " --backup=" + fw_root + "/GPT_BACKUP/sd" + alphabet + ".bin");
                                     scriptwriter.write("ui_print \"Processing sd" + alphabet + " " + "\"\n");
                                     scriptwriter.write("/agisk_tmp/sgdisk /dev/block/sd" + alphabet + " --load-backup=/agisk_tmp/GPT_BACKUP/sd" + alphabet + ".bin\n");
                                 }
                             }
                         } else {
                             //emmc
-                            cmd.add(fw_root + "/sgdisk /dev/block/mmcblk0 --backup=" + fw_root + "/GPT_BACKUP/mmcblk0.bin");
+                            cmd.add(exe_dir + "/sgdisk /dev/block/mmcblk0 --backup=" + fw_root + "/GPT_BACKUP/mmcblk0.bin");
                             scriptwriter.write("/agisk_tmp/sgdisk /dev/block/mmcblk0 --load-backup=/agisk_tmp/GPT_BACKUP/mmcblk0.bin\n");
                         }
                         scriptwriter.write("ui_print \"GPT Restore finished\"\n");
@@ -754,6 +763,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                     //clean up
                     Shell.cmd("rm -rf " + fw_root).exec();
+                    Shell.cmd("rm -rf " + exe_dir).exec();
                     success = true;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2328,7 +2338,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getSize_sector() * selectedDriver.getSector_size())));
-                    subcell_list.add(new Cell(Support.BytesToIeee(chunk.getSize_sector(),selectedDriver.getSector_size())));
+                    subcell_list.add(new Cell(Support.BytesToIeee(chunk.getSize_sector(), selectedDriver.getSector_size())));
                     subcell_list.add(new Cell(""));
                     subcell_list.add(new Cell(""));
                     break;
@@ -2341,7 +2351,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     subcell_list.add(new Cell(String.valueOf(chunk.getStartSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getEndSector())));
                     subcell_list.add(new Cell(String.valueOf(chunk.getSize_sector() * selectedDriver.getSector_size())));
-                    subcell_list.add(new Cell(Support.BytesToIeee(chunk.getSize_sector(),selectedDriver.getSector_size())));
+                    subcell_list.add(new Cell(Support.BytesToIeee(chunk.getSize_sector(), selectedDriver.getSector_size())));
                     String code = "0x" + Integer.toHexString(Integer.parseInt(part.getCode())).toUpperCase();
                     subcell_list.add(new Cell(code));
                     subcell_list.add(new Cell(part.getPart_type().getName()));
