@@ -7,7 +7,8 @@
     android:background="#FFFFFF"
     tools:context=".fragments.SystemInfoMap">
 
-    <androidx.core.widget.NestedScrollView
+
+    <ScrollView
         android:id="@+id/map_container_ns"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -399,19 +400,17 @@
                     </HorizontalScrollView>>
 
                     <androidx.core.widget.NestedScrollView
+                        android:id="@+id/part_list_tableview_container_ns"
                         android:layout_width="match_parent"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="15dp"
-                        android:layout_height="300dp" >
+                        android:layout_height="400dp" >
 
                         <com.evrencoskun.tableview.TableView
                             android:textAlignment="center"
                             android:id="@+id/part_list_tableview"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-
-                            android:stretchColumns="*"
-                            android:shrinkColumns="*"
                             app:allow_click_inside_cell="true"
                             app:allow_click_inside_row_header="true"
                             app:allow_click_inside_column_header="true"
@@ -430,7 +429,7 @@
         </LinearLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 
 </FrameLayout>

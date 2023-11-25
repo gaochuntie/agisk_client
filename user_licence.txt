@@ -1,0 +1,49 @@
+[Agisk Client] License Agreement
+
+Version All_Versions
+
+This License Agreement (the "Agreement") is entered into by and between you ("User" or "Licensee") and asm1409(gaochuntie) ("Licensor").
+
+IMPORTANT: PLEASE READ THIS AGREEMENT CAREFULLY BEFORE USING THE Agisk Client APPLICATION ("THE APP"). BY USING THE APP, YOU AGREE TO BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE TO THE TERMS OF THIS AGREEMENT, DO NOT USE THE APP.
+
+1. **Age Limitation:**
+
+User must be 16 years of age or above to use the App. By using the App, User represents that they are at least 16 years old.
+
+2. **License Grant:**
+
+Subject to the terms and conditions of this Agreement, Licensor grants to User a non-exclusive, non-transferable license to use the App on a single device owned or controlled by User.
+
+3. **Root Permissions and Disk Operations:**
+
+The App requires root permissions and performs operations directly on the device's disk. These actions include backup/restore/wipe(zero) areas of the disk. By using the App, User acknowledges and accepts the potential risks associated with these actions.
+
+4. **Open Source:**
+
+The App is an open-source project released under the MIT license. The source code is available at [https://github.com/gaochuntie/agisk_client](https://github.com/gaochuntie/agisk_client).
+
+5. **No Warranty:**
+
+The App is provided "as-is" without any warranty of any kind, either expressed or implied. Licensor does not guarantee that the App will be error-free or uninterrupted.
+
+6. **Limitation of Liability:**
+
+In no event shall Licensor be liable for any special, incidental, indirect, or consequential damages of any kind, or any damages whatsoever resulting from the loss of use, data, or profits, whether or not advised of the possibility of damage, and on any theory of liability, arising out of or in connection with the use or performance of the App.
+
+7. **User Consent:**
+
+By using the App, User acknowledges that they have read and understood this Agreement, including the potential risks associated with root permissions and disk operations. User agrees to use the App at their own risk.
+
+8. **Governing Law:**
+
+This Agreement shall be governed by and construed in accordance with the laws of China Mainland.
+
+9. **Changes to the Agreement:**
+
+Licensor reserves the right to modify this Agreement at any time. Changes will be effective immediately upon posting the revised Agreement. Continued use of the App after any such changes shall constitute User's consent to such changes.
+
+10. **Contact Information:**
+
+For questions about this Agreement, please contact gaochuntie@github.
+
+[Agisk Client] © 2023, gaochuntie. All rights reserved.

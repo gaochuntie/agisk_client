@@ -1,5 +1,8 @@
 package atms.app.agiskclient;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -97,12 +100,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Settings.setRootAccess(true);
                     initSettings();
                 }
+
                 checkRootAccess(shell.isRoot());
+                //welcome screen
+                if (isFirstTime()) {
+                    Intent intent = new Intent(MainActivity.this, WelcomScreenActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
 
 
+
+    }
+    private boolean isFirstTime() {
+        // Get the SharedPreferences object
+        SharedPreferences sharedPreferences = getSharedPreferences("agisk_base",Context.MODE_PRIVATE);
+
+        // Check if the "firstTime" flag is set
+        boolean firstTime = sharedPreferences.getBoolean("firstTime", true);
+        Log.d("firstTimeA", String.valueOf(firstTime));
+        // Return the result
+        return firstTime;
     }
     private void initSettings(){
         if (Settings.getRootAccess()) {

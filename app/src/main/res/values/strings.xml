@@ -70,4 +70,48 @@
     <string name="dash">-</string>
     <string name="scrollViewStart">START OF SCROLLVIEW</string>
     <string name="scrollViewEnd">END OF SCROLLVIEW</string>
+    <string name="title_activity_welcom_screen">WelcomScreenActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="license_text">[Agisk Client] License Agreement\n\nVersion All_Versions\n\nThis License Agreement (the \"Agreement\") is entered into by and between you (\"User\" or \"Licensee\") and asm1409(gaochuntie) (\"Licensor\").\n\nIMPORTANT: PLEASE READ THIS AGREEMENT CAREFULLY BEFORE USING THE Agisk Client APPLICATION (\"THE APP\"). BY USING THE APP, YOU AGREE TO BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE TO THE TERMS OF THIS AGREEMENT, DO NOT USE THE APP.\n\n1. **Age Limitation:**\n\nUser must be 16 years of age or above to use the App. By using the App, User represents that they are at least 16 years old.\n\n2. **License Grant:**\n\nSubject to the terms and conditions of this Agreement, Licensor grants to User a non-exclusive, non-transferable license to use the App on a single device owned or controlled by User.\n\n3. **Root Permissions and Disk Operations:**\n\nThe App requires root permissions and performs operations directly on the device\'s disk. These actions include backup/restore/wipe(zero) areas of the disk. By using the App, User acknowledges and accepts the potential risks associated with these actions.\n\n4. **Open Source:**\n\nThe App is an open-source project released under the MIT license. The source code is available at [https://github.com/gaochuntie/agisk_client](https://github.com/gaochuntie/agisk_client).\n\n5. **No Warranty:**\n\nThe App is provided \"as-is\" without any warranty of any kind, either expressed or implied. Licensor does not guarantee that the App will be error-free or uninterrupted.\n\n6. **Limitation of Liability:**\n\nIn no event shall Licensor be liable for any special, incidental, indirect, or consequential damages of any kind, or any damages whatsoever resulting from the loss of use, data, or profits, whether or not advised of the possibility of damage, and on any theory of liability, arising out of or in connection with the use or performance of the App.\n\n7. **User Consent:**\n\nBy using the App, User acknowledges that they have read and understood this Agreement, including the potential risks associated with root permissions and disk operations. User agrees to use the App at their own risk.\n\n8. **Governing Law:**\n\nThis Agreement shall be governed by and construed in accordance with the laws of China Mainland.\n\n9. **Changes to the Agreement:**\n\nLicensor reserves the right to modify this Agreement at any time. Changes will be effective immediately upon posting the revised Agreement. Continued use of the App after any such changes shall constitute User\'s consent to such changes.\n\n10. **Contact Information:**\n\nFor questions about this Agreement, please contact gaochuntie@github.\n\n[Agisk Client] © 2023, gaochuntie. All rights reserved.\n</string>
 </resources>

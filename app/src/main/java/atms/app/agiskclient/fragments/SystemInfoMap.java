@@ -13,6 +13,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableRow;
@@ -2798,18 +2800,21 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
     /////////////////////////////////////////////////////
-    NestedScrollView nestedScrollView;
+    ScrollView base_scrollview;
+    NestedScrollView part_list_tableview_container_ns;
 
     private void setupBasicUi(View view) {
-        nestedScrollView = view.findViewById(R.id.map_container_ns);
+        base_scrollview = view.findViewById(R.id.map_container_ns);
+        part_list_tableview_container_ns=view.findViewById(R.id.part_list_tableview_container_ns);
+
     }
 
     private void disableContainerScroll() {
-        nestedScrollView.setNestedScrollingEnabled(false);
+        base_scrollview.setNestedScrollingEnabled(false);
     }
 
     private void enableContainerScroll() {
-        nestedScrollView.setNestedScrollingEnabled(true);
+        base_scrollview.setNestedScrollingEnabled(true);
     }
 }
 
