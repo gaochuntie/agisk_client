@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Calendar;
 
-import atms.app.agiskclient.MainActivity;
 import atms.app.agiskclient.R;
 import atms.app.agiskclient.SettingsActivity;
 import mehdi.sakout.aboutpage.AboutPage;
@@ -141,7 +140,7 @@ public class aboutFragment extends Fragment {
     Element getTelegramElement() {
         Element settingsElement = new Element();
         settingsElement.setTitle("Telegram");
-        settingsElement.setIconDrawable(R.drawable.icons_telegram_50);
+        settingsElement.setIconDrawable(R.drawable.icons_telegram_dark50);
         settingsElement.setAutoApplyIconTint(true);
         settingsElement.setIconTint(mehdi.sakout.aboutpage.R.color.about_item_icon_color);
         settingsElement.setIconNightTint(android.R.color.white);

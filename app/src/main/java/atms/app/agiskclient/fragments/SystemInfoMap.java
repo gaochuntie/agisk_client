@@ -96,12 +96,14 @@ import atms.app.agiskclient.TableViewUI.DataModels.RowHeader;
 import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.CompressUtils;
 import atms.app.agiskclient.Tools.DateUtils;
+import atms.app.agiskclient.Tools.DebugUtils;
 import atms.app.agiskclient.Tools.DirectFunctionUtils;
 import atms.app.agiskclient.Tools.FileForceWriteListener;
 import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.Support;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.Tools.Worker;
+import atms.app.agiskclient.UIcomponents.LineSegmentRatioProgressBar;
 import atms.app.agiskclient.adapter.MyTableViewAdapter;
 import atms.app.agiskclient.aidl.IWorkListener;
 import atms.app.agiskclient.aidl.workClient;
@@ -203,6 +205,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     TextView disk_part_align_sectorl;
 
     private void setupDiskInfoView(View view) {
+        DebugUtils.functionHit("setupDiskInfoView");
         disk_total_sector = view.findViewById(R.id.total_sector_tv);
         disk_total_size = view.findViewById(R.id.total_size_tv);
         disk_free_sector = view.findViewById(R.id.free_sector_tv);
@@ -237,6 +240,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             String guid,
             long part_align_sector
     ) {
+        DebugUtils.functionHit("updateDiskInfo");
         disk_total_sector.setText(String.valueOf(total_sector));
         disk_total_size.setText(String.valueOf(total_size) + " = " + Support.BytesToIeee(total_sector, logical_sector));
         disk_free_sector.setText(String.valueOf(free_sector));
@@ -257,6 +261,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     Button fwFlashable_gen_bt;
 
     private void setupFirmwareBackupBt(View view) {
+        DebugUtils.functionHit("setupFirmwareBackupBt");
         fwFlashable_gen_bt = (Button) view.findViewById(R.id.generate_firmware_updater_zip);
         if (!Settings.getRootAccess()) {
             fwFlashable_gen_bt.setEnabled(false);
@@ -289,6 +294,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     Map<String, Long> block_dev = new HashMap<>();
 
     private void loadFirmwareList() {
+        DebugUtils.functionHit("loadFirmwareList");
         WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
         WaitDialog.show("Loading Block Device");
 
@@ -317,7 +323,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                     if (!showMapperDevice && item.contains("/mapper/")) {
                         continue;
                     }
-                    Log.d(TAG.SystemInforMap_TAG, "Block Dev : " + item);
+                    //Log.d(TAG.SystemInforMap_TAG, "Block Dev : " + item);
                     String[] parts = item.split("=");
                     if (parts.length == 2) {
                         String filename = parts[0].trim();
@@ -352,6 +358,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     boolean isBackupGptTable = false;
 
     private void showFirmwareFlashableGenDialog() {
+        DebugUtils.functionHit("showFirmwareFlashableGenDialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Select Items");
@@ -555,10 +562,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * load firmware list
      */
     private void readFilenamesFromFile() {
+        DebugUtils.functionHit("readFilenamesFromFile");
         filePickerLauncher.launch("text/plain");
     }
 
     private void onFilePicked(Uri uri) {
+DebugUtils.functionHit("onFilePicked");
+        DebugUtils.functionHit("onFilePicked");
         if (uri != null) {
             /**
              * update selectedItem and redisplay dialog
@@ -600,12 +610,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * @param fw_list
      */
     private void generateFirmwareFlashable(Map<String, Long> fw_list, boolean isBackupPt) {
+        DebugUtils.functionHit("generateFirmwareFlashable");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;
                 for (String item : fw_list.keySet()) {
-                    Log.d(TAG.SystemInforMap_TAG, item);
+                    //Log.d(TAG.SystemInforMap_TAG, item);
                 }
                 WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
                 WaitDialog.show("Backuping");
@@ -669,9 +680,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                         //Log.d(TAG.SystemInforMap_TAG, "writer 5585: " + dev_path);
 
                         String filename_zip = dev_path.substring(dev_path.indexOf("/") + 1);
-                        Log.d(TAG.SystemInforMap_TAG, filename_zip);
+                        //Log.d(TAG.SystemInforMap_TAG, filename_zip);
                         String filedir_zip = filename_zip.substring(0, filename_zip.lastIndexOf("/") + 1);
-                        Log.d(TAG.SystemInforMap_TAG, filedir_zip);
+                        //Log.d(TAG.SystemInforMap_TAG, filedir_zip);
 
                         //new function
                         scriptwriter.write("ui_print \"Processing " + current + "/" + total + " " + dev_path + "\"\n");
@@ -820,6 +831,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     Button partSettings_bt;
 
     private void setupPartActionButtons(View view) {
+        DebugUtils.functionHit("setupPartActionButtons");
         partMount_bt = (Button) view.findViewById(R.id.part_mount_bt);
         partUmount_bt = (Button) view.findViewById(R.id.part_umount_bt);
         partNew_bt = (Button) view.findViewById(R.id.part_new_bt);
@@ -896,7 +908,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             //already mounted
             String cmd = "umount " + part.getMountPointString();
             Shell.cmd(cmd).exec();
-            Log.d(TAG.SystemInforMap_TAG, cmd);
+            //Log.d(TAG.SystemInforMap_TAG, cmd);
             part.checIsMountedInner();
             if (part.isMountedInner()) {
                 MessageDialog.show("Failed", "Unable to umount");
@@ -930,12 +942,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                       EditText name_et = view.findViewById(R.id.newDialog_name_et);
                                       TextView percentage_tv = view.findViewById(R.id.newDialog_new_percentage_tv);
                                       TextView total_byte_tv = view.findViewById(R.id.newDialog_total_byte_tv);
-                                      TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
+                                      //TextView new_byte_tv = view.findViewById(R.id.newDialog_new_byte_tv);
                                       TextView available_tv = view.findViewById(R.id.newDialog_available_tv);
                                       EditText sizeEt = view.findViewById(R.id.newDialog_size_et);
                                       NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.newDialog_size_type_sp);
                                       NiceSpinner filesystemSp = view.findViewById(R.id.newDialog_filesystem_type_sp);
                                       SeekBar seekBar = view.findViewById(R.id.newDialog_setsize_sb);
+                                      LineSegmentRatioProgressBar lineSegmentRatioProgressBar = view.findViewById(R.id.newDialog_lineSegmentRatioProgressBar);
 
                                       List<String> dataset = new LinkedList<>(Arrays.asList("byte", "sector", "kib", "gib"));
                                       niceSpinner.attachDataSource(dataset);
@@ -957,9 +970,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                       rangeEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
                                       setStart.setText(String.valueOf(selectedChunk.getStartSector() * selectedDriver.getBlock_size()));
                                       setEnd.setText(String.valueOf(((selectedChunk.getEndSector() + 1) * selectedDriver.getBlock_size()) - 1));
-                                      totalTv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                                      totalTv.setText(String.valueOf(Support.BytesToIeee(selectedChunk.getSize_sector() * selectedDriver.getBlock_size(),1)));
                                       total_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
-                                      new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
+                                      //new_byte_tv.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
                                       sizeEt.setText(String.valueOf(selectedChunk.getSize_sector() * selectedDriver.getBlock_size()));
                                       available_tv.setText(total_byte_tv.getText());
 
@@ -1007,7 +1020,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                               //update seekbar
                                               int seekbar_value = (int) (size_set / available_total) * 100;
                                               seekBar.setProgress(seekbar_value);
-                                              //update diskusage
+
                                           }
 
 
@@ -1055,8 +1068,6 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                               //update seekbar
                                               int seekbar_value = (int) (size_set / available_total) * 100;
                                               seekBar.setProgress(seekbar_value);
-                                              //update diskusage
-
                                           }
                                       });
                                       sizeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1088,6 +1099,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                               } else {
                                                   sizeEt.setText("0");
                                               }
+
                                           }
                                       });
                                       seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -1096,6 +1108,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                               percentage_tv.setText(String.valueOf(i));
                                               if (fromUser) {
                                                   long available_total = Long.valueOf(rangeEnd.getText().toString()) - Long.valueOf(setStart.getText().toString()) + 1;
+
                                                   long start = Long.valueOf(setStart.getText().toString());
                                                   long size = (available_total * i / 100);
                                                   long end = start + size - 1;
@@ -1107,6 +1120,24 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                   //update diskusage
 
                                               }
+                                              //update diskusage
+                                              lineSegmentRatioProgressBar.clearRanges();
+
+                                              long setStartValue = Long.parseLong(setStart.getText().toString());
+                                              long setEndValue = Long.parseLong(setEnd.getText().toString());
+                                              long rangeStartValue = Long.parseLong(rangeStart.getText().toString());
+                                              long total = Long.parseLong(total_byte_tv.getText().toString());
+
+                                              DebugUtils.functionHit("onProgressChanged " +
+                                                      (float) ((setStartValue - rangeStartValue) / (double) total) + " " +
+                                                      (float) ((setEndValue - rangeStartValue) / (double) total));
+
+                                              lineSegmentRatioProgressBar.addRange(0f, (float) ((setStartValue - rangeStartValue) / (double) total), Color.GRAY);
+                                              lineSegmentRatioProgressBar.addRange((float) ((setStartValue - rangeStartValue) / (double) total),
+                                                      (float) ((setEndValue - rangeStartValue) / (double) total), Color.GREEN);
+                                              lineSegmentRatioProgressBar.addRange((float) ((setEndValue - rangeStartValue) / (double) total), 1f, Color.GRAY);
+
+
                                           }
 
                                           @Override
@@ -1275,7 +1306,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                 //Do action
                                                 OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
-                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+                                                //Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
 
                                                 client = Worker.putTaskToRootService(origConfig
                                                         , getActivity(), new IWorkListener.Stub() {
@@ -1291,7 +1322,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                             @Override
                                                             public void onCompleted(boolean success) throws RemoteException {
-                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                //Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
                                                                 ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
@@ -1382,7 +1413,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                 //Do action
                                                 OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
-                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+                                                //Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
 
                                                 client = Worker.putTaskToRootService(origConfig
                                                         , getActivity(), new IWorkListener.Stub() {
@@ -1398,7 +1429,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                             @Override
                                                             public void onCompleted(boolean success) throws RemoteException {
-                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                //Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
                                                                 ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
@@ -1499,7 +1530,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                 //Do action
                                                 OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
-                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+                                                //Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
 
                                                 client = Worker.putTaskToRootService(origConfig
                                                         , getActivity(), new IWorkListener.Stub() {
@@ -1515,7 +1546,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                             @Override
                                                             public void onCompleted(boolean success) throws RemoteException {
-                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                //Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
                                                                 ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
@@ -1741,7 +1772,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                             @Override
                                             public boolean onClick(InputDialog baseDialog, View v, String inputStr) {
                                                 WaitDialog.show("Changing name");
-                                                Log.d(TAG.SystemInforMap_TAG, "Rename " + selectedDriver.getPath() + ":" + ((GPTPart) selectedChunk).getNumber() + " to " + inputStr);
+                                                //Log.d(TAG.SystemInforMap_TAG, "Rename " + selectedDriver.getPath() + ":" + ((GPTPart) selectedChunk).getNumber() + " to " + inputStr);
                                                 WaitDialog.overrideCancelable = BaseDialog.BOOLEAN.FALSE;
 
                                                 //allow blank
@@ -1777,7 +1808,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                 //Do action
                                                 OrigConfig origConfig = new OrigConfig(sb.toString(), "UTF-8");
-                                                Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
+                                                //Log.d(TAG.SystemInforMap_TAG, "\n\n" + sb.toString() + "\n\n");
 
                                                 client = Worker.putTaskToRootService(origConfig
                                                         , getActivity(), new IWorkListener.Stub() {
@@ -1793,7 +1824,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
                                                             @Override
                                                             public void onCompleted(boolean success) throws RemoteException {
-                                                                Log.d(TAG.SystemInforMap_TAG, "Success");
+                                                                //Log.d(TAG.SystemInforMap_TAG, "Success");
                                                                 WaitDialog.dismiss();
                                                                 ((MainActivity) getActivity()).runOnUiThread(new Runnable() {
                                                                     @Override
@@ -1820,7 +1851,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                                         });
 
                                                 if (client == null) {
-                                                    Log.d(TAG.SystemInforMap_TAG, "Null Client");
+                                                    //Log.d(TAG.SystemInforMap_TAG, "Null Client");
                                                     WaitDialog.dismiss();
                                                     MessageDialog.show("Error", "Permission denied.This perfermance requires root permission", "Cancel");
                                                     return false;
@@ -2034,7 +2065,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             @Override
             public void onCellClicked(@NonNull RecyclerView.ViewHolder cellView, int column, int row) {
                 //super.onCellClicked(cellView, column, row);
-                Log.d(TAG.SystemInforMap_TAG, "Click Table View ROW : " + row);
+                //Log.d(TAG.SystemInforMap_TAG, "Click Table View ROW : " + row);
                 tableViewChooseDiskChunk(row);
             }
         });
@@ -2114,6 +2145,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * @param driver
      */
     private void setData(String driver) {
+        //Log.d(TAG.SystemInforMap_TAG, "Set Data");
 
         /**
          * Need async get gpt list data
@@ -2195,9 +2227,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 entry.setData(freeChunk);
                                 entries.add(entry);
 
-                                Log.d(TAG.SystemInforMap_TAG, "Add Chart Entry : "
-                                        + "Unused "
-                                        + ":" + String.valueOf(freeChunk.getStartSector()));
+//                                Log.d(TAG.SystemInforMap_TAG, "Add Chart Entry : "
+//                                        + "Unused "
+//                                        + ":" + String.valueOf(freeChunk.getStartSector()));
                             } else {
                                 //part
                                 GPTPart part = (GPTPart) partList.get(i);
@@ -2211,16 +2243,16 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                                 entry.setData(part);
                                 entries.add(entry);
 
-                                Log.d(TAG.SystemInforMap_TAG, "Add Chart Entry : "
-                                        + part.getNumber()
-                                        + ":" + part.getName());
+//                                Log.d(TAG.SystemInforMap_TAG, "Add Chart Entry : "
+//                                        + part.getNumber()
+//                                        + ":" + part.getName());
                             }
                         }
                         if (other_size > 0) {
                             String label_other = "Other";
                             entries.add(new PieEntry(other_size, label_other));
-                            Log.d(TAG.SystemInforMap_TAG, "Add Other Entry : "
-                                    + other_size);
+//                            Log.d(TAG.SystemInforMap_TAG, "Add Other Entry : "
+//                                    + other_size);
                         }
 
                         PieDataSet dataSet = new PieDataSet(entries, "Disk Layout");
@@ -2300,6 +2332,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     TableView partListTableView = null; //fuck on in piechart setup
 
     private void setUpPartListTableView(GPTDriver driver) {
+        DebugUtils.functionHit("setUpPartListTableView");
         setCellList(driver);
         // Create our custom TableView Adapter
         MyTableViewAdapter adapter = new MyTableViewAdapter(getContext());
@@ -2312,6 +2345,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
     private void setCellList(GPTDriver driver) {
+        DebugUtils.functionHit("setCellList");
         mRowHeaderList.clear();
         mColumnHeaderList.clear();
         mCellList.clear();
@@ -2374,8 +2408,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
      * @param origin_index
      */
     private void tableViewChooseDiskChunk(int origin_index) {
+        DebugUtils.functionHit("tableViewChooseDiskChunk");
         if (origin_index >= selectedDriver.getPartList().size() | origin_index < 0) {
-            Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 1");
+            //Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 1");
             selectedChunk = null;
             disableExistedPartActions();
             disableFreeChunkActions();
@@ -2383,7 +2418,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         }
         selectedChunk = selectedDriver.getPartList().get(origin_index);
         if (selectedChunk == null) {
-            Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 2");
+            //Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 2");
         }
         /**
          * calcuate piechart index
@@ -2424,8 +2459,9 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     ///////////////////////////////////////
 
     private GPTDriver getPartList(String driver) {
+        DebugUtils.functionHit("getPartList");
         String result = DirectFunctionUtils.Direct1_PART_DUMPER(getActivity(), driver);
-        Log.d(TAG.SystemInforMap_TAG, "GPart list string : " + result);
+        //Log.d(TAG.SystemInforMap_TAG, "GPart list string : " + result);
         /**
          * result format
          * private List<GPTPart> partList;
@@ -2520,6 +2556,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     boolean preventPieReselect = false;
 
     private void selectEntry(int index) {
+        DebugUtils.functionHit("selectEntry");
         if (index > chart.getData().getEntryCount() - 1) {
             //out of range
             TipDialog.show("Out of range");
@@ -2530,6 +2567,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
     }
 
     private void selectOtherEntry() {
+        DebugUtils.functionHit("selectOtherEntry");
         int last_index = chart.getData().getDataSet().getEntryCount() - 1;
         preventPieReselect = true;
         chart.highlightValue(last_index, 0);
@@ -2537,9 +2575,10 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     @Override
     public void onValueSelected(Entry e, Highlight h) {
+        DebugUtils.functionHit("onValueSelected");
         //prevent reselect tableview cell
         if (preventPieReselect) {
-            Log.d(TAG.SystemInforMap_TAG, "Prevented onvalueselected");
+            //Log.d(TAG.SystemInforMap_TAG, "Prevented onvalueselected");
             preventPieReselect = false;
             return;
         }
@@ -2558,13 +2597,13 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
         } else {
             selectedChunk = chunk;
             if (selectedChunk == null) {
-                Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 3");
+                //Log.d(TAG.SystemInforMap_TAG, "tableViewChoose set selectedChunk null 3");
             }
             Log.i("VAL SELECTED",
                     "Value: " + e.getY() + ", xIndex: " + e.getX()
                             + ", |  " + chunk.getPart_type().getPartType().toString());
             int pie_index = chart.getData().getDataSet().getEntryIndex((PieEntry) e);
-            Log.d(TAG.SystemInforMap_TAG, "Piechart index " + pie_index);
+            //Log.d(TAG.SystemInforMap_TAG, "Piechart index " + pie_index);
             /**
              * calcuate original index and select in tableview
              */
@@ -2572,7 +2611,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             long threshold = (long) (0.1 * selectedDriver.getTotal_size_sector());
             int counter = 0;
             origin_index = selectedDriver.getPartList().indexOf(chunk);
-            Log.d(TAG.SystemInforMap_TAG, "Piechart origin index " + origin_index);
+            //Log.d(TAG.SystemInforMap_TAG, "Piechart origin index " + origin_index);
 //            for (; origin_index < selectedDriver.getPartList().size(); origin_index++) {
 //                DiskChunk ctmp=selectedDriver.getPartList().get(origin_index);
 //            }
@@ -2583,11 +2622,11 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
             //
 
             if (chunk.getPart_type().getPartType() == PartType.PartEnum.TYPE_FREESPACE) {
-                Log.d(TAG.SystemInforMap_TAG, "FREESPACE SELECTED");
+                //Log.d(TAG.SystemInforMap_TAG, "FREESPACE SELECTED");
                 disableExistedPartActions();
                 enableFreeChunkActions();
             } else {
-                Log.d(TAG.SystemInforMap_TAG, "PART SELECTED");
+                //Log.d(TAG.SystemInforMap_TAG, "PART SELECTED");
                 disableFreeChunkActions();
                 enableExistedPartActions();
             }
@@ -2597,11 +2636,12 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
 
     @Override
     public void onNothingSelected() {
+        DebugUtils.functionHit("onNothingSelected");
         if (diskSpinner.getSelectedIndex() == 0) {
             return;
         }
         Log.i("PieChart", "nothing selected");
-        Log.d(TAG.SystemInforMap_TAG, "NothingSelected set selectedChunk null");
+        //Log.d(TAG.SystemInforMap_TAG, "NothingSelected set selectedChunk null");
         selectedChunk = null;
         partListTableView.getSelectionHandler().clearSelection();
 
@@ -2762,7 +2802,7 @@ public class SystemInfoMap extends Fragment implements OnChartValueSelectedListe
                 partUmount_bt.setEnabled(false);
             }
         } else {
-            Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : NULL");
+            //Log.d(TAG.SystemInforMap_TAG, "ENABLE EXISTED : NULL");
         }
 
     }

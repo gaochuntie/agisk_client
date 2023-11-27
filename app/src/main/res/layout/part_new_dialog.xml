@@ -169,7 +169,6 @@
 
             </LinearLayout>
             <LinearLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -179,11 +178,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:width="0dp"
-                    android:text="New(byte): "
+                    android:text="Total(IEEE): "
                     android:textColor="@color/black" />
 
                 <TextView
-                    android:id="@+id/newDialog_new_byte_tv"
+                    android:id="@+id/newDialog_total_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="5"
@@ -191,8 +190,8 @@
                     android:gravity="right"
                     android:text="5014515"
                     android:textColor="@color/black" />
-
             </LinearLayout>
+
             <LinearLayout
                 android:layout_marginBottom="20dp"
                 android:layout_width="match_parent"
@@ -218,29 +217,7 @@
 
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:width="0dp"
-                    android:text="Total: "
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:id="@+id/newDialog_total_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:width="0dp"
-                    android:gravity="right"
-                    android:text="5014515"
-                    android:textColor="@color/black" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -322,7 +299,7 @@
                     android:secondaryProgress="0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
-                 </LinearLayout>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -343,7 +320,11 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black" />
             </LinearLayout>
-
+            <atms.app.agiskclient.UIcomponents.LineSegmentRatioProgressBar
+                android:background="@color/gray"
+                android:layout_width="match_parent"
+                android:id="@+id/newDialog_lineSegmentRatioProgressBar"
+                android:layout_height="10dp"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
