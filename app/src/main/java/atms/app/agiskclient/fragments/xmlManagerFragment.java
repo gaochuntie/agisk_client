@@ -69,6 +69,7 @@ import atms.app.agiskclient.Tools.ClipboardUtil;
 import atms.app.agiskclient.Tools.FileForceWriteListener;
 import atms.app.agiskclient.Tools.FileUtils;
 import atms.app.agiskclient.Tools.RandomUtils;
+import atms.app.agiskclient.Tools.Support;
 import atms.app.agiskclient.Tools.TAG;
 import atms.app.agiskclient.adapter.xmlListAdapter;
 import atms.app.agiskclient.databinding.FragmentXmlManagerBinding;
@@ -136,6 +137,7 @@ public class xmlManagerFragment extends Fragment {
         fragmentInstallBinding = FragmentXmlManagerBinding.bind(view);
         initComponents();
         setupXmlEncrypt();
+        setupXmlEncryptM();
         //show xml list
         reloadXmlItem();
         return view;
@@ -147,6 +149,8 @@ public class xmlManagerFragment extends Fragment {
     private ImageButton helpbt;
 
     private RecyclerView xmlListManage;
+
+    // singal encrypt xml
     private EditText enXml_path;
     private EditText enXml_key;
     private EditText enXml_arg;
@@ -156,6 +160,17 @@ public class xmlManagerFragment extends Fragment {
     private TextView enXml_log;
     private RadioButton enXml_NeedSn;
     private Button enXml_key_random;
+
+    // multiple encrypt xml
+    private EditText enXmlM_path;
+    private EditText enXmlM_key;
+    private EditText enXmlM_arg;
+    private RadioGroup enXmlM_rg;
+    private Button enXmlM_en;
+    private Button enxmlM_openfile_bt;
+    private TextView enXmlM_log;
+    private RadioButton enXmlM_NeedSn;
+    private Button enXmlM_key_random;
 
     private void initComponents() {
         addnewbt = fragmentInstallBinding.installAddIbt;
@@ -181,6 +196,8 @@ public class xmlManagerFragment extends Fragment {
         });
         xmlListManage = fragmentInstallBinding.xmlManageList;
 
+        // single encrypt xml
+
         enXml_en = fragmentInstallBinding.xmlEncryptBtDoencrypt;
         enXml_arg = fragmentInstallBinding.xmlEncryptEtArgs;
         enXml_rg = fragmentInstallBinding.xmlEncryptRg;
@@ -191,6 +208,17 @@ public class xmlManagerFragment extends Fragment {
         enxml_openfile_bt = fragmentInstallBinding.xmlEncryptBtOpenfile;
         enXml_NeedSn=fragmentInstallBinding.xmlEncryptRbNeedSn;
         enXml_key_random=fragmentInstallBinding.xmlEncryptBtRandomKey;
+        // multiple encrypt xml
+
+        enXmlM_en = fragmentInstallBinding.xmlEncryptMBtDoencrypt;
+        enXmlM_arg = fragmentInstallBinding.xmlEncryptMEtArgs;
+        enXmlM_rg = fragmentInstallBinding.xmlEncryptMRg;
+        enXmlM_log = fragmentInstallBinding.xmlEncryptMTvLog;
+        enXmlM_key = fragmentInstallBinding.xmlEncryptMEtKey;
+        enXmlM_path = fragmentInstallBinding.xmlEncryptMEtPath;
+        enxmlM_openfile_bt = fragmentInstallBinding.xmlEncryptMBtOpenfile;
+        enXmlM_NeedSn=fragmentInstallBinding.xmlEncryptMRbNeedSn;
+        enXmlM_key_random=fragmentInstallBinding.xmlEncryptMBtRandomKey;
     }
 
 
@@ -342,6 +370,177 @@ public class xmlManagerFragment extends Fragment {
                                     public boolean onClick(View v, FileBean file, String currentPath, BasePathSelectFragment pathSelectFragment) {
                                         Mtools.toast(file.getPath());
                                         enXml_path.setText(file.getPath());
+                                        pathSelectFragment.close();
+                                        return false;
+                                    }
+                                }
+                        )
+                        .show();//开始构建
+            }
+        });
+    }
+    private void setupXmlEncryptM() {
+        if (!Settings.getRootAccess()) {
+            enXmlM_en.setEnabled(false);
+        }
+        enXmlM_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.xml_encryptM_rb_need_sn:
+                        enXmlM_path.setVisibility(View.VISIBLE);
+                        enXmlM_key_random.setVisibility(View.VISIBLE);
+                        enxmlM_openfile_bt.setVisibility(View.VISIBLE);
+                        break;
+                    case R.id.xml_encryptM_rb_noneed_sn:
+                        enXmlM_path.setVisibility(View.INVISIBLE);
+                        enXmlM_key_random.setVisibility(View.INVISIBLE);
+                        enxmlM_openfile_bt.setVisibility(View.INVISIBLE);
+
+                        break;
+                }
+            }
+        });
+        enXmlM_key_random.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enXmlM_key.setText(RandomUtils.getAlphaNumericString(16));
+            }
+        });
+        enXmlM_en.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 16 length key is necessary
+                if (enXmlM_key.getText().toString().length()<16){
+                    enXmlM_log.append("Key must length 16 or longer\n");
+                    return;
+                }
+                //do en xml
+                if (enXmlM_path.getText().toString().isEmpty() && enXmlM_NeedSn.isChecked()) {
+                    enXmlM_log.append("Path is must\n");
+                    return;
+                }
+                final String path=enXmlM_path.getText().toString();
+                final String key = enXmlM_key.getText().toString();
+
+                Log.d(TAG.XML_MANAGER_TAG, "d1");
+                final boolean needEncryptXml=enXmlM_NeedSn.isChecked();
+                String[] snList=enXmlM_arg.getText().toString().split("\n");
+                List<String> keyList=new ArrayList<>();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        //encrypt key for each sn
+                        for (String sn:snList){
+                            if (sn.isEmpty()){
+                                continue;
+                            }
+                            String en_key= Support.DES_EncryptString(key,sn);
+                            if (en_key==null){
+                                //failed to encrypt key
+                                en_key = "ERROR_ENCRYPT_KEY";
+                            }
+                               keyList.add(en_key);
+                        }
+
+                        // need encrypt xml
+                        if (needEncryptXml){
+                            String en_xml="";
+                            String orig_xml=FileUtils.forceReadFileWithRoot(getActivity(),path);
+                            Log.d(TAG.XML_MANAGER_TAG, "d2");
+                            if (orig_xml.isEmpty()) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        enXmlM_log.append("Error read xml");
+                                    }
+                                });
+
+                                return;
+                            }
+                            en_xml=XmlProcessor.encryptXml(orig_xml
+                                    ,
+                                    key,
+                                    0,""
+                            );
+                            Log.d(TAG.XML_MANAGER_TAG, "d3");
+                            if (en_xml == null || en_xml.isEmpty()) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        enXmlM_log.append("Error encrypt xml\n");
+                                    }
+                                });
+
+                                return;
+                            }
+                            String new_path = path.replaceAll(".xml", ".enXmlM");
+
+                            FileUtils.forceWriteToFileWithRoot(getActivity(), en_xml, new_path, new FileForceWriteListener() {
+                                @Override
+                                public void onWriteFailed(String resaon) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            enXmlM_en.setEnabled(true);
+                                            enXmlM_log.append("Failed:"+resaon+"\n");
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onWriteSuccess() {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            enXmlM_en.setEnabled(true);
+                                            enXmlM_log.append("Success:"+new_path+"\n");
+                                            enXmlM_log.append("Your keys are followings (Order as given sns)\n");
+                                            for (String key:keyList){
+                                                enXmlM_log.append("2"+key+"\n");
+                                            }
+                                            //ClipboardUtil.copyToClipboard(getContext(),"0"+key);
+                                        }
+                                    });
+                                }
+                            });
+                        }else{
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    enXmlM_en.setEnabled(true);
+                                    enXmlM_log.append("Success:\n");
+                                    enXmlM_log.append("Your keys are followings (Order as given sns)\n");
+                                    for (String key:keyList){
+                                        enXmlM_log.append("2"+key+"\n");
+                                    }
+                                    //ClipboardUtil.copyToClipboard(getContext(),"0"+key);
+                                }
+                            });
+                        }
+
+                    }
+                }).start();
+
+            }
+        });
+        enxmlM_openfile_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //如果没有权限会自动申请权限
+                PathSelector.build(getActivity(), MConstants.BUILD_DIALOG)//Dialog构建方式
+                        .setSelectFileTypes("xml")
+                        .setShowFileTypes("xml","enXmlM")
+                        .setRadio()
+                        .setTitlebarMainTitle(new FontBean("Choose Xml"))
+                        .setAlwaysShowHandleFragment(false)
+                        .setFileItemListener(//设置文件item点击回调(点击是文件才会回调,如果点击是文件夹则不会)
+                                new FileItemListener() {
+                                    @Override
+                                    public boolean onClick(View v, FileBean file, String currentPath, BasePathSelectFragment pathSelectFragment) {
+                                        Mtools.toast(file.getPath());
+                                        enXmlM_path.setText(file.getPath());
                                         pathSelectFragment.close();
                                         return false;
                                     }
