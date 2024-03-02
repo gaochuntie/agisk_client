@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     tools:context=".fragments.xmlManagerFragment">
 
@@ -14,55 +14,81 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:divider="@drawable/linearlayout_divider"
             android:layout_height="wrap_content"
+            android:divider="@drawable/linearlayout_divider"
             android:orientation="vertical">
+
             <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="3dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                app:cardCornerRadius="3dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="30dp"
-                        android:textStyle="bold"
-                        android:layout_marginVertical="10dp"
                         android:layout_marginHorizontal="5dp"
+                        android:layout_marginVertical="10dp"
                         android:text="XML LIST"
-                        android:textColor="#000000"/>
+                        android:textColor="#000000"
+                        android:textSize="30dp"
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/xml_manage_list"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginHorizontal="5dp"
-                        android:layout_marginBottom="15dp"
-                        android:layout_height="wrap_content" />
+                        android:layout_marginBottom="15dp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="3dp"
-                android:layout_height="wrap_content">
+                app:cardCornerRadius="3dp">
 
                 <LinearLayout
-                    android:layout_marginLeft="4dp"
-                    android:orientation="vertical"
-                    android:background="#00FF0000"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:background="#00FF0000"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="XML Decryption Runtime Support Broken !"
+                        android:textColor="#FF0000"
+                        android:textStyle="italic|bold"
+                        android:textSize="18dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/white"
+                app:cardBackgroundColor="#F8F8F8"
+                app:cardCornerRadius="3dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:background="#00FF0000"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -70,70 +96,81 @@
                         android:text="Encrypt a xml for a specific device"
                         android:textColor="@color/black"
                         android:textSize="18dp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="This function need root at this stage\nIn order to skip Android file permission issue"
-                        android:textColor="#FFC107"/>
+                        android:textColor="#FFC107" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:text="Path : "
-                            android:gravity="center"/>
+                            android:textColor="@color/black" />
+
                         <EditText
                             android:id="@+id/xml_encrypt_et_path"
                             android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:text=""
-                            android:hint="xml to be encrypted"
-                            android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
-                            android:gravity="left"/>
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:hint="xml to be encrypted"
+                            android:text=""
+                            android:textColorHint="@color/gray" />
+
                         <Button
                             android:id="@+id/xml_encrypt_bt__openfile"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:background="@drawable/ic_file_foreground"/>
+                            android:background="@drawable/ic_file_foreground" />
 
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:text="Key  : "
-                            android:gravity="center"/>
+                            android:textColor="@color/black" />
+
                         <EditText
-                            android:text=""
                             android:id="@+id/xml_encrypt_et_key"
                             android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:hint="key for des encryption"
-                            android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
-                            android:gravity="left"/>
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:hint="key for des encryption"
+                            android:text=""
+                            android:textColorHint="@color/gray" />
+
                         <Button
                             android:id="@+id/xml_encrypt_bt__random_key"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
+                            android:background="@drawable/dice"
                             android:scaleX="0.6"
-                            android:scaleY="0.6"
-                            android:background="@drawable/dice"/>
+                            android:scaleY="0.6" />
 
                     </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Need serial number for encryption?"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black" />
+
                     <RadioGroup
                         android:id="@+id/xml_encrypt_rg"
                         android:layout_width="match_parent"
@@ -144,67 +181,72 @@
                             android:id="@+id/xml_encrypt_rb_need_sn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:checked="false"
                             android:text="Yes"
-                            android:textColor="@color/black"
-                            android:checked="false"/>
+                            android:textColor="@color/black" />
 
                         <RadioButton
                             android:id="@+id/xml_encrypt_rb_noneed_sn"
-                            android:textColor="@color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="No"/>
+                            android:text="No"
+                            android:textColor="@color/black" />
                     </RadioGroup>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:text="Serial Num (hex) : "
-                            android:gravity="center"/>
+                            android:textColor="@color/black" />
+
                         <EditText
-                            android:text=""
                             android:id="@+id/xml_encrypt_et_args"
                             android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:hint="Go to Map section to see"
-                            android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
-                            android:gravity="left"/>
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:hint="Go to Map section to see"
+                            android:text=""
+                            android:textColorHint="@color/gray" />
                     </LinearLayout>
 
                     <Button
                         android:id="@+id/xml_encrypt_bt_doencrypt"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="Encrypt"/>
+                        android:text="Encrypt" />
+
                     <TextView
-                        android:textIsSelectable="true"
                         android:id="@+id/xml_encrypt_tv_log"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="log here\n"
                         android:textColor="@color/black"
-                        android:text="log here\n"/>
+                        android:textIsSelectable="true" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="3dp"
-                android:layout_height="wrap_content">
+                app:cardCornerRadius="3dp">
 
                 <LinearLayout
-                    android:layout_marginLeft="4dp"
-                    android:orientation="vertical"
-                    android:background="#00FF0000"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:background="#00FF0000"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -212,70 +254,81 @@
                         android:text="Encrypt a xml for multiple device"
                         android:textColor="@color/black"
                         android:textSize="18dp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="This function need root at this stage\nIn order to skip Android file permission issue"
-                        android:textColor="#FFC107"/>
+                        android:textColor="#FFC107" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:text="Path : "
-                            android:gravity="center"/>
+                            android:textColor="@color/black" />
+
                         <EditText
                             android:id="@+id/xml_encryptM_et_path"
                             android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:text=""
-                            android:hint="xml to be encrypted"
-                            android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
-                            android:gravity="left"/>
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:hint="xml to be encrypted"
+                            android:text=""
+                            android:textColorHint="@color/gray" />
+
                         <Button
                             android:id="@+id/xml_encryptM_bt__openfile"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:background="@drawable/ic_file_foreground"/>
+                            android:background="@drawable/ic_file_foreground" />
 
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:text="Key  : "
-                            android:gravity="center"/>
+                            android:textColor="@color/black" />
+
                         <EditText
-                            android:text=""
                             android:id="@+id/xml_encryptM_et_key"
                             android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:hint="key for des encryption"
-                            android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
-                            android:gravity="left"/>
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:hint="key for des encryption"
+                            android:text=""
+                            android:textColorHint="@color/gray" />
+
                         <Button
                             android:id="@+id/xml_encryptM_bt__random_key"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
+                            android:background="@drawable/dice"
                             android:scaleX="0.6"
-                            android:scaleY="0.6"
-                            android:background="@drawable/dice"/>
+                            android:scaleY="0.6" />
 
                     </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Encrypt Xml? (Same original key no need to encrypt again)"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black" />
+
                     <RadioGroup
                         android:id="@+id/xml_encryptM_rg"
                         android:layout_width="match_parent"
@@ -286,109 +339,113 @@
                             android:id="@+id/xml_encryptM_rb_need_sn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:checked="true"
                             android:text="Yes"
-                            android:textColor="@color/black"
-                            android:checked="true"/>
+                            android:textColor="@color/black" />
 
                         <RadioButton
                             android:id="@+id/xml_encryptM_rb_noneed_sn"
-                            android:textColor="@color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="false"
-                            android:text="No"/>
+                            android:text="No"
+                            android:textColor="@color/black" />
                     </RadioGroup>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:text="Serial Num (hex,one line one num) : "
-                            android:gravity="center"/>
+                            android:textColor="@color/black" />
+
                         <EditText
-                            android:text=""
                             android:id="@+id/xml_encryptM_et_args"
                             android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:hint="Go to Map section to see"
-                            android:textColorHint="@color/gray"
                             android:layout_height="wrap_content"
-                            android:gravity="left"/>
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:hint="Go to Map section to see"
+                            android:text=""
+                            android:textColorHint="@color/gray" />
                     </LinearLayout>
 
                     <Button
                         android:id="@+id/xml_encryptM_bt_doencrypt"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="Encrypt"/>
+                        android:text="Encrypt" />
+
                     <TextView
-                        android:textIsSelectable="true"
                         android:id="@+id/xml_encryptM_tv_log"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="Output key(s) here\n"
                         android:textColor="@color/black"
-                        android:text="Output key(s) here\n"/>
+                        android:textIsSelectable="true" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_margin="5dp"
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="3dp"
-                android:layout_height="180dp">
+                app:cardCornerRadius="3dp">
 
                 <ImageButton
-                    android:background="#00FF0000"
                     android:id="@+id/install_add_ibt"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:src="@drawable/ic_install_button_foreground"
+                    android:background="#00FF0000"
                     android:scaleType="center"
-                    android:tooltipText="New"
-                    android:text="New" />
+                    android:src="@drawable/ic_install_button_foreground"
+                    android:text="New"
+                    android:tooltipText="New" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_margin="5dp"
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="3dp"
-                android:layout_height="180dp">
+                app:cardCornerRadius="3dp">
 
                 <ImageButton
-                    android:background="#00FF0000"
                     android:id="@+id/install_get_ibt"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:src="@drawable/ic_install_get_button_foreground"
+                    android:background="#00FF0000"
                     android:scaleType="center"
-                    android:tooltipText="New"
-                    android:text="New" />
+                    android:src="@drawable/ic_install_get_button_foreground"
+                    android:text="New"
+                    android:tooltipText="New" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_margin="5dp"
                 android:background="@color/white"
                 app:cardBackgroundColor="#F8F8F8"
-                android:layout_margin="5dp"
-                app:cardCornerRadius="3dp"
-                android:layout_height="180dp">
+                app:cardCornerRadius="3dp">
 
                 <ImageButton
-                    android:background="#00FF0000"
                     android:id="@+id/install_help_ibt"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:src="@drawable/ic_install_help_button_foreground"
+                    android:background="#00FF0000"
                     android:scaleType="center"
-                    android:tooltipText="New"
-                    android:text="New" />
+                    android:src="@drawable/ic_install_help_button_foreground"
+                    android:text="New"
+                    android:tooltipText="New" />
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
