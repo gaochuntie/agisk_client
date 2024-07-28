@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_map_foreground),
                         Color.parseColor(colors[2])
-                ).title("Map")
+                ).title("GPT")
                         .build()
         );
         models.add(
