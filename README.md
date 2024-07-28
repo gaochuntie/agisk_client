@@ -1,7 +1,7 @@
 # Release
   https://github.com/gaochuntie/agisk_client/releases
-  
 
+# This app consists of two seperate part : agisk client & gpt partition manager
 # Introduce : Agisk android app client & GPT Partition Manager
     This is a project regarding all disk/partition actions as xml configuration files.And include a GUI GPT Partition Manager.
     Such idea is the same as TWRP's ui-action.
