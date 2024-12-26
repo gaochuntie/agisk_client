@@ -45,5 +45,5 @@
 # About me
   * Thank you very much to check my project,if you have any issue or individule suggestion,please open an issue or email me at
   2041469901@qq.com Nightly check [ QQ Contract Request not allowed.]
-   * or jackmaxpale@gmail.com with title "AGISK <Main-Points>" [Less check]
+   * or jackmaxpale@gmail.com with title "AGISK Main-Points" [Less check]
   
