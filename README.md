@@ -39,11 +39,11 @@
   * I will check request every night 
   
 # Language issue
-  * The project only support English language and will never be translated into other languages
-  for it's an open source and free hacker tool for android.
+  * The project currently only supports English language
+  * Feel free to do translation here ^_^
   
 # About me
   * Thank you very much to check my project,if you have any issue or individule suggestion,please open an issue or email me at
   2041469901@qq.com Nightly check [ QQ Contract Request not allowed.]
-   * or jackmaxpale@gmail.com [Less check]
+   * or jackmaxpale@gmail.com with title "AGISK <Main-Points>" [Less check]
   
