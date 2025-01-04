@@ -36,7 +36,7 @@
 最新版本请访问：  
 [下载页面](https://github.com/gaochuntie/agisk_client/releases)  
 
-**pre-v4** 为重构前的最后一个版本。  
+**pre-v4** 为重构前的最后一个版本，不再进行更新和支持，该版本未加入多语言支持。  
 
 ---
 
